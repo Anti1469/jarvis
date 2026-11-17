@@ -685,7 +685,7 @@ const EN_PATTERNS=[
   [/^Működik · (\d+) modell \(kattints a modell mezőre a listához\)$/,"Working · $1 models (click the model field for the list)"],
   [/^Felhő: szinkronizálva (.+)$/,"Cloud: synced $1"],[/^szinkronizálva (.+)$/,"synced $1"],[/^Felhő: (.+)$/,m=>"Cloud: "+trCore(m.slice(7))],
   [/^Lejárt: (.+)$/,"Overdue: $1"],[/^Határidő: (.+)$/,"Due: $1"],[/^Feladat: (.+)$/,"Task: $1"],[/^Megjegyzésed: (.+)$/,"Your note: $1"],[/^Feladat határidő · (.+)$/,"Task deadline · $1"],
-  [/^(\d+) ügynök$/,"$1 agents"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
+  [/^(\d+) ügynök$/,"$1 agents"],[/^(.+) \(alapértelmezett\)$/,"$1 (default)"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
   [/^Nincs beállítva: (.+?)\. Add meg az AI mag oldalon\.$/,"Not configured: $1. Add it on the AI Core page."],[/^Nincs beállítva: (.+)$/,"Not configured: $1"],
   [/^(.+?): a kulcs érvénytelen vagy nincs jogosultsága\. Ellenőrizd az AI mag oldalon\. \((.*)\)$/,"$1: invalid key or no permission. Check it on the AI Core page. ($2)"],
   [/^(.+?): nincs ilyen modell\. Válassz másikat az AI mag oldalon\. \((.*)\)$/,"$1: no such model. Pick another on the AI Core page. ($2)"],
@@ -783,7 +783,7 @@ const PROVIDERS = {
   openrouter:{name:"OpenRouter",vendor:"Több száz modell egy kulccsal",kind:"oa",base:"https://openrouter.ai/api/v1",keyUrl:"https://openrouter.ai/keys",keyHint:"sk-or-…",models:["openrouter/auto"]},
   claudecode:{name:"Claude Code",vendor:"A gépeden futó Claude Code, az előfizetéseddel",kind:"cc",local:true,keyHint:"http://127.0.0.1:8765",defAddr:"http://127.0.0.1:8765",
     hint:"Csak azon a gépen működik, ahol a Claude Code telepítve van és a híd fut (Jarvis-Claude-inditas.bat). API-kulcs nem kell.",
-    linkText:"Híd letöltése ↗",keyUrl:"https://github.com/Anti1469/jarvis/tree/main/helyi",models:["sonnet","opus","haiku"]},
+    linkText:"Híd letöltése ↗",keyUrl:"https://github.com/Anti1469/jarvis/tree/main/helyi",models:["sonnet","opus","haiku","claude-opus-5-5","claude-sonnet-5-5","claude-haiku-5-5"]},
   ollama:{name:"Ollama",vendor:"Helyi modellek a gépeden",kind:"oa",local:true,keyHint:"http://localhost:11434/v1",defAddr:"http://localhost:11434/v1",
     hint:"Csak azon a gépen működik, ahol az Ollama fut. Indítás: OLLAMA_ORIGINS=* ollama serve",linkText:"Ollama letöltése ↗",keyUrl:"https://ollama.com/download",models:["llama3.2"]}
 };
@@ -1081,7 +1081,7 @@ async function run({newRound,note}){
   log("info", round>1?`${round}. kör indult`:"Új küldetés indult", task.slice(0,80));
   running={controller:new AbortController(),round}; renderAll();
   for (let i=startIdx;i<team.length;i++){
-    const m=team[i], model=models[m.provider];
+    const m=team[i], model=(m.model||"").trim()||models[m.provider];
     const prior=history.filter(h=>!h.note), roundNote=history.find(h=>h.note&&h.round===round)?.text;
     const pending={round,memberId:m.id,name:m.name,provider:m.provider,model,pending:true,startedAt:Date.now()};
     history.push(pending); renderAll();
@@ -1161,7 +1161,7 @@ function renderAgents(){
     const wave=el("div",{class:"wave"}); for(let k=0;k<16;k++){ const b=el("i"); b.style.animationDelay=(k*0.06%0.9)+"s"; if(st!=="work") b.style.height=(18+((k*37)%60))+"%"; wave.append(b); }
     return el("div",{class:`agent ${st}`,style:`--pc:${pColor(m.provider)}`},
       el("div",{class:"hd"},ico(ROLE_ICONS[i%ROLE_ICONS.length],pColor(m.provider)),el("div",{style:"min-width:0;flex:1"},el("b",{},m.name),el("small",{},lbl[st]))),
-      wave,el("span",{class:"prov"},`${PROVIDERS[m.provider]?.name} · ${models[m.provider]}`)); }));
+      wave,el("span",{class:"prov"},`${PROVIDERS[m.provider]?.name} · ${(m.model||"").trim()||models[m.provider]}`)); }));
 }
 function renderTimeline(){
   const now=Date.now(), today=todayStr(), rows=[];
@@ -1302,17 +1302,21 @@ function renderMemStats(){
 }
 
 // ================= ügynökök =================
+function ensureDl(pid){ const id="dl-"+pid; if(!document.getElementById(id)){ const dl=el("datalist",{id}); for (const x of (PROVIDERS[pid]?.models||[])) dl.append(el("option",{value:x})); document.body.append(dl); } return id; }
 function renderTeam(){
   const t=$("#team"); t.replaceChildren();
   team.forEach((m,i)=>{
     const sel=el("select",{id:"prov-"+m.id,"aria-label":"Melyik AI"}); for (const id of PIDS) sel.append(el("option",{value:id,selected:id===m.provider},PROVIDERS[id].name));
-    sel.addEventListener("change",()=>{ m.provider=sel.value; saveAll(); renderTeam(); renderNav(); });
+    sel.addEventListener("change",()=>{ m.provider=sel.value; m.model=""; saveAll(); renderTeam(); renderNav(); });
+    const dlId=ensureDl(m.provider);
+    const mdl=el("input",{id:"mdl-"+m.id,list:dlId,value:m.model||"",placeholder:(models[m.provider]||"")+" (alapértelmezett)","aria-label":"Modell"});
+    mdl.addEventListener("input",()=>{ m.model=mdl.value.trim(); saveAll(); });
     const name=el("input",{id:"name-"+m.id,value:m.name,"aria-label":"Ügynök neve",placeholder:"Ügynök neve"}); name.addEventListener("input",()=>{ m.name=name.value; saveAll(); });
     const ins=el("textarea",{id:"ins-"+m.id,rows:"4","aria-label":"Utasítás",placeholder:"Mi a feladata?"}); ins.value=m.instruction; ins.addEventListener("input",()=>{ m.instruction=ins.value; saveAll(); });
     const move=d=>{ const j=i+d; if(j<0||j>=team.length) return; [team[i],team[j]]=[team[j],team[i]]; saveAll(); renderTeam(); };
     t.append(el("div",{class:"panel member stack",style:`--pc:${pColor(m.provider)}`},
       el("div",{class:"row"},el("div",{class:"num"},String(i+1)),el("div",{class:"grow"},name)),
-      el("label",{for:"prov-"+m.id},"Modell-szolgáltató"),sel,el("label",{for:"ins-"+m.id},"Utasítás"),ins,
+      el("label",{for:"prov-"+m.id},"Modell-szolgáltató"),sel,el("label",{for:"mdl-"+m.id},"Modell"),mdl,el("label",{for:"ins-"+m.id},"Utasítás"),ins,
       el("div",{class:"row"},el("button",{class:"btn small",disabled:i===0,onclick:()=>move(-1)},"↑ Előre"),el("button",{class:"btn small",disabled:i===team.length-1,onclick:()=>move(1)},"↓ Hátra"),el("span",{class:"grow"}),
         el("button",{class:"btn small danger",onclick:()=>{ team.splice(i,1); saveAll(); renderTeam(); renderNav(); }},"Törlés"))));
   });
@@ -1324,7 +1328,7 @@ $("#saveWfBtn").innerHTML=svg("flow")+"Mentés munkafolyamatként";
 $("#saveWfBtn").addEventListener("click",()=>{
   const inp=el("input",{id:"wfName",placeholder:"Pl. Blogcikk csapat"}), d=el("input",{id:"wfDesc",placeholder:"Rövid leírás (nem kötelező)"});
   openModal("Munkafolyamat mentése",el("form",{class:"stack",onsubmit:e=>{ e.preventDefault(); if(!inp.value.trim()) return inp.focus();
-    myWf.unshift({id:uid(),name:inp.value.trim(),desc:d.value.trim(),team:team.map(({name,provider,instruction})=>({name,provider,instruction}))}); saveAll(); closeModal(); toast("Munkafolyamat elmentve"); }},
+    myWf.unshift({id:uid(),name:inp.value.trim(),desc:d.value.trim(),team:team.map(({name,provider,instruction,model})=>({name,provider,instruction,model:model||""}))}); saveAll(); closeModal(); toast("Munkafolyamat elmentve"); }},
     el("label",{for:"wfName"},"Név"),inp,el("label",{for:"wfDesc"},"Leírás"),d,el("button",{class:"btn primary",type:"submit"},"Mentés")));
   inp.focus();
 });

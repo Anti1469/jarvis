@@ -9,9 +9,11 @@ const fs = require("fs");
 const os = require("os");
 const path = require("path");
 
-const PORT = 8765;
+const PORT = Number(process.env.JARVIS_PORT) || 8765;
 const ALLOWED_ORIGINS = ["https://anti1469.github.io", "http://localhost:5173"];
-const MODELS = ["sonnet", "opus", "haiku"];
+const MODELS = ["sonnet", "opus", "haiku", "claude-opus-5-5", "claude-sonnet-5-5", "claude-haiku-5-5"];
+// Bármilyen Claude-modellnév elfogadott (rövid név vagy teljes azonosító); csak a biztonságos karaktereket engedjük át.
+const validModel = m => typeof m === "string" && /^[a-zA-Z0-9][a-zA-Z0-9._\[\]-]{1,59}$/.test(m); // kötőjellel nem kezdődhet, így nem lehet belőle parancssori kapcsoló
 const TIMEOUT_MS = 5 * 60 * 1000;
 const WORKDIR = fs.mkdtempSync(path.join(os.tmpdir(), "jarvis-claude-"));
 
@@ -34,7 +36,7 @@ function askClaude({ system, user, model }) {
   return new Promise((resolve, reject) => {
     const sysFile = path.join(WORKDIR, "system-" + Date.now() + "-" + Math.random().toString(36).slice(2) + ".txt");
     fs.writeFileSync(sysFile, system || "Te Jarvis vagy, egy segítőkész AI asszisztens.", "utf8");
-    const args = ["-p", "--output-format", "json", "--model", MODELS.includes(model) ? model : "sonnet",
+    const args = ["-p", "--output-format", "json", "--model", validModel(model) ? model : "sonnet",
       "--system-prompt-file", sysFile, "--tools", ""];
     const child = spawn("claude", args, { cwd: WORKDIR, windowsHide: true });
     let out = "", err = "";
@@ -74,7 +76,7 @@ const server = http.createServer(async (req, res) => {
       const t0 = Date.now();
       try {
         const text = await askClaude(body);
-        console.log(`[${new Date().toLocaleTimeString("hu-HU")}] kész (${body.model || "sonnet"}, ${Math.round((Date.now() - t0) / 1000)} mp)`);
+        console.log(`[${new Date().toLocaleTimeString("hu-HU")}] kész (${validModel(body.model) ? body.model : "sonnet"}, ${Math.round((Date.now() - t0) / 1000)} mp)`);
         send(res, origin, 200, { text });
       } catch (e) {
         console.log(`[${new Date().toLocaleTimeString("hu-HU")}] hiba: ${e.message}`);
