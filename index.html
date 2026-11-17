@@ -1283,7 +1283,7 @@ function toggleMic(){
   if (!SR) return;
   if (recOn){ rec?.stop(); return; }
   if (view!=="command") showView("command");
-  if (TTS) speechSynthesis.cancel();
+  stopSpeak();
   rec=new SR(); rec.lang=settings.lang||"hu-HU"; rec.interimResults=true; rec.continuous=!voiceChat;
   recBase=taskEl.value&&!voiceChat?taskEl.value.replace(/\s*$/," "):"";
   if (voiceChat) taskEl.value="";
@@ -1295,9 +1295,38 @@ function toggleMic(){
 }
 function startVoiceChat(){ if(!SR||running) return; voiceChat=true; if(recOn) rec.stop(); toggleMic(); toast("Mondd el a küldetést. A végén Jarvis felolvassa a választ."); }
 function plain(md){ return (md||"").replace(/```[\s\S]*?```/g," kódrészlet ").replace(/\[(.*?)\]\(.*?\)/g,"$1").replace(/[#*_`>|~]+/g," ").replace(/\s+/g," ").trim(); }
-function speak(text){
-  if (!TTS||!text) return; speechSynthesis.cancel();
-  const parts=plain(text).slice(0,4000).match(/[^.!?]+[.!?]*/g)||[];
+const FISH_DEFAULT_VOICE="612b878b113047d9a770c069c8b4fdfe";
+let curAudio=null;
+function stopSpeak(){ if(TTS) speechSynthesis.cancel(); if(curAudio){ curAudio.pause(); curAudio=null; } }
+async function premiumTTS(eng,text){
+  if (eng==="openai"){
+    const key=(keys.openai||"").trim(); if(!key) throw new Error("nincs ChatGPT-kulcs az AI mag oldalon");
+    const r=await fetch("https://api.openai.com/v1/audio/speech",{method:"POST",headers:{"content-type":"application/json",authorization:"Bearer "+key},
+      body:JSON.stringify({model:"gpt-4o-mini-tts",voice:settings.oaVoice||"onyx",input:text,response_format:"mp3",instructions:"Beszélj nyugodt, kifinomult, magabiztos hangon, mint egy elegáns, brit stílusú AI-komornyik."})});
+    if(!r.ok){ const d=await r.json().catch(()=>({})); throw new Error(d?.error?.message||("HTTP "+r.status)); }
+    return await r.blob();
+  }
+  if (eng==="fish"){
+    const url=(settings.fishProxy||"").trim(); if(!url) throw new Error("nincs megadva a Fish Audio híd címe a Beállításokban");
+    const r=await fetch(url,{method:"POST",headers:{"content-type":"application/json","x-jarvis-key":settings.fishAccess||""},body:JSON.stringify({text,reference_id:(settings.fishVoice||FISH_DEFAULT_VOICE).trim()})});
+    if(!r.ok){ const d=await r.json().catch(()=>({})); throw new Error(d?.message||("HTTP "+r.status)); }
+    return await r.blob();
+  }
+  throw new Error("ismeretlen hangmotor");
+}
+async function speak(text){
+  if (!text) return; stopSpeak();
+  const eng=settings.ttsEngine||"browser", clean=plain(text);
+  if (eng!=="browser"){
+    try{ const blob=await premiumTTS(eng,clean.slice(0,eng==="fish"?2500:4000)); const url=URL.createObjectURL(blob);
+      const a=new Audio(url); curAudio=a; a.onended=()=>{ URL.revokeObjectURL(url); if(curAudio===a) curAudio=null; }; await a.play(); return; }
+    catch(e){ toast("Prémium hang nem elérhető ("+(e.message||e)+"). Böngészőhangon olvasom fel."); }
+  }
+  browserSpeak(clean);
+}
+function browserSpeak(clean){
+  if (!TTS) return;
+  const parts=clean.slice(0,4000).match(/[^.!?]+[.!?]*/g)||[];
   const vs=speechSynthesis.getVoices(); const lang=settings.lang||"hu-HU";
   const v=vs.find(v=>v.name===settings.voice)||vs.find(v=>v.lang===lang)||vs.find(v=>v.lang.startsWith(lang.slice(0,2)));
   for (const p of parts){ const u=new SpeechSynthesisUtterance(p); u.lang=lang; if(v) u.voice=v; speechSynthesis.speak(u); }
@@ -1368,13 +1397,26 @@ function openSettings(){
   fillV(); lang.addEventListener("change",fillV); if(TTS) speechSynthesis.onvoiceschanged=fillV;
   const reset=el("button",{class:"btn danger",type:"button"},"Minden adat törlése ezen az eszközön");
   armButton(reset,"Minden adat törlése ezen az eszközön",()=>{ try{ Object.keys(localStorage).filter(k=>k.startsWith("aimuhely:")).forEach(k=>localStorage.removeItem(k)); }catch(_){} location.reload(); });
+  const eng=el("select",{id:"stEng"}); for (const [v,l] of [["fish","Jarvis hang (Fish Audio)"],["openai","OpenAI prémium hang"],["browser","Böngésző beépített hangja (ingyenes)"]]) eng.append(el("option",{value:v,selected:(settings.ttsEngine||"browser")===v},l));
+  const fProxy=el("input",{id:"stFishProxy",type:"url",placeholder:"https://jarvis-hang.valami.workers.dev",value:settings.fishProxy||""});
+  const fAccess=el("input",{id:"stFishAccess",type:"password",autocomplete:"off",placeholder:"A hídnál beállított hozzáférési kulcs",value:settings.fishAccess||""});
+  const fVoice=el("input",{id:"stFishVoice",placeholder:FISH_DEFAULT_VOICE,value:settings.fishVoice||""});
+  const oaV=el("select",{id:"stOaVoice"}); for (const v of ["onyx","echo","fable","ash","sage","alloy","nova","shimmer","coral","ballad","verse"]) oaV.append(el("option",{value:v,selected:(settings.oaVoice||"onyx")===v},v));
+  const fishBox=el("div",{class:"stack"},
+    el("p",{class:"hint"},"A Fish Audio nem engedi, hogy a böngésző közvetlenül hívja, ezért egy kis „híd” kell hozzá (ingyenes Cloudflare Worker). A Fish Audio kulcsod a hídban marad, nem itt."),
+    el("label",{for:"stFishProxy"},"Híd címe"),fProxy,el("label",{for:"stFishAccess"},"Hozzáférési kulcs"),fAccess,el("label",{for:"stFishVoice"},"Hangmodell azonosító"),fVoice);
+  const oaBox=el("div",{class:"stack"},el("p",{class:"hint"},"A ChatGPT-kulcsodat használja. Mély, nyugodt hanghoz az „onyx” vagy „echo” ajánlott."),el("label",{for:"stOaVoice"},"OpenAI hang"),oaV);
+  const brBox=el("div",{class:"stack"},TTS?el("label",{for:"stVoice"},"Böngészőhang"):el("p",{class:"hint"},"Ez a böngésző nem tud felolvasni."),TTS?voice:null);
+  const syncEng=()=>{ fishBox.hidden=eng.value!=="fish"; oaBox.hidden=eng.value!=="openai"; brBox.hidden=eng.value!=="browser"; };
+  eng.addEventListener("change",syncEng); syncEng();
+  const collect=()=>({lang:lang.value,tts:tts.checked,voice:voice.value,ttsEngine:eng.value,fishProxy:fProxy.value.trim(),fishAccess:fAccess.value.trim(),fishVoice:fVoice.value.trim(),oaVoice:oaV.value});
   openModal("Beállítások",el("form",{class:"stack",onsubmit:e=>{ e.preventDefault();
-      Object.assign(settings,{opName:n.value.trim()||"Operátor",opTitle:t.value.trim(),lang:lang.value,tts:tts.checked,voice:voice.value}); saveAll(); renderOp(); closeModal(); toast("Beállítások mentve"); }},
+      Object.assign(settings,{opName:n.value.trim()||"Operátor",opTitle:t.value.trim()},collect()); saveAll(); renderOp(); closeModal(); toast("Beállítások mentve"); }},
     el("label",{for:"stName"},"Neved"),n,el("label",{for:"stTitle"},"Titulus"),t,
-    el("label",{for:"stLang"},"Beszéd nyelve"),lang,
-    TTS?el("label",{class:"chk"},tts,"Jarvis hangosan felolvassa a végeredményt"):el("p",{class:"hint"},"Ez a böngésző nem tud felolvasni."),
-    TTS?el("label",{for:"stVoice"},"Hang"):null,TTS?voice:null,
-    TTS?el("button",{class:"btn small",type:"button",onclick:()=>{ const o={voice:settings.voice,lang:settings.lang}; settings.voice=voice.value; settings.lang=lang.value; speak(`Üdvözlöm, ${n.value||"uram"}. Jarvis szolgálatra kész.`); Object.assign(settings,o); }},"Hang kipróbálása"):null,
+    el("label",{for:"stLang"},"Beszéd nyelve (diktálás)"),lang,
+    el("label",{class:"chk"},tts,"Jarvis hangosan felolvassa a végeredményt"),
+    el("label",{for:"stEng"},"Jarvis hangja"),eng,fishBox,oaBox,brBox,
+    el("button",{class:"btn small",type:"button",onclick:()=>{ const o={...settings}; Object.assign(settings,collect()); speak(`Üdvözlöm, ${n.value||"uram"}. Jarvis szolgálatra kész. Minden rendszer működik.`); settings=o; },html:svg("speaker")+"Hang kipróbálása"}),
     el("button",{class:"btn",type:"button",onclick:()=>{ closeModal(); locate(); },html:svg("pin")+"Hely és időjárás beállítása"}),
     el("button",{class:"btn primary",type:"submit"},"Mentés"),
     el("div",{class:"row",style:"border-top:1px solid var(--line);padding-top:12px"},
