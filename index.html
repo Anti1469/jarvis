@@ -556,6 +556,182 @@ body:not(.locked) .login{display:none}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dompurify/3.1.6/purify.min.js"></script>
 <script>
 "use strict";
+// ================= nyelv (magyar / angol) =================
+// Angol nyelvnél egy fordítóréteg a megjelenő feliratokat cseréli le; a felhasználó saját tartalmához (válaszok, feladatnevek) nem nyúl.
+const EN = {
+  // bejelentkezés, keret
+  "PARANCSKÖZPONT · AZONOSÍTÁS":"COMMAND CENTER · IDENTIFICATION","Felhasználónév":"Username","Jelszó":"Password","Maradjak bejelentkezve ezen az eszközön":"Keep me signed in on this device",
+  "Belépés":"Sign in","Azonosítás…":"Verifying…","Rendszerek indítása…":"Starting systems…","Hibás felhasználónév vagy jelszó.":"Wrong username or password.",
+  "Túl sok sikertelen próbálkozás. Várj 30 másodpercet.":"Too many failed attempts. Wait 30 seconds.","Ez a böngésző nem támogatja a biztonságos bejelentkezést.":"This browser does not support secure sign-in.",
+  "Egyszeri újbelépés kell, hogy a felhő mentés automatikus legyen.":"Please sign in once more so cloud saving can run automatically.",
+  "PARANCSKÖZPONT":"COMMAND CENTER","Hangvezérlés":"Voice control","Koppints a beszédhez":"Tap to speak","Kijelentkezés":"Sign out","RENDSZER":"SYSTEM",
+  "OPTIMÁLIS":"OPTIMAL","DOLGOZIK":"WORKING","OFFLINE":"OFFLINE","KULCS HIÁNYZIK":"KEY MISSING","INKOGNITÓ":"INCOGNITO","Operátor":"Operator","Parancsnok":"Commander",
+  "Keresés…":"Search…","Keresés":"Search","Inkognitó mód":"Incognito mode","Fókusz mód":"Focus mode","Fókusz mód: be":"Focus mode: on","Értesítések":"Notifications","Beállítások":"Settings",
+  "Fókusz mód bekapcsolva":"Focus mode on","Fókusz mód kikapcsolva":"Focus mode off","Bezárás":"Close","Diktálás indítása":"Start dictation","Diktálás":"Dictation",
+  "Figyelek… koppints a befejezéshez":"Listening… tap to finish","Hangos beszélgetés… mondd el a küldetést":"Voice chat… say your mission","Ez a böngésző nem támogatja a diktálást":"This browser does not support dictation",
+  // navigáció
+  "Parancsközpont":"Command Center","Központ":"Center","AI mag":"AI Core","Ügynökök":"Agents","Feladatok":"Tasks","Naptár":"Calendar","Memória":"Memory","Beszélgetések":"Conversations",
+  "Tudásbázis":"Knowledge Base","Eszközök és képességek":"Tools & Skills","Eszközök":"Tools","Munkafolyamatok":"Workflows",
+  // parancsközpont
+  "AI mag áttekintés":"AI Core overview","v3.0 · készenlétben":"v3.0 · standby","inkognitó mód":"incognito mode","AI MAG":"AI CORE","Élő hírfolyam":"Live intelligence feed","● Élő":"● Live",
+  "Aktív ügynökök":"Active agents","Szerkesztés ›":"Edit ›","Mai idővonal":"Today's timeline","Ma":"Today","Teljes napirend ›":"Full schedule ›","Gyorsparancsok":"Quick commands",
+  "Küldetés eredmény":"Mission output","Végeredmény":"Final result","Még egy kör":"One more round","Mentés a tudásbázisba":"Save to knowledge base","Új küldetés":"New mission",
+  "A csapat újra végigmegy a feladaton, és látja az eddigi munkát. Írd ide, mit változtassanak.":"The team goes through the task again and sees the work so far. Write what they should change.",
+  "Pl. legyen rövidebb, tegeződő hangnemben":"E.g. make it shorter and more casual","Rendszermonitor":"System monitor","Ez az eszköz":"This device","Memória betekintés":"Memory insights",
+  "Memóriatérkép megnyitása ›":"Open memory map ›","LLM állapot":"LLM status","Szolgáltatók kezelése ›":"Manage providers ›",
+  "AI mag":"AI Core","Aktív":"Active","Dolgozik":"Working","Dolgozik…":"Working…","Hang":"Voice","Elérhető":"Available","Nem támogatott":"Not supported","Figyel…":"Listening…",
+  "LLM-ek":"LLMs","Felhő mentés":"Cloud save","Rendszer":"System","Nincs internet":"No internet","Hiányzó kulcs":"Missing key","Optimális":"Optimal",
+  "Infó":"Info","Kész":"Done","Figyel":"Alert","Hiba":"Error","Még nincs esemény. Indíts egy küldetést lent.":"No events yet. Start a mission below.",
+  "Nincs ügynök. Adj hozzá egyet az Ügynökök oldalon.":"No agents. Add one on the Agents page.","Készenlét":"Standby","Folyamatban":"In progress","Lejárt":"Overdue","Egész nap":"All day",
+  "Mára nincs esemény vagy határidős feladat. Vegyél fel újat a Naptárban vagy a Feladatoknál.":"Nothing scheduled for today. Add something in Calendar or Tasks.",
+  "Új feladat felvétele":"Add new task","Naptár megnyitása":"Open calendar","Hangos beszélgetés":"Start voice chat","Munkafolyamat futtatása":"Run workflow",
+  "Nincs beállítva":"Not configured","Csatlakoztatva":"Connected","Hibás kulcs":"Invalid key","Beállítva":"Configured","Előfizetési token":"Subscription token",
+  "Így működik":"How it works","Add meg a kulcsokat az AI mag oldalon.":"Enter your keys on the AI Core page.","Állítsd össze az ügynököket, vagy tölts be egy kész munkafolyamatot.":"Set up your agents or load a ready-made workflow.",
+  "Írd be vagy mondd el a küldetést lent a „Beszélj Jarvisszal” sávban. Az ügynökök sorban dolgoznak, a válaszaik itt jelennek meg.":"Type or say your mission in the “Talk to Jarvis” bar below. The agents work in turn and their answers appear here.",
+  "Felolvasás":"Read aloud","Másolás":"Copy","Indítás":"Launch","Folytatás":"Continue","Leállítás":"Stop","A csapat dolgozik…":"The team is working…","Figyelek…":"Listening…","Ctrl+Enter: indítás":"Ctrl+Enter: launch",
+  "BESZÉLJ JARVISSAL":"TALK TO JARVIS","Mi legyen a küldetés?":"What's the mission?","Írd be a küldetést…":"Type your mission…","Küldetés":"Mission","Vezetői összefoglaló":"Executive briefing",
+  "HELY":"LOCATION","IDŐJÁRÁS":"WEATHER","HÁLÓZAT":"NETWORK","Beállítás":"Set up","Kattints a helyre":"Click location","Nem elérhető":"Unavailable","Saját hely":"My location",
+  "Nincs új értesítés.":"No new notifications.","Nincs találat.":"No results.","Nincs határidő":"No deadline","Emlék":"Memory",
+  "Oldal memória":"Page memory","Nem mérhető itt":"Not measurable here","Töltődik":"Charging","Akkumulátor":"Battery","Jarvis adatai":"Jarvis data","AKKU":"BATT","TÁR":"STORAGE",
+  "EMLÉKEK":"MEMORIES","KÜLDETÉSEK":"MISSIONS","API-HÍVÁSOK":"API CALLS","Még nincs emlék. Adj hozzá a Memória oldalon.":"No memories yet. Add some on the Memory page.",
+  // AI mag oldal
+  "AI MAG · LLM SZOLGÁLTATÓK":"AI CORE · LLM PROVIDERS","API-kulcs":"API key","Szerver címe":"Server address","Modell":"Model","Mutasd":"Show","Rejtsd":"Hide","Bekapcsolás":"Enable",
+  "Kulcs ellenőrzése":"Check key","Kapcsolat ellenőrzése":"Check connection","Ellenőrzés…":"Checking…","Kulcs létrehozása ↗":"Create key ↗","Híd letöltése ↗":"Download bridge ↗","Ollama letöltése ↗":"Download Ollama ↗",
+  "A kulcsok csak ebben a böngészőben tárolódnak, és innen közvetlenül a szolgáltatóhoz mennek. Minden eszközön egyszer kell megadni, vagy átviheted őket a lenti „Átvitel” résszel.":"Keys are stored only in this browser and go straight to the provider. Enter them once per device, or move them with the “Transfer” section below.",
+  "Beállítások átvitele másik eszközre":"Transfer settings to another device","Kód másolása":"Copy code","Kód beillesztése":"Paste code","Betöltés":"Load","Illeszd be ide a kódot":"Paste the code here","Betöltve":"Loaded",
+  "Másold ki a kódot, küldd át magadnak (pl. jegyzetben), és illeszd be a másik eszközön. Tartalmazza a kulcsokat, ügynököket, memóriát, feladatokat és naptárt. Ne oszd meg senkivel.":"Copy the code, send it to yourself (e.g. in a note) and paste it on the other device. It contains your keys, agents, memory, tasks and calendar. Don't share it with anyone.",
+  "Hibás kód. Másold ki újra a teljes kódot.":"Invalid code. Copy the whole code again.","Gyors nyílt modellek":"Fast open models","Több száz modell egy kulccsal":"Hundreds of models with one key",
+  "A gépeden futó Claude Code, az előfizetéseddel":"Claude Code on your computer, with your subscription","Helyi modellek a gépeden":"Local models on your computer",
+  "Csak azon a gépen működik, ahol a Claude Code telepítve van és a híd fut (Jarvis-Claude-inditas.bat). API-kulcs nem kell.":"Works only on the computer where Claude Code is installed and the bridge is running (Jarvis-Claude-inditas.bat). No API key needed.",
+  "Csak azon a gépen működik, ahol az Ollama fut. Indítás: OLLAMA_ORIGINS=* ollama serve":"Works only on the computer running Ollama. Start: OLLAMA_ORIGINS=* ollama serve",
+  "Ez a Claude előfizetés tokenje (sk-ant-oat…), nem API-kulcs, ezért a Jarvis nem használhatja. API-kulcs: console.anthropic.com, vagy cseréld a Claude-ot másik AI-ra.":"This is a Claude subscription token (sk-ant-oat…), not an API key, so Jarvis can't use it. Get an API key at console.anthropic.com, or switch Claude to another AI.",
+  "Előbb add meg a címet.":"Enter the address first.","Előbb add meg a kulcsot.":"Enter the key first.","Claude Code: a híd nem válaszol megfelelően.":"Claude Code: the bridge is not responding properly.",
+  // ügynökök
+  "ÜGYNÖKÖK":"AGENTS","Új ügynök":"New agent","Mentés munkafolyamatként":"Save as workflow","Modell-szolgáltató":"Model provider","Utasítás":"Instruction","↑ Előre":"↑ Up","↓ Hátra":"↓ Down","Törlés":"Delete",
+  "Az ügynökök ebben a sorrendben dolgoznak. Mindegyik látja a feladatot és az előtte lévők munkáját. Kész csapatokat a Munkafolyamatok oldalon találsz.":"Agents work in this order. Each sees the task and the work of those before it. Ready-made teams are on the Workflows page.",
+  "Nincs ügynök. Adj hozzá egyet, vagy tölts be egy munkafolyamatot.":"No agents. Add one or load a workflow.","Melyik AI":"Which AI","Ügynök neve":"Agent name","Mi a feladata?":"What is its job?",
+  "Munkafolyamat mentése":"Save workflow","Név":"Name","Leírás":"Description","Pl. Blogcikk csapat":"E.g. Blog post team","Rövid leírás (nem kötelező)":"Short description (optional)","Mentés":"Save",
+  "Munkafolyamat elmentve":"Workflow saved","Kutató ügynök":"Research agent","Író ügynök":"Writer agent","Ellenőr ügynök":"Reviewer agent",
+  // feladatok, naptár
+  "FELADATOK":"TASKS","Aktív":"Active","Mind":"All","Új feladat…":"New task…","Határidő":"Deadline","Fontosság":"Priority","Alacsony":"Low","Közepes":"Medium","Magas":"High","Hozzáadás":"Add",
+  "Feladat hozzáadva":"Task added","Feladat kész":"Task done","Még nincs kész feladat.":"No completed tasks yet.","Nincs aktív feladat. Vegyél fel egyet fent.":"No active tasks. Add one above.","Jarvis megoldja":"Jarvis handles it",
+  "NAPTÁR":"CALENDAR","Új esemény":"New event","Pl. Megbeszélés":"E.g. Meeting","Időpont":"Time","Időtartam":"Duration","15 perc":"15 min","30 perc":"30 min","1 óra":"1 hour","2 óra":"2 hours",
+  "Előző hónap":"Previous month","Következő hónap":"Next month","Esemény hozzáadva":"Event added","Erre a napra nincs bejegyzés.":"Nothing on this day.",
+  "H":"Mon","K":"Tue","Sze":"Wed","Cs":"Thu","P":"Fri","Szo":"Sat","V":"Sun",
+  // memória, beszélgetések, tudásbázis
+  "MEMÓRIA":"MEMORY","Használja a küldetésekben":"Use in missions","Új emlék…":"New memory…","Új emlék":"New memory","Még nincs emlék.":"No memories yet.","Új emlék mentve":"New memory saved",
+  "Amit ide írsz, azt minden ügynök megkapja háttér-információként. Pl. „A nevem Anti, Budapesten élek”, „Rövid, lényegre törő válaszokat szeretek”.":"Everything you write here is given to every agent as background. E.g. “My name is Anti, I live in Budapest”, “I like short, to-the-point answers”.",
+  "BESZÉLGETÉSEK":"CONVERSATIONS","Összes törlése":"Delete all","Minden küldetés automatikusan ide kerül. Megnyitva folytathatod.":"Every mission is saved here automatically. Open one to continue it.",
+  "Megnyitás":"Open","Még nincs mentett beszélgetés.":"No saved conversations yet.","Beszélgetések törölve":"Conversations deleted","Biztos? Kattints újra":"Sure? Click again",
+  "TUDÁSBÁZIS":"KNOWLEDGE BASE","Cím":"Title","Szöveg":"Text","Pl. Termékleírás":"E.g. Product description","Illeszd be a szöveget…":"Paste the text…","Fájl feltöltése (.txt, .md, .csv, .json)":"Upload file (.txt, .md, .csv, .json)",
+  "Tölts fel vagy másolj be szövegeket (jegyzetek, leírások, adatok). A bekapcsolt dokumentumokat az ügynökök megkapják forrásként.":"Upload or paste texts (notes, descriptions, data). Enabled documents are given to the agents as sources.",
+  "Megnézés":"View","Még nincs dokumentum.":"No documents yet.","Mentve a tudásbázisba":"Saved to knowledge base","Elmentve a tudásbázisba":"Saved to knowledge base","Használat a küldetésekben":"Use in missions",
+  // eszközök, munkafolyamatok
+  "ESZKÖZÖK ÉS KÉPESSÉGEK":"TOOLS & SKILLS","Saját eszköz":"Custom tool","Kész küldetés-sablonok. Írd be, mire alkalmazza, és Jarvis összeállítja a feladatot.":"Ready-made mission templates. Type what to apply it to and Jarvis builds the mission.",
+  "Mire alkalmazza?":"Apply it to what?","Küldetés összeállítása":"Build mission","Sablon":"Template","Pl. LinkedIn poszt":"E.g. LinkedIn post","Eszköz elmentve":"Tool saved",
+  "MUNKAFOLYAMATOK":"WORKFLOWS","Előre összeállított csapatok különböző feladatokra. Betöltéskor a jelenlegi ügynököket lecseréli.":"Pre-built teams for different jobs. Loading one replaces your current agents.",
+  "Betöltés és küldetés":"Load and start","Munkafolyamat betöltve":"Workflow loaded",
+  "Kutatás → Írás → Ellenőrzés":"Research → Write → Review","Általános szövegek, cikkek, leírások.":"General texts, articles, descriptions.","Ötletbörze":"Brainstorm",
+  "Két AI egymástól függetlenül ötletel, a harmadik összegzi és rangsorolja.":"Two AIs brainstorm independently, a third summarises and ranks.","Ötletgyáros A":"Idea maker A","Ötletgyáros B":"Idea maker B","Összegző":"Summariser",
+  "Kódfejlesztés":"Software development","Terv, megvalósítás és kódellenőrzés.":"Plan, build and code review.","Tervező":"Architect","Fejlesztő":"Developer","Tesztelő":"Tester",
+  "Vita és döntés":"Debate & decision","Érvek mellette és ellene, majd egy pártatlan döntés.":"Arguments for and against, then an impartial verdict.","Mellette":"For","Ellene":"Against","Bíró":"Judge",
+  "Fordítás és lektorálás":"Translate & proofread","Pontos fordítás, majd anyanyelvi szintű csiszolás.":"Accurate translation, then native-level polishing.","Fordító":"Translator","Lektor":"Proofreader",
+  "Összefoglalás":"Summary","Hosszú szövegből rövid, pontokba szedett kivonat.":"Short bullet-point summary of a long text.","Fordítás angolra":"Translate to English","Természetes, pontos angol fordítás.":"Natural, accurate English translation.",
+  "E-mail megírása":"Write an email","Udvarias, rövid e-mail a megadott célra.":"Polite, short email for the given purpose.","Ötletelés":"Ideas","Sok ötlet egy témára.":"Lots of ideas on a topic.",
+  "Szövegjavítás":"Proofreading","Helyesírás, nyelvtan, stílus.":"Spelling, grammar, style.","Közösségi poszt":"Social post","Facebook/Instagram poszt hashtagekkel.":"Facebook/Instagram post with hashtags.",
+  "Kód magyarázata":"Explain code","Érthető magyarázat lépésről lépésre.":"Clear step-by-step explanation.","Tanulási terv":"Study plan","Heti bontású terv egy témához.":"Week-by-week plan for a topic.",
+  "Előnyök és hátrányok":"Pros and cons","Kiegyensúlyozott mérlegelés.":"Balanced assessment.","Termékleírás":"Product description","Eladásra ösztönző webshop szöveg.":"Persuasive web-shop copy.",
+  // beállítások
+  "Neved":"Your name","Titulus":"Title","Beszéd nyelve (diktálás)":"Speech language (dictation)","Jarvis hangosan felolvassa a végeredményt":"Jarvis reads the final result aloud","Jarvis hangja":"Jarvis's voice",
+  "Jarvis hang (Fish Audio)":"Jarvis voice (Fish Audio)","OpenAI prémium hang":"OpenAI premium voice","Böngésző beépített hangja (ingyenes)":"Browser built-in voice (free)","Böngészőhang":"Browser voice","Automatikus":"Automatic",
+  "A Fish Audio a lenti Cloudflare hídon keresztül szól. A Fish Audio kulcsod a hídban marad, nem itt.":"Fish Audio speaks through the Cloudflare bridge below. Your Fish Audio key stays in the bridge, not here.",
+  "Hangmodell azonosító":"Voice model ID","A ChatGPT-kulcsodat használja. Mély, nyugodt hanghoz az „onyx” vagy „echo” ajánlott.":"Uses your ChatGPT key. For a deep, calm voice choose “onyx” or “echo”.","OpenAI hang":"OpenAI voice",
+  "Felolvasás nyelve":"Speech language","Angol (Jarvis stílus)":"English (Jarvis style)","Magyar":"Hungarian",
+  "Angolnál a képernyőn magyarul marad a válasz, Jarvis felolvasás előtt lefordítja angolra (egy rövid AI-hívás).":"With English, answers stay Hungarian on screen and Jarvis translates them before reading aloud (one short AI call).",
+  "Hang kipróbálása":"Test voice","Felhő mentés és hang híd":"Cloud save & voice bridge","Mentés a felhőbe, hogy minden eszközön ugyanaz legyen":"Save to the cloud so every device stays in sync","Szinkronizálás most":"Sync now",
+  "Híd címe":"Bridge address","Hozzáférési kód a Cloudflare-hez: ezt másold be az ACCESS_KEY titokhoz. A jelszavadból készül, ne oszd meg senkivel.":"Access code for Cloudflare: paste this into the ACCESS_KEY secret. It is derived from your password; don't share it.",
+  "Hozzáférési kód másolása":"Copy access code","Jelentkezz ki, majd be újra, hogy a felhő mentés és a Jarvis hang működjön.":"Sign out and back in so cloud save and the Jarvis voice work.",
+  "Hely és időjárás beállítása":"Set location & weather","Jelszó módosítása":"Change password","Minden adat törlése ezen az eszközön":"Delete all data on this device","Beállítások mentve":"Settings saved",
+  "Nyelv / Language":"Language / Nyelv","Az oldal nyelve":"Page language",
+  "Jelenlegi jelszó":"Current password","Új jelszó":"New password","Új jelszó még egyszer":"New password again","A jelenlegi jelszó nem jó.":"The current password is wrong.",
+  "Az új jelszó legalább 8 karakter legyen.":"The new password must be at least 8 characters.","A két új jelszó nem egyezik.":"The two new passwords don't match.",
+  "Jelszó módosítva. Másold be az új hozzáférési kódot a Cloudflare-be (Beállítások).":"Password changed. Paste the new access code into Cloudflare (Settings).",
+  "Az új jelszó csak ezen az eszközön érvényes, a többi eszközön is változtasd meg ugyanerre. Felhő mentésnél utána az új hozzáférési kódot (Beállítások) be kell másolni a Cloudflare ACCESS_KEY titokhoz.":"The new password applies only on this device; change it to the same on your other devices. With cloud save, paste the new access code (Settings) into the Cloudflare ACCESS_KEY secret.",
+  "Hely beállítása":"Set location","Az időjáráshoz kell. Megadhatsz várost, vagy használhatod az eszköz helymeghatározását.":"Needed for the weather. Enter a city or use your device's location.","Pl. Budapest":"E.g. Budapest",
+  "Jelenlegi helyem használata":"Use my current location","Nem találom ezt a várost.":"I can't find that city.","Nem sikerült a keresés.":"Search failed.","Helymeghatározás…":"Locating…",
+  "A helymeghatározás nem engedélyezett. Add meg a várost kézzel.":"Location is not allowed. Enter the city manually.","Hely beállítva":"Location set",
+  // üzenetek
+  "Kimásolva":"Copied","Nem sikerült másolni":"Copy failed","Írd be a küldetést":"Type your mission","Adj hozzá legalább egy ügynököt":"Add at least one agent","Leállítva.":"Stopped.","(üres válasz)":"(empty reply)",
+  "Új küldetés indult":"New mission started","Küldetés leállítva":"Mission stopped","Küldetés teljesítve":"Mission complete","A végeredmény az Eredmény panelen":"See the result in the Output panel",
+  "Sikeres bejelentkezés":"Signed in","Internetkapcsolat helyreállt":"Internet connection restored","Nincs internetkapcsolat":"No internet connection","Felhő szinkron":"Cloud sync",
+  "Adatok betöltve a felhőből":"Data loaded from the cloud","Vezetői összefoglaló elkészült":"Executive briefing ready","A mikrofon nincs engedélyezve":"Microphone not allowed",
+  "Mondd el a küldetést. A végén Jarvis felolvassa a választ.":"Say your mission. Jarvis will read the answer aloud at the end.","A fordítás nem sikerült, eredeti nyelven olvasom fel.":"Translation failed, reading in the original language.",
+  "Inkognitó mód aktív. Semmi nem mentődik.":"Incognito mode on. Nothing is saved.","Inkognitó mód kikapcsolva. Az inkognitóban végzett munka törölve.":"Incognito mode off. Incognito work deleted.",
+  "Az inkognitó mód már aktív.":"Incognito mode is already on.","Az inkognitó mód nincs bekapcsolva.":"Incognito mode is not on.","Megtelt a böngésző tárhelye. Törölj régi beszélgetéseket.":"Browser storage is full. Delete old conversations.",
+  "Ehhez legalább egy AI-szolgáltatót be kell állítanod az AI mag oldalon.":"You need at least one AI provider set up on the AI Core page.","AI mag megnyitása":"Open AI Core",
+  "Felhő mentés: kikapcsolva":"Cloud save: off","Felhő mentés: jelentkezz be újra":"Cloud save: sign in again","Felhő: mentés…":"Cloud: saving…","Felhő: még nincs mentés":"Cloud: not saved yet",
+  "kikapcsolva":"off","jelentkezz be újra":"sign in again","mentés…":"saving…","még nincs mentés":"not saved yet",
+  "Claude Code: a híd nem fut ezen a gépen. Indítsd el a Jarvis-Claude-inditas.bat fájlt (dupla kattintás), és hagyd nyitva az ablakát.":"Claude Code: the bridge is not running on this computer. Start Jarvis-Claude-inditas.bat (double-click) and keep its window open.",
+  "Ollama: nem érhető el. Fut az Ollama a gépeden? Indítsd el így: OLLAMA_ORIGINS=* ollama serve":"Ollama is unreachable. Is it running? Start it with: OLLAMA_ORIGINS=* ollama serve",
+  "Működik":"Working","hibás hozzáférési kód (másold be a Cloudflare-be)":"wrong access code (paste it into Cloudflare)","nincs tároló kötve a hídhoz":"no storage bound to the bridge","túl sok adat":"too much data","nem érhető el":"unreachable","a felhőben lévő adat más jelszóval készült":"cloud data was made with a different password","[ide írd a szöveget]":"[write your text here]"
+};
+const WX_EN={"Derült":"Clear","Többnyire derült":"Mostly clear","Részben felhős":"Partly cloudy","Borult":"Overcast","Köd":"Fog","Zúzmarás köd":"Rime fog","Szitálás":"Drizzle","Erős szitálás":"Heavy drizzle","Ónos szitálás":"Freezing drizzle",
+  "Gyenge eső":"Light rain","Eső":"Rain","Erős eső":"Heavy rain","Ónos eső":"Freezing rain","Gyenge havazás":"Light snow","Havazás":"Snow","Erős havazás":"Heavy snow","Hószemcse":"Snow grains","Zápor":"Showers","Heves zápor":"Heavy showers","Hózápor":"Snow showers","Zivatar":"Thunderstorm","Zivatar jégesővel":"Thunderstorm with hail"};
+const EN_PATTERNS=[
+  [/^(\d+)\. kör indult$/,"Round $1 started"],[/^(\d+)\. kör$/,"Round $1"],[/^v3\.0 · (\d+)\. kör folyamatban$/,"v3.0 · round $1 in progress"],
+  [/^(.+) végzett$/,"$1 finished"],[/^(.+) csatlakoztatva$/,"$1 connected"],[/^(\d+) emlék · (\d+) dokumentum$/,"$1 memories · $2 documents"],[/^(\d+) beállítva$/,"$1 configured"],
+  [/^(\d+) tag · (\d+) dolgozik$/,"$1 members · $2 working"],[/^(\d+) lejárt feladat$/,"$1 overdue tasks"],[/^(\d+) feladat ma esedékes$/,"$1 tasks due today"],[/^Hamarosan: (.+)$/,"Soon: $1"],
+  [/^Kész · (\d+) mp$/,"Done · $1 s"],[/^Böngésző · (.+) mag$/,"Browser · $1 cores"],[/^Eszköz: (.+)$/,"Device: $1"],[/^(\d+) modell elérhető$/,"$1 models available"],
+  [/^Működik · (\d+) modell \(kattints a modell mezőre a listához\)$/,"Working · $1 models (click the model field for the list)"],
+  [/^Felhő: szinkronizálva (.+)$/,"Cloud: synced $1"],[/^szinkronizálva (.+)$/,"synced $1"],[/^Felhő: (.+)$/,m=>"Cloud: "+trCore(m.slice(7))],
+  [/^Lejárt: (.+)$/,"Overdue: $1"],[/^Határidő: (.+)$/,"Due: $1"],[/^Feladat: (.+)$/,"Task: $1"],[/^Megjegyzésed: (.+)$/,"Your note: $1"],[/^Feladat határidő · (.+)$/,"Task deadline · $1"],
+  [/^(\d+) ügynök$/,"$1 agents"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
+  [/^Nincs beállítva: (.+?)\. Add meg az AI mag oldalon\.$/,"Not configured: $1. Add it on the AI Core page."],[/^Nincs beállítva: (.+)$/,"Not configured: $1"],
+  [/^(.+?): a kulcs érvénytelen vagy nincs jogosultsága\. Ellenőrizd az AI mag oldalon\. \((.*)\)$/,"$1: invalid key or no permission. Check it on the AI Core page. ($2)"],
+  [/^(.+?): nincs ilyen modell\. Válassz másikat az AI mag oldalon\. \((.*)\)$/,"$1: no such model. Pick another on the AI Core page. ($2)"],
+  [/^(.+?): túl sok kérés vagy elfogyott a keret\. Várj egy kicsit, vagy nézd meg az egyenleged\. \((.*)\)$/,"$1: too many requests or quota used up. Wait a bit or check your balance. ($2)"],
+  [/^(.+?): nincs elég egyenleg a fiókon\. \((.*)\)$/,"$1: insufficient account balance. ($2)"],[/^(.+?) hiba \((\d+)\): (.*)$/,"$1 error ($2): $3"],
+  [/^(.+?): nem sikerült elérni a szolgáltatót\. Ellenőrizd az internetkapcsolatot és a kulcsot\.$/,"$1: couldn't reach the provider. Check your internet connection and key."],
+  [/^(.+) összeállítja a napod áttekintését…$/,"$1 is preparing your daily overview…"],[/^Túl sok sikertelen próbálkozás\. Próbáld újra (\d+) mp múlva\.$/,"Too many failed attempts. Try again in $1 s."],
+  [/^Prémium hang nem elérhető \((.*)\)\. Böngészőhangon olvasom fel\.$/,m=>"Premium voice unavailable ("+trCore(m.replace(/^Prémium hang nem elérhető \(|\)\. Böngészőhangon olvasom fel\.$/g,""))+"). Using the browser voice."],
+  [/^Adatok betöltve \((.+)\)$/,m=>"Data loaded ("+m.slice(17,-1).replace("telefon","phone").replace("gép","computer").replace("másik eszköz","another device")+")"],
+  [/^(\d+(?:[  ]\d+)*) karakter · (használatban|kikapcsolva)$/,(m,a,b)=>a+" characters · "+(b==="használatban"?"in use":"off")],
+  [/^(.+) · (\d+) válasz · (\d+) kör$/,"$1 · $2 replies · $3 rounds"],[/^(.+) · Gemini · (\d+) mp$/,"$1 · Gemini · $2 s"],
+  [/^(-?\d+)°C (.+)$/,(m,a,b)=>a+"°C "+(WX_EN[b]||b)],[/^(.+) · (\d+) mp$/,"$1 · $2 s"]
+];
+const EN_FRAG=[[/(\d+) ó (\d+) p múlva/g,"in $1 h $2 min"],[/(\d+) perc múlva/g,"in $1 min"],[/(\d+) ó (\d+) p\b/g,"$1 h $2 min"],[/(\d+) perc\b/g,"$1 min"]];
+const UI_LANG=(()=>{ try{ return (JSON.parse(localStorage.getItem("aimuhely:settings")||"{}").uiLang)||"hu"; }catch(e){ return "hu"; } })();
+const isEN=()=>UI_LANG==="en";
+function LOC(){ return isEN()?"en-GB":"hu-HU"; }
+function trCore(core){
+  if (EN[core]!==undefined) return EN[core];
+  for (const [re,rep] of EN_PATTERNS){ if (re.test(core)) return typeof rep==="function" ? core.replace(re,rep) : core.replace(re,rep); }
+  let out=core; for (const [re,rep] of EN_FRAG) out=out.replace(re,rep); return out;
+}
+function tr(s){ if (!isEN()||!s) return s; const m=s.match(/^(\s*)([\s\S]*?)(\s*)$/); if(!m[2]) return s; const o=trCore(m[2]); return o===m[2]?s:m[1]+o+m[3]; }
+const NO_TR="textarea,script,style,.card:not(.err) .card-body,.li .tx b,.agent b,.tr b,#dayList b,#memList b,#kbList b,#convList b,.chainl";
+const NAME_OK=".agent b,.chainl,.tr b";
+const trName=n=>isEN()&&EN[n]!==undefined?EN[n]:n;
+function trNode(n){
+  if (n.nodeType===3){ const p=n.parentElement; if(!p) return; if(p.closest(NO_TR)){ if(p.closest(NAME_OK)){ const k=n.data.trim(); if(EN[k]!==undefined && isEN()) n.data=n.data.replace(k,EN[k]); } return; } const v=tr(n.data); if(v!==n.data) n.data=v; return; }
+  if (n.nodeType!==1) return;
+  for (const a of ["placeholder","aria-label","title"]){ const v=n.getAttribute(a); if(v){ const t=tr(v); if(t!==v) n.setAttribute(a,t); } }
+  const w=document.createTreeWalker(n,NodeFilter.SHOW_ELEMENT|NodeFilter.SHOW_TEXT);
+  let c; while((c=w.nextNode())){ if(c.nodeType===3) trNode(c); else for (const a of ["placeholder","aria-label","title"]){ const v=c.getAttribute(a); if(v){ const t=tr(v); if(t!==v) c.setAttribute(a,t); } } }
+}
+if (isEN()){
+  document.documentElement.lang="en";
+  trNode(document.body);
+  new MutationObserver(ms=>{ for (const m of ms){ if (m.type==="characterData") trNode(m.target); else if (m.type==="attributes") trNode(m.target); else m.addedNodes.forEach(trNode); } })
+    .observe(document.body,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:["placeholder","aria-label","title"]});
+}
+// angol küldetés-sablonok és példafeladat
+const SKILL_EN={"sk-sum":"Summarise this in bullet points with the key takeaways:\n\n{input}","sk-en":"Translate this into natural, accurate English:\n\n{input}","sk-mail":"Write a polite, short email. Purpose and details:\n\n{input}",
+  "sk-ideas":"Give me 10 creative ideas for:\n\n{input}","sk-fix":"Fix spelling, grammar and style, then give the corrected text:\n\n{input}","sk-post":"Write an eye-catching social media post (Facebook/Instagram) with hashtags about:\n\n{input}",
+  "sk-code":"Explain clearly, step by step, what this code does:\n\n{input}","sk-plan":"Create a 4-week, week-by-week study plan for this topic:\n\n{input}","sk-proscons":"Write a pros and cons analysis and finish with a recommendation:\n\n{input}",
+  "sk-product":"Write persuasive web-shop copy (title, short description, 5 key benefits) for:\n\n{input}"};
+const EXAMPLE_TASK_EN="Write a short, friendly introduction for a small-town bakery's website (about 120 words).";
+
 // ================= ikonok =================
 const IC = {
   grid:'<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/>',
@@ -662,9 +838,10 @@ let keys = {...Object.fromEntries(PIDS.map(p=>[p,""])), ...store.get("keys",{})}
 let keyOk = store.get("keyOk",{});
 let models = {...defModels, ...store.get("models",{})};
 let team = store.get("team",null) || DEFAULT_TEAM.map(m=>({...m,id:uid()}));
+if (isEN()) team.forEach(m=>{ m.name=trName(m.name); });
 let history = store.get("history",[]);
 let feed = store.get("feed",[]);
-let task = store.get("task",EXAMPLE_TASK);
+let task = store.get("task",isEN()?EXAMPLE_TASK_EN:EXAMPLE_TASK); if (isEN() && task===EXAMPLE_TASK) task=EXAMPLE_TASK_EN;
 let tasks = store.get("tasks",[]);
 let events = store.get("events",[]);
 let memories = store.get("memories",[]);
@@ -705,7 +882,7 @@ function el(tag,attrs={},...kids){
 }
 const ico = (name,color) => el("span",{class:"ico",style:color?`--c:${color}`:null,html:svg(name)});
 const delBtn = fn => el("button",{class:"ibtn",style:"width:32px;height:32px","aria-label":"Törlés",onclick:fn,html:svg("trash")});
-const hhmm = t => t ? new Date(t).toLocaleTimeString("hu-HU",{hour:"2-digit",minute:"2-digit"}) : "--:--";
+const hhmm = t => t ? new Date(t).toLocaleTimeString(LOC(),{hour:"2-digit",minute:"2-digit"}) : "--:--";
 const dstr = d => d.toLocaleDateString("sv-SE");
 const todayStr = () => dstr(new Date());
 function relTime(ms){ const m=Math.round(Math.abs(ms)/60000); if (m<60) return `${m} perc`; return `${Math.floor(m/60)} ó ${m%60} p`; }
@@ -771,8 +948,8 @@ document.addEventListener("click",e=>{ const g=e.target.closest("[data-go]"); if
 
 // ================= óra, operátor, fókusz =================
 function tick(){ const d=new Date();
-  $("#date").textContent=d.toLocaleDateString("hu-HU",{year:"numeric",month:"long",day:"numeric",weekday:"long"});
-  $("#time").textContent=d.toLocaleTimeString("hu-HU",{hour:"2-digit",minute:"2-digit",second:"2-digit"}); }
+  $("#date").textContent=d.toLocaleDateString(LOC(),{year:"numeric",month:"long",day:"numeric",weekday:"long"});
+  $("#time").textContent=d.toLocaleTimeString(LOC(),{hour:"2-digit",minute:"2-digit",second:"2-digit"}); }
 setInterval(tick,1000); tick();
 setInterval(()=>{ if(view==="command"){ renderTimeline(); renderFeed(); } renderBell(); },60000);
 $("#opIcon").innerHTML=svg("user"); $("#sIco").innerHTML=svg("search");
@@ -875,8 +1052,8 @@ function buildPrompts(member,idx,round,prior,note){
 A neved: ${member.name}. A szereped: ${member.instruction}
 A csapat tagjai sorrendben:
 ${others}
-A felhasználó neve: ${settings.opName||"Operátor"}. Mai dátum: ${new Date().toLocaleDateString("hu-HU",{year:"numeric",month:"long",day:"numeric",weekday:"long"})}.
-Csak a saját szerepedet töltsd be. Építs a többiek munkájára, ne ismételd feleslegesen. Válaszolj a feladat nyelvén (alapból magyarul). Használhatsz Markdown formázást.`+contextBlock();
+A felhasználó neve: ${settings.opName||"Operátor"}. Mai dátum: ${new Date().toLocaleDateString(LOC(),{year:"numeric",month:"long",day:"numeric",weekday:"long"})}.
+Csak a saját szerepedet töltsd be. Építs a többiek munkájára, ne ismételd feleslegesen. ${isEN()?"Always answer in English, even if the task or the team instructions are in Hungarian.":"Válaszolj a feladat nyelvén (alapból magyarul)."} Használhatsz Markdown formázást.`+contextBlock();
   let user=`FELADAT:\n${task}\n`;
   if (prior.length){ user+=`\nA CSAPAT EDDIGI MUNKÁJA:\n`; for (const h of prior){ if(h.error) continue; user+=`\n--- ${h.round}. kör · ${h.name} (${PROVIDERS[h.provider]?.name||h.provider}) ---\n${h.text}\n`; } }
   if (note) user+=`\nA FELHASZNÁLÓ MEGJEGYZÉSE ERRE A KÖRRE:\n${note}\n`;
@@ -1070,7 +1247,7 @@ sIn.addEventListener("input",()=>{
   const m=s=>(s||"").toLowerCase().includes(q); const groups=[];
   const add=(title,items)=>{ if(items.length) groups.push(el("h6",{},title),...items.slice(0,5)); };
   const it=(icn,b,s,fn)=>el("button",{class:"it",onclick:()=>{ sDrop.hidden=true; sIn.value=""; fn(); }},ico(icn),el("div",{style:"min-width:0"},el("b",{},b),el("small",{},s)));
-  add("Beszélgetések",convs.filter(c=>m(c.task)||c.history?.some(h=>m(h.text))).map(c=>it("chat",c.task.slice(0,60),new Date(c.updated).toLocaleString("hu-HU"),()=>openConv(c.id))));
+  add("Beszélgetések",convs.filter(c=>m(c.task)||c.history?.some(h=>m(h.text))).map(c=>it("chat",c.task.slice(0,60),new Date(c.updated).toLocaleString(LOC()),()=>openConv(c.id))));
   add("Feladatok",tasks.filter(t=>m(t.title)).map(t=>it("list",t.title,t.due?t.due.replace("T"," "):"Nincs határidő",()=>showView("tasks"))));
   add("Naptár",events.filter(e=>m(e.title)).map(e=>it("cal",e.title,`${e.date} ${e.time||""}`,()=>{ calSel=e.date; calMonth=new Date(e.date+"T00:00"); calMonth.setDate(1); showView("calendar"); })));
   add("Memória",memories.filter(x=>m(x.text)).map(x=>it("db",x.text.slice(0,60),"Emlék",()=>showView("memory"))));
@@ -1205,7 +1382,7 @@ function renderTasks(){
     const od=!t.done&&t.due&&new Date(t.due).getTime()<now;
     const cb=el("input",{type:"checkbox",checked:t.done,"aria-label":"Kész"}); cb.addEventListener("change",()=>{ t.done=cb.checked; if(t.done) log("ok","Feladat kész",t.title); saveAll(); renderTasks(); renderNav(); });
     const prT={high:["Magas","err"],mid:["Közepes","warn"],low:["Alacsony","mute"]}[t.prio]||["","mute"];
-    return el("div",{class:"li"+(t.done?" done":"")},cb,el("div",{class:"tx"},el("b",{},t.title),el("small",{style:od?"color:var(--err)":null},t.due?(od?"Lejárt: ":"Határidő: ")+new Date(t.due).toLocaleString("hu-HU",{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"Nincs határidő")),
+    return el("div",{class:"li"+(t.done?" done":"")},cb,el("div",{class:"tx"},el("b",{},t.title),el("small",{style:od?"color:var(--err)":null},t.due?(od?"Lejárt: ":"Határidő: ")+new Date(t.due).toLocaleString(LOC(),{month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"}):"Nincs határidő")),
       el("span",{class:"tag "+prT[1]},prT[0]),
       el("button",{class:"btn small",title:"Jarvis megoldja",onclick:()=>newMission(t.title),html:svg("send")+"Jarvis"}),
       delBtn(()=>{ tasks=tasks.filter(x=>x!==t); saveAll(); renderTasks(); renderNav(); }));
@@ -1219,16 +1396,16 @@ $("#taskForm").addEventListener("submit",e=>{ e.preventDefault(); const ti=$("#t
 let calMonth=new Date(); calMonth.setDate(1); let calSel=todayStr();
 function renderCal(){
   const y=calMonth.getFullYear(), mo=calMonth.getMonth();
-  $("#calTitle").textContent=calMonth.toLocaleDateString("hu-HU",{year:"numeric",month:"long"});
+  $("#calTitle").textContent=calMonth.toLocaleDateString(LOC(),{year:"numeric",month:"long"});
   const c=$("#cal"); c.replaceChildren(...["H","K","Sze","Cs","P","Szo","V"].map(d=>el("div",{class:"dh"},d)));
   const first=new Date(y,mo,1), start=new Date(y,mo,1-((first.getDay()+6)%7));
   const weeks=Math.ceil((((first.getDay()+6)%7)+new Date(y,mo+1,0).getDate())/7);
   for (let i=0;i<weeks*7;i++){ const d=new Date(start); d.setDate(start.getDate()+i); const ds=dstr(d);
     const n=events.filter(e=>e.date===ds).length+tasks.filter(t=>!t.done&&t.due&&t.due.slice(0,10)===ds).length;
-    c.append(el("button",{class:(d.getMonth()!==mo?"out ":"")+(ds===todayStr()?"today":""),"aria-pressed":String(ds===calSel),"aria-label":d.toLocaleDateString("hu-HU",{month:"long",day:"numeric"}),onclick:()=>{ calSel=ds; renderCal(); }},
+    c.append(el("button",{class:(d.getMonth()!==mo?"out ":"")+(ds===todayStr()?"today":""),"aria-pressed":String(ds===calSel),"aria-label":d.toLocaleDateString(LOC(),{month:"long",day:"numeric"}),onclick:()=>{ calSel=ds; renderCal(); }},
       String(d.getDate()),el("span",{class:"evd"},...Array.from({length:Math.min(3,n)},()=>el("i")))));
   }
-  $("#dayTitle").textContent=new Date(calSel+"T00:00").toLocaleDateString("hu-HU",{month:"long",day:"numeric",weekday:"long"});
+  $("#dayTitle").textContent=new Date(calSel+"T00:00").toLocaleDateString(LOC(),{month:"long",day:"numeric",weekday:"long"});
   const items=[...events.filter(e=>e.date===calSel).map(e=>({k:e.time||"00:00",n:el("div",{class:"li"},ico("cal","var(--warn)"),el("div",{class:"tx"},el("b",{},e.title),el("small",{},e.time?`${e.time}${e.dur?` · ${e.dur} perc`:""}`:"Egész nap")),
       delBtn(()=>{ events=events.filter(x=>x!==e); saveAll(); renderCal(); }))})),
     ...tasks.filter(t=>t.due&&t.due.slice(0,10)===calSel).map(t=>({k:t.due.slice(11,16),n:el("div",{class:"li"+(t.done?" done":"")},ico("list","var(--cyan)"),el("div",{class:"tx"},el("b",{},t.title),el("small",{},"Feladat határidő · "+t.due.slice(11,16))))}))]
@@ -1244,7 +1421,7 @@ $("#evForm").addEventListener("submit",e=>{ e.preventDefault(); const ti=$("#evT
 // ================= memória =================
 function renderMemory(){
   $("#useMem").checked=!!settings.useMem;
-  $("#memList").replaceChildren(...(memories.length?memories.map(m=>el("div",{class:"li"},ico("db","var(--blue)"),el("div",{class:"tx"},el("b",{},m.text),el("small",{},new Date(m.created).toLocaleDateString("hu-HU"))),
+  $("#memList").replaceChildren(...(memories.length?memories.map(m=>el("div",{class:"li"},ico("db","var(--blue)"),el("div",{class:"tx"},el("b",{},m.text),el("small",{},new Date(m.created).toLocaleDateString(LOC()))),
     delBtn(()=>{ memories=memories.filter(x=>x!==m); saveAll(); renderMemory(); renderNav(); }))):[el("div",{class:"empty-s"},"Még nincs emlék.")]));
   requestAnimationFrame(()=>drawMap($("#memBig"),true));
 }
@@ -1255,7 +1432,7 @@ $("#memForm").addEventListener("submit",e=>{ e.preventDefault(); const t=$("#mem
 function openConv(id){ const c=convs.find(c=>c.id===id); if(!c||running) return; convId=c.id; history=c.history||[]; task=c.task; taskEl.value=task; saveAll(); showView("command"); autoGrow(); }
 function renderConvs(){
   $("#convList").replaceChildren(...(convs.length?convs.map(c=>{ const hs=c.history||[], steps=hs.filter(h=>!h.note).length, rounds=hs.reduce((a,h)=>Math.max(a,h.round||0),0);
-    return el("div",{class:"li"},ico("chat","var(--cyan)"),el("div",{class:"tx"},el("b",{},c.task.slice(0,120)),el("small",{},`${new Date(c.updated).toLocaleString("hu-HU")} · ${steps} válasz · ${rounds} kör`)),
+    return el("div",{class:"li"},ico("chat","var(--cyan)"),el("div",{class:"tx"},el("b",{},c.task.slice(0,120)),el("small",{},`${new Date(c.updated).toLocaleString(LOC())} · ${steps} válasz · ${rounds} kör`)),
       el("button",{class:"btn small",onclick:()=>openConv(c.id),html:svg("open")+"Megnyitás"}),
       delBtn(()=>{ convs=convs.filter(x=>x!==c); if(convId===c.id){ convId=null; history=[]; } saveAll(); renderConvs(); renderNav(); })); })
     :[el("div",{class:"empty-s"},"Még nincs mentett beszélgetés.")]));
@@ -1266,7 +1443,7 @@ armButton($("#convClear"),"Összes törlése",()=>{ convs=[]; convId=null; histo
 function renderKb(){
   $("#useKb").checked=!!settings.useKb;
   $("#kbList").replaceChildren(...(kb.length?kb.map(d=>{ const cb=el("input",{type:"checkbox",checked:d.active,"aria-label":"Használat a küldetésekben"}); cb.addEventListener("change",()=>{ d.active=cb.checked; saveAll(); renderKb(); });
-    return el("div",{class:"li"},cb,el("div",{class:"tx"},el("b",{},d.title),el("small",{},`${d.text.length.toLocaleString("hu-HU")} karakter · ${d.active?"használatban":"kikapcsolva"}`)),
+    return el("div",{class:"li"},cb,el("div",{class:"tx"},el("b",{},d.title),el("small",{},`${d.text.length.toLocaleString(LOC())} karakter · ${d.active?"használatban":"kikapcsolva"}`)),
       el("button",{class:"btn small",onclick:()=>openModal(d.title,el("div",{class:"card-body",style:"white-space:pre-wrap;max-height:60vh;overflow:auto"},d.text))},"Megnézés"),
       delBtn(()=>{ kb=kb.filter(x=>x!==d); saveAll(); renderKb(); renderNav(); })); })
     :[el("div",{class:"empty-s"},"Még nincs dokumentum.")]));
@@ -1284,7 +1461,7 @@ function renderSkills(){
   $("#skills").replaceChildren(...allSkills().map(s=>{ const inp=el("textarea",{rows:"2",placeholder:"Mire alkalmazza?","aria-label":s.name+" bemenet"});
     return el("div",{class:"panel stack"},el("div",{class:"row"},ico("tool","var(--cyan)"),el("div",{class:"grow"},el("b",{style:"font:700 15px var(--f-label)"},s.name),el("div",{class:"hint"},s.desc)),
         !s.id.startsWith("sk-")?delBtn(()=>{ mySkills=mySkills.filter(x=>x!==s); saveAll(); renderSkills(); renderNav(); }):null),
-      inp,el("button",{class:"btn",onclick:()=>newMission(s.template.replace("{input}",inp.value.trim()||"[ide írd a szöveget]")),html:svg("send")+"Küldetés összeállítása"})); }));
+      inp,el("button",{class:"btn",onclick:()=>newMission(((isEN()&&SKILL_EN[s.id])||s.template).replace("{input}",inp.value.trim()||(isEN()?"[write your text here]":"[ide írd a szöveget]"))),html:svg("send")+"Küldetés összeállítása"})); }));
 }
 $("#addSkill").addEventListener("click",()=>{
   const n=el("input",{id:"skN",placeholder:"Pl. LinkedIn poszt"}), d=el("input",{id:"skD",placeholder:"Rövid leírás"}), t=el("textarea",{id:"skT",rows:"5",placeholder:"Utasítás. A {input} helyére kerül, amit beírsz.\nPl. Írj LinkedIn posztot erről: {input}"});
@@ -1300,7 +1477,7 @@ function renderWorkflows(){
     const chain=el("div",{class:"chainl"}); w.team.forEach((m,i)=>{ if(i) chain.append(el("span",{style:"opacity:.6"},"→")); chain.append(el("span",{class:"prov",style:`--pc:${pColor(m.provider)}`},m.name)); });
     return el("div",{class:"panel stack"},el("div",{class:"row"},ico("flow","var(--violet)"),el("div",{class:"grow"},el("b",{style:"font:700 15px var(--f-label)"},w.name),el("div",{class:"hint"},w.desc||`${w.team.length} ügynök`)),
         !w.id.startsWith("wf-")?delBtn(()=>{ myWf=myWf.filter(x=>x!==w); saveAll(); renderWorkflows(); }):null),
-      chain,el("button",{class:"btn",onclick:()=>{ team=w.team.map(m=>({...m,id:uid()})); saveAll(); log("info","Munkafolyamat betöltve",w.name); toast(`Betöltve: ${w.name}`); showView("command"); taskEl.focus(); },html:svg("play")+"Betöltés és küldetés"})); }));
+      chain,el("button",{class:"btn",onclick:()=>{ team=w.team.map(m=>({...m,name:trName(m.name),id:uid()})); saveAll(); log("info","Munkafolyamat betöltve",w.name); toast(`Betöltve: ${w.name}`); showView("command"); taskEl.focus(); },html:svg("play")+"Betöltés és küldetés"})); }));
 }
 
 // ================= hang: diktálás + felolvasás =================
@@ -1319,7 +1496,7 @@ function toggleMic(){
   if (recOn){ rec?.stop(); return; }
   if (view!=="command") showView("command");
   stopSpeak();
-  rec=new SR(); rec.lang=settings.lang||"hu-HU"; rec.interimResults=true; rec.continuous=!voiceChat;
+  rec=new SR(); rec.lang=isEN()?"en-US":(settings.lang||"hu-HU"); rec.interimResults=true; rec.continuous=!voiceChat;
   recBase=taskEl.value&&!voiceChat?taskEl.value.replace(/\s*$/," "):"";
   if (voiceChat) taskEl.value="";
   rec.onresult=e=>{ let fin="",tmp=""; for(let i=0;i<e.results.length;i++){ const r=e.results[i]; if(r.isFinal) fin+=r[0].transcript; else tmp+=r[0].transcript; }
@@ -1351,7 +1528,7 @@ async function premiumTTS(eng,text){
   throw new Error("ismeretlen hangmotor");
 }
 // Felolvasás angolul: a szöveget felolvasás előtt egy beállított AI lefordítja (a képernyőn marad az eredeti).
-const speakEnglish=()=>(settings.speakLang||"en")==="en";
+const speakEnglish=()=>isEN()||(settings.speakLang||"en")==="en";
 let trCache={src:"",out:""};
 async function toEnglish(text){
   if (trCache.src===text) return trCache.out;
@@ -1389,14 +1566,14 @@ $("#briefBtn").addEventListener("click",async()=>{
   if (!prov){ body.append(el("p",{class:"hint"},"Ehhez legalább egy AI-szolgáltatót be kell állítanod az AI mag oldalon."),el("button",{class:"btn",onclick:()=>{ closeModal(); showView("core"); }},"AI mag megnyitása")); return; }
   body.append(el("div",{class:"note"},el("span",{class:"dots"},el("i"),el("i"),el("i"))," ",`${PROVIDERS[prov].name} összeállítja a napod áttekintését…`));
   const now=new Date(), today=todayStr(), week=dstr(new Date(Date.now()+7*864e5));
-  const ctx=`Dátum és idő: ${now.toLocaleString("hu-HU",{dateStyle:"full",timeStyle:"short"})}
+  const ctx=`Dátum és idő: ${now.toLocaleString(LOC(),{dateStyle:"full",timeStyle:"short"})}
 Helyszín: ${settings.place||"ismeretlen"}. Időjárás: ${$("#wxTx").textContent}.
 MAI ESEMÉNYEK: ${events.filter(e=>e.date===today).map(e=>`${e.time||"egész nap"} ${e.title}`).join("; ")||"nincs"}
 KÖVETKEZŐ 7 NAP ESEMÉNYEI: ${events.filter(e=>e.date>today&&e.date<=week).map(e=>`${e.date} ${e.time} ${e.title}`).join("; ")||"nincs"}
 NYITOTT FELADATOK: ${tasks.filter(t=>!t.done).map(t=>`${t.title} (${t.prio==="high"?"magas":t.prio==="low"?"alacsony":"közepes"} fontosság${t.due?", határidő: "+t.due.replace("T"," "):""}${t.due&&new Date(t.due)<now?", LEJÁRT":""})`).join("; ")||"nincs"}
 LEGUTÓBBI KÜLDETÉSEK: ${convs.slice(0,5).map(c=>c.task.slice(0,80)).join("; ")||"nincs"}`;
   try{
-    const txt=await callAI(prov,models[prov],`Te Jarvis vagy, ${settings.opName||"az operátor"} személyi AI asszisztense. Rövid, összeszedett, Jarvis-stílusú (udvarias, magabiztos) vezetői összefoglalót adsz magyarul, Markdownban. Szakaszok: Üdvözlés (1 mondat), Mai napirend, Prioritások (max 3), Figyelmeztetések (lejárt dolgok), Javaslat a napra. Ne találj ki adatot.`+contextBlock(),ctx);
+    const txt=await callAI(prov,models[prov],`Te Jarvis vagy, ${settings.opName||"az operátor"} személyi AI asszisztense. Rövid, összeszedett, Jarvis-stílusú (udvarias, magabiztos) vezetői összefoglalót adsz magyarul, Markdownban. Szakaszok: Üdvözlés (1 mondat), Mai napirend, Prioritások (max 3), Figyelmeztetések (lejárt dolgok), Javaslat a napra. Ne találj ki adatot.`+(isEN()?" IMPORTANT: write the entire briefing in English (headings too).":"")+contextBlock(),ctx);
     saveAll(); renderMemStats();
     body.replaceChildren(renderMd(txt),el("div",{class:"row"},TTS?el("button",{class:"btn",onclick:()=>speak(txt),html:svg("speaker")+"Felolvasás"}):null,el("button",{class:"btn",onclick:()=>copyText(txt),html:svg("copy")+"Másolás"})));
     if (settings.tts) speak(txt);
@@ -1466,17 +1643,19 @@ function openSettings(){
   const brBox=el("div",{class:"stack"},TTS?el("label",{for:"stVoice"},"Böngészőhang"):el("p",{class:"hint"},"Ez a böngésző nem tud felolvasni."),TTS?voice:null);
   const syncEng=()=>{ fishBox.hidden=eng.value!=="fish"; oaBox.hidden=eng.value!=="openai"; brBox.hidden=eng.value!=="browser"; };
   eng.addEventListener("change",syncEng); syncEng();
+  const uiL=el("select",{id:"stUiLang"}); for (const [v,l] of [["hu","Magyar"],["en","English"]]) uiL.append(el("option",{value:v,selected:(settings.uiLang||"hu")===v},l));
   const spL=el("select",{id:"stSpL"}); for (const [v,l] of [["en","Angol (Jarvis stílus)"],["hu","Magyar"]]) spL.append(el("option",{value:v,selected:(settings.speakLang||"en")===v},l));
   const collect=()=>({lang:lang.value,tts:tts.checked,voice:voice.value,ttsEngine:eng.value,fishProxy:fProxy.value.trim(),syncOn:syncOn.checked,speakLang:spL.value,fishVoice:fVoice.value.trim(),oaVoice:oaV.value});
   openModal("Beállítások",el("form",{class:"stack",onsubmit:e=>{ e.preventDefault();
-      Object.assign(settings,{opName:n.value.trim()||"Operátor",opTitle:t.value.trim()},collect()); saveAll(); renderOp(); closeModal(); toast("Beállítások mentve"); }},
+      const langChanged=uiL.value!==(settings.uiLang||"hu"); Object.assign(settings,{opName:n.value.trim()||"Operátor",opTitle:t.value.trim(),uiLang:uiL.value},collect()); saveAll(); renderOp(); closeModal(); toast("Beállítások mentve"); if (langChanged){ clearTimeout(sync.timer); syncPush(false).finally(()=>location.reload()); } }},
+    el("label",{for:"stUiLang"},"Nyelv / Language"),uiL,
     el("label",{for:"stName"},"Neved"),n,el("label",{for:"stTitle"},"Titulus"),t,
     el("label",{for:"stLang"},"Beszéd nyelve (diktálás)"),lang,
     el("label",{class:"chk"},tts,"Jarvis hangosan felolvassa a végeredményt"),
     el("label",{for:"stEng"},"Jarvis hangja"),eng,fishBox,oaBox,brBox,
     el("label",{for:"stSpL"},"Felolvasás nyelve"),spL,
     el("p",{class:"hint"},"Angolnál a képernyőn magyarul marad a válasz, Jarvis felolvasás előtt lefordítja angolra (egy rövid AI-hívás)."),
-    el("button",{class:"btn small",type:"button",onclick:()=>{ const o={...settings}; Object.assign(settings,collect()); speak(spL.value==="en"?`Good day, ${n.value||"sir"}. JARVIS at your service. All systems are online.`:`Üdvözlöm, ${n.value||"uram"}. Jarvis szolgálatra kész. Minden rendszer működik.`); settings=o; },html:svg("speaker")+"Hang kipróbálása"}),
+    el("button",{class:"btn small",type:"button",onclick:()=>{ const o={...settings}; Object.assign(settings,collect()); speak(spL.value==="en"||isEN()?`Good day, ${n.value||"sir"}. JARVIS at your service. All systems are online.`:`Üdvözlöm, ${n.value||"uram"}. Jarvis szolgálatra kész. Minden rendszer működik.`); settings=o; },html:svg("speaker")+"Hang kipróbálása"}),
     bridgeBox,
     el("button",{class:"btn",type:"button",onclick:()=>{ closeModal(); locate(); },html:svg("pin")+"Hely és időjárás beállítása"}),
     el("button",{class:"btn primary",type:"submit"},"Mentés"),
@@ -1678,7 +1857,7 @@ function setIncog(on,announce){
     incog=false; try{ sessionStorage.removeItem("jarvis:incog"); }catch(_){}
   }
   document.body.classList.toggle("incog",incog);
-  document.title=incog?"Jarvis · Inkognitó":"Jarvis";
+  document.title=incog?(isEN()?"Jarvis · Incognito":"Jarvis · Inkognitó"):"Jarvis";
   $("#incogBtn").classList.toggle("on",incog);
   $("#orbSub").textContent=incog?"inkognitó mód":"v3.0 · készenlétben";
   autoGrow(); if (view==="command") renderAll(); renderSyncSt();
