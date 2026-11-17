@@ -1317,9 +1317,21 @@ async function premiumTTS(eng,text){
   }
   throw new Error("ismeretlen hangmotor");
 }
+// Felolvasás angolul: a szöveget felolvasás előtt egy beállított AI lefordítja (a képernyőn marad az eredeti).
+const speakEnglish=()=>(settings.speakLang||"en")==="en";
+let trCache={src:"",out:""};
+async function toEnglish(text){
+  if (trCache.src===text) return trCache.out;
+  if (!/[áéíóöőúüű]/i.test(text)) return text; // már angol (nincs magyar ékezet)
+  const prov=["claude","openai","gemini","groq","openrouter","ollama"].find(p=>(keys[p]||"").trim());
+  if (!prov) return text;
+  const out=(await callAI(prov,models[prov],"Translate the user's text into natural, spoken British English, the way J.A.R.V.I.S. from the films would say it: calm, polite, concise. If it is already English, return it unchanged. Output only the text to be spoken, without notes, quotes, lists or markdown.",text.slice(0,3000))).trim();
+  saveLocal(); trCache={src:text,out:out||text}; return trCache.out;
+}
 async function speak(text){
   if (!text) return; stopSpeak();
-  const eng=settings.ttsEngine||"browser", clean=plain(text);
+  const eng=settings.ttsEngine||"browser"; let clean=plain(text);
+  if (speakEnglish()){ try{ clean=plain(await toEnglish(clean)); }catch(e){ toast("A fordítás nem sikerült, eredeti nyelven olvasom fel."); } }
   if (eng!=="browser"){
     try{ const blob=await premiumTTS(eng,clean.slice(0,eng==="fish"?2500:4000)); const url=URL.createObjectURL(blob);
       const a=new Audio(url); curAudio=a; a.onended=()=>{ URL.revokeObjectURL(url); if(curAudio===a) curAudio=null; }; await a.play(); return; }
@@ -1330,8 +1342,8 @@ async function speak(text){
 function browserSpeak(clean){
   if (!TTS) return;
   const parts=clean.slice(0,4000).match(/[^.!?]+[.!?]*/g)||[];
-  const vs=speechSynthesis.getVoices(); const lang=settings.lang||"hu-HU";
-  const v=vs.find(v=>v.name===settings.voice)||vs.find(v=>v.lang===lang)||vs.find(v=>v.lang.startsWith(lang.slice(0,2)));
+  const vs=speechSynthesis.getVoices(); const lang=speakEnglish()?"en-GB":(settings.lang||"hu-HU");
+  const v=(!speakEnglish()&&vs.find(v=>v.name===settings.voice))||(speakEnglish()&&vs.find(v=>/en-GB/i.test(v.lang)&&/male|george|ryan|daniel|arthur/i.test(v.name)))||vs.find(v=>v.lang===lang)||vs.find(v=>v.lang.startsWith(lang.slice(0,2)));
   for (const p of parts){ const u=new SpeechSynthesisUtterance(p); u.lang=lang; if(v) u.voice=v; speechSynthesis.speak(u); }
 }
 $("#micBig").innerHTML=svg("mic"); $("#micSmall").innerHTML=svg("mic");
@@ -1421,14 +1433,17 @@ function openSettings(){
   const brBox=el("div",{class:"stack"},TTS?el("label",{for:"stVoice"},"Böngészőhang"):el("p",{class:"hint"},"Ez a böngésző nem tud felolvasni."),TTS?voice:null);
   const syncEng=()=>{ fishBox.hidden=eng.value!=="fish"; oaBox.hidden=eng.value!=="openai"; brBox.hidden=eng.value!=="browser"; };
   eng.addEventListener("change",syncEng); syncEng();
-  const collect=()=>({lang:lang.value,tts:tts.checked,voice:voice.value,ttsEngine:eng.value,fishProxy:fProxy.value.trim(),syncOn:syncOn.checked,fishVoice:fVoice.value.trim(),oaVoice:oaV.value});
+  const spL=el("select",{id:"stSpL"}); for (const [v,l] of [["en","Angol (Jarvis stílus)"],["hu","Magyar"]]) spL.append(el("option",{value:v,selected:(settings.speakLang||"en")===v},l));
+  const collect=()=>({lang:lang.value,tts:tts.checked,voice:voice.value,ttsEngine:eng.value,fishProxy:fProxy.value.trim(),syncOn:syncOn.checked,speakLang:spL.value,fishVoice:fVoice.value.trim(),oaVoice:oaV.value});
   openModal("Beállítások",el("form",{class:"stack",onsubmit:e=>{ e.preventDefault();
       Object.assign(settings,{opName:n.value.trim()||"Operátor",opTitle:t.value.trim()},collect()); saveAll(); renderOp(); closeModal(); toast("Beállítások mentve"); }},
     el("label",{for:"stName"},"Neved"),n,el("label",{for:"stTitle"},"Titulus"),t,
     el("label",{for:"stLang"},"Beszéd nyelve (diktálás)"),lang,
     el("label",{class:"chk"},tts,"Jarvis hangosan felolvassa a végeredményt"),
     el("label",{for:"stEng"},"Jarvis hangja"),eng,fishBox,oaBox,brBox,
-    el("button",{class:"btn small",type:"button",onclick:()=>{ const o={...settings}; Object.assign(settings,collect()); speak(`Üdvözlöm, ${n.value||"uram"}. Jarvis szolgálatra kész. Minden rendszer működik.`); settings=o; },html:svg("speaker")+"Hang kipróbálása"}),
+    el("label",{for:"stSpL"},"Felolvasás nyelve"),spL,
+    el("p",{class:"hint"},"Angolnál a képernyőn magyarul marad a válasz, Jarvis felolvasás előtt lefordítja angolra (egy rövid AI-hívás)."),
+    el("button",{class:"btn small",type:"button",onclick:()=>{ const o={...settings}; Object.assign(settings,collect()); speak(spL.value==="en"?`Good day, ${n.value||"sir"}. JARVIS at your service. All systems are online.`:`Üdvözlöm, ${n.value||"uram"}. Jarvis szolgálatra kész. Minden rendszer működik.`); settings=o; },html:svg("speaker")+"Hang kipróbálása"}),
     bridgeBox,
     el("button",{class:"btn",type:"button",onclick:()=>{ closeModal(); locate(); },html:svg("pin")+"Hely és időjárás beállítása"}),
     el("button",{class:"btn primary",type:"submit"},"Mentés"),
