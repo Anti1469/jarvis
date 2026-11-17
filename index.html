@@ -311,9 +311,38 @@ body.focus .orb{min-height:200px}
 .brand-m b{font:700 15px var(--f-hud);letter-spacing:.24em;color:#e8f7ff}
 @media (max-width:520px){ .top-r .ibtn.hide-s{display:none} .brief{display:none} .brand-m b{display:none} }
 @media (prefers-reduced-motion: reduce){ *{animation:none!important;transition:none!important} }
+/* bejelentkezés */
+body.locked .app,body.locked .modal{display:none!important}
+.login{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;overflow:auto}
+body:not(.locked) .login{display:none}
+.lbox{width:min(400px,100%);display:flex;flex-direction:column;gap:14px;align-items:stretch;text-align:center}
+.lbox .lorb{width:120px;height:120px;margin:0 auto 4px;border-radius:50%;border:1.5px solid var(--cyan);
+  background:radial-gradient(circle,rgba(63,214,255,.55) 0 14%,transparent 16% 36%,rgba(63,214,255,.22) 38% 42%,transparent 44% 60%,rgba(63,214,255,.12) 62% 64%,transparent 66%);
+  box-shadow:0 0 30px rgba(63,214,255,.5),inset 0 0 24px rgba(63,214,255,.3);animation:pulse 2.4s infinite}
+.lbox h1{margin:0;font:700 34px/1 var(--f-hud);letter-spacing:.34em;padding-left:.34em;color:#9ff0ff;text-shadow:0 0 18px rgba(63,214,255,.8)}
+.lbox .sub{font:600 12px var(--f-label);letter-spacing:.3em;color:var(--cyan);margin-top:-6px}
+.lbox form{text-align:left}
+.lerr{color:var(--err);font:600 13.5px var(--f-label);min-height:1.2em;text-align:center}
+.lnote{color:var(--muted);font-size:12px;text-align:center}
 </style>
 </head>
-<body>
+<body class="locked">
+<div class="login" id="login">
+  <div class="lbox panel" style="padding:28px 22px">
+    <div class="lorb" aria-hidden="true"></div>
+    <h1>JARVIS</h1>
+    <div class="sub">PARANCSKÖZPONT · AZONOSÍTÁS</div>
+    <form class="stack" id="loginForm" autocomplete="on">
+      <label for="lUser">Felhasználónév</label>
+      <input id="lUser" name="username" autocomplete="username" required>
+      <label for="lPass">Jelszó</label>
+      <input id="lPass" name="password" type="password" autocomplete="current-password" required>
+      <label class="chk"><input type="checkbox" id="lRemember"> Maradjak bejelentkezve ezen az eszközön</label>
+      <button class="btn primary" type="submit" id="lBtn">Belépés</button>
+      <div class="lerr" id="lErr" role="alert"></div>
+    </form>
+  </div>
+</div>
 <div class="app">
   <aside class="side">
     <div class="brand"><div class="logo"></div><div><b>JARVIS</b><small>PARANCSKÖZPONT</small></div></div>
@@ -325,6 +354,7 @@ body.focus .orb{min-height:200px}
       <div class="lbl" id="micLbl">Koppints a beszédhez</div>
       <button class="btn small" id="focusBtn2" style="align-self:stretch"></button>
     </div>
+    <button class="btn small danger" id="logoutBtn">Kijelentkezés</button>
   </aside>
 
   <div class="main">
@@ -1347,6 +1377,9 @@ function openSettings(){
     TTS?el("button",{class:"btn small",type:"button",onclick:()=>{ const o={voice:settings.voice,lang:settings.lang}; settings.voice=voice.value; settings.lang=lang.value; speak(`Üdvözlöm, ${n.value||"uram"}. Jarvis szolgálatra kész.`); Object.assign(settings,o); }},"Hang kipróbálása"):null,
     el("button",{class:"btn",type:"button",onclick:()=>{ closeModal(); locate(); },html:svg("pin")+"Hely és időjárás beállítása"}),
     el("button",{class:"btn primary",type:"submit"},"Mentés"),
+    el("div",{class:"row",style:"border-top:1px solid var(--line);padding-top:12px"},
+      el("button",{class:"btn",type:"button",onclick:()=>openPassChange()},"Jelszó módosítása"),
+      el("button",{class:"btn danger",type:"button",onclick:()=>lock()},"Kijelentkezés")),
     el("div",{style:"border-top:1px solid var(--line);padding-top:12px"},reset)));
 }
 
@@ -1372,10 +1405,59 @@ function openSettings(){
 })();
 addEventListener("resize",()=>{ if(view==="command") drawMap($("#memMap"),false); if(view==="memory") drawMap($("#memBig"),true); });
 
+// ================= bejelentkezés =================
+// A jelszó nincs a kódban, csak egy sózott PBKDF2-SHA256 lenyomat. A jelszó módosítása ezen az eszközön felülírja.
+const DEFAULT_CRED = {user:"admin", salt:"e5a7fc7e6a8840cd7caf1ff5e2bfec57", hash:"7a4bc8c92ebb307461d0d3e07f5a848796ba3ddb1ce3a0bfe68ee4e3a885291a", iter:250000};
+function getCred(){ try{ const c=JSON.parse(localStorage.getItem("jarvis:cred")||"null"); if(c&&c.hash) return c; }catch(e){} return DEFAULT_CRED; }
+async function pbkdf2(pass,salt,iter){
+  const enc=new TextEncoder(); const key=await crypto.subtle.importKey("raw",enc.encode(pass),"PBKDF2",false,["deriveBits"]);
+  const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:enc.encode(salt),iterations:iter,hash:"SHA-256"},key,256);
+  return [...new Uint8Array(bits)].map(b=>b.toString(16).padStart(2,"0")).join("");
+}
+function authToken(){ try{ return sessionStorage.getItem("jarvis:auth")||localStorage.getItem("jarvis:auth"); }catch(e){ return null; } }
+function unlock(){ document.body.classList.remove("locked"); showView("command"); renderAll(); }
+function lock(){ try{ sessionStorage.removeItem("jarvis:auth"); localStorage.removeItem("jarvis:auth"); }catch(e){} closeModal(); document.body.classList.add("locked"); $("#lPass").value=""; $("#lErr").textContent=""; $("#lUser").focus(); }
+$("#loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  const err=$("#lErr"), btn=$("#lBtn"), until=+(sessionStorage.getItem("jarvis:wait")||0);
+  if (Date.now()<until){ err.textContent=`Túl sok sikertelen próbálkozás. Próbáld újra ${Math.ceil((until-Date.now())/1000)} mp múlva.`; return; }
+  btn.disabled=true; btn.textContent="Azonosítás…"; err.textContent="";
+  const c=getCred(); let ok=false;
+  try{ ok = $("#lUser").value.trim().toLowerCase()===c.user && await pbkdf2($("#lPass").value,c.salt,c.iter)===c.hash; }
+  catch(_){ err.textContent="Ez a böngésző nem támogatja a biztonságos bejelentkezést."; }
+  btn.disabled=false; btn.textContent="Belépés";
+  if (!ok){
+    const n=+(sessionStorage.getItem("jarvis:fails")||0)+1; sessionStorage.setItem("jarvis:fails",n);
+    if (n>=5){ sessionStorage.setItem("jarvis:wait",Date.now()+30000); sessionStorage.setItem("jarvis:fails",0); err.textContent="Túl sok sikertelen próbálkozás. Várj 30 másodpercet."; }
+    else if (!err.textContent) err.textContent="Hibás felhasználónév vagy jelszó.";
+    $("#lPass").select(); return;
+  }
+  sessionStorage.setItem("jarvis:fails",0);
+  try{ ($("#lRemember").checked?localStorage:sessionStorage).setItem("jarvis:auth",c.hash); }catch(_){}
+  $("#lPass").value=""; unlock(); log("info","Sikeres bejelentkezés",c.user==="admin"?"Admin":c.user);
+});
+$("#logoutBtn").addEventListener("click",lock);
+function openPassChange(){
+  const cur=el("input",{id:"pwCur",type:"password",autocomplete:"current-password"}), nw=el("input",{id:"pwNew",type:"password",autocomplete:"new-password"}), nw2=el("input",{id:"pwNew2",type:"password",autocomplete:"new-password"}), st=el("div",{class:"status"});
+  openModal("Jelszó módosítása",el("form",{class:"stack",onsubmit:async e=>{ e.preventDefault(); const c=getCred();
+      if (await pbkdf2(cur.value,c.salt,c.iter)!==c.hash){ st.className="status bad"; st.textContent="A jelenlegi jelszó nem jó."; return; }
+      if (nw.value.length<8){ st.className="status bad"; st.textContent="Az új jelszó legalább 8 karakter legyen."; return; }
+      if (nw.value!==nw2.value){ st.className="status bad"; st.textContent="A két új jelszó nem egyezik."; return; }
+      const salt=[...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,"0")).join("");
+      const nc={user:c.user,salt,iter:250000,hash:await pbkdf2(nw.value,salt,250000)};
+      try{ localStorage.setItem("jarvis:cred",JSON.stringify(nc)); if(localStorage.getItem("jarvis:auth")) localStorage.setItem("jarvis:auth",nc.hash); sessionStorage.setItem("jarvis:auth",nc.hash); }catch(_){}
+      closeModal(); toast("Jelszó módosítva ezen az eszközön"); }},
+    el("p",{class:"hint"},"Az új jelszó csak ezen az eszközön és böngészőben érvényes. A többi eszközön a régi marad, amíg ott is meg nem változtatod."),
+    el("label",{for:"pwCur"},"Jelenlegi jelszó"),cur,el("label",{for:"pwNew"},"Új jelszó"),nw,el("label",{for:"pwNew2"},"Új jelszó még egyszer"),nw2,st,
+    el("button",{class:"btn primary",type:"submit"},"Mentés")));
+  cur.focus();
+}
+
 // ================= indulás =================
 taskEl.value=task;
 history=history.filter(h=>!h.pending);
 renderOp(); applyFocus(); setMicUI(); renderNet(); loadWeather(); showView("command"); autoGrow();
+if (authToken()===getCred().hash) unlock(); else $("#lUser").focus();
 </script>
 </body>
 </html>
