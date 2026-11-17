@@ -280,6 +280,15 @@ body.incog .panel::before,body.incog .panel::after{border-color:var(--cyan)}
 body.focus .nf{display:none!important}
 body.focus .g1{grid-template-columns:minmax(0,1fr)}
 body.focus .orb{min-height:200px}
+.focus-hud{display:flex;gap:18px;align-items:center;flex-wrap:wrap;border-color:var(--line-2);box-shadow:0 0 26px rgba(63,214,255,.18)}
+.fh-time{font:700 46px/1 var(--f-hud);color:var(--cyan);text-shadow:0 0 16px rgba(63,214,255,.6);font-variant-numeric:tabular-nums;letter-spacing:.04em}
+.fh-info{flex:1 1 200px;min-width:0;display:flex;flex-direction:column;gap:2px}
+.fh-info b{font:700 15px var(--f-label);letter-spacing:.12em;text-transform:uppercase}
+.fh-info small{color:var(--muted);font:600 13px var(--f-label);overflow-wrap:anywhere}
+.fh-bar{height:6px;background:var(--panel-2);border-radius:3px;overflow:hidden;margin-top:6px}
+.fh-bar i{display:block;height:100%;width:0;background:var(--cyan);box-shadow:0 0 8px var(--cyan);transition:width 1s linear}
+.focus-hud.brk .fh-time{color:var(--ok);text-shadow:0 0 16px rgba(62,230,161,.6)} .focus-hud.brk .fh-bar i{background:var(--ok)}
+.fdur{display:flex;gap:8px;flex-wrap:wrap} .fdur button[aria-pressed="true"]{background:rgba(63,214,255,.22);border-color:var(--cyan)}
 
 @media (max-width:1700px){ .cmd-in .ttl{display:none} }
 @media (max-width:1380px){ .envs{display:none} }
@@ -385,6 +394,11 @@ body:not(.locked) .login{display:none}
 
     <div class="wrap-views">
     <section id="view-command" class="stack" style="gap:14px">
+      <div class="panel focus-hud" id="focusHud" hidden>
+        <div class="fh-time" id="fhTime">25:00</div>
+        <div class="fh-info"><b id="fhTitle">Fókusz</b><small id="fhTask"></small><div class="fh-bar"><i id="fhBar"></i></div></div>
+        <div class="row"><button class="btn small" id="fhPause" type="button">Szünet</button><button class="btn small" id="fhPlus" type="button">+5 perc</button><button class="btn small" id="fhNoise" type="button">Háttérzaj</button><button class="btn small danger" id="fhEnd" type="button">Befejezés</button></div>
+      </div>
       <div class="grid g1">
         <div class="panel nf"><div class="ph"><h3>AI mag áttekintés</h3></div><div id="overview"></div></div>
         <div class="panel orb" id="orbPanel">
@@ -673,7 +687,7 @@ const EN = {
   "kikapcsolva":"off","jelentkezz be újra":"sign in again","mentés…":"saving…","még nincs mentés":"not saved yet",
   "Claude Code: a híd nem fut ezen a gépen. Indítsd el a Jarvis-Claude-inditas.bat fájlt (dupla kattintás), és hagyd nyitva az ablakát.":"Claude Code: the bridge is not running on this computer. Start Jarvis-Claude-inditas.bat (double-click) and keep its window open.",
   "Ollama: nem érhető el. Fut az Ollama a gépeden? Indítsd el így: OLLAMA_ORIGINS=* ollama serve":"Ollama is unreachable. Is it running? Start it with: OLLAMA_ORIGINS=* ollama serve",
-  "Működik":"Working","Jarvis személyisége":"Jarvis's personality","Így beszél Jarvis a végső válaszokban és hangos beszélgetésben.":"This is how Jarvis speaks in final answers and voice chat.","Alapértelmezett":"Default","Gyors hangos válasz: beszélgetéskor csak Jarvis felel (a csapat helyett), és emlékszik az előző mondatokra":"Fast voice replies: in voice chat only Jarvis answers (instead of the team) and remembers the previous lines","Ez a böngésző nem támogatja a hangbevitelt":"This browser does not support voice input","Feldolgozás…":"Processing…","Figyelek… ha abbahagyod, Jarvis válaszol":"Listening… when you stop, Jarvis answers","Koppints, és beszélj Jarvishoz":"Tap and talk to Jarvis","Nem hallottam semmit.":"I didn't hear anything.","A böngésző beszédfelismerője nem működik, átváltok felvételes módra.":"The browser's speech recognition isn't working, switching to recording mode.","Ebben a böngészőben a beszédhez egy ingyenes Groq-kulcs kell (AI mag → Groq).":"In this browser, voice needs a free Groq key (AI Core → Groq).","Nagyon olcsó, erős modellek":"Very cheap, strong models","A platform.deepseek.com oldalon kapsz kulcsot. Kis feltöltés kell hozzá, de nagyon olcsó (a deepseek-reasoner gondolkodó modell).":"Get a key at platform.deepseek.com. It needs a small top-up but is very cheap (deepseek-reasoner is the reasoning model).","Automatikus váltás: ha egy AI kifogy vagy hibázik, egy másik működő veszi át":"Automatic failover: if an AI runs out or fails, another working one takes over","Nincs működő AI-szolgáltató beállítva.":"No working AI provider is configured.","Automatikus váltás":"Automatic failover","nincs beállítva":"not configured","Kulcs nem kell":"No key needed","Nem kell kulcs vagy fiók, azonnal használható. Ingyenes, ezért lassabb lehet, és naponta korlátozott.":"No key or account needed, works right away. It is free, so it can be slower and has daily limits.","Bejelentkezés OpenRouter-fiókkal":"Sign in with OpenRouter account","vagy illeszd be lent a kulcsot":"or paste a key below","Alapértelmezett modell":"Default model","✎ Egyéni modell…":"✎ Custom model…","Írd be a modell azonosítóját":"Enter the model ID","Hozzáférési token":"Access token","Ingyenes, kulcs és fiók nélkül":"Free, no key or account","Ingyenes havi keret, tokennel":"Free monthly credits, with a token","Ingyenes kísérleti csomag":"Free experiment plan","Ingyenes, villámgyors":"Free, lightning fast","Ingyenes modellek is, fiókkal vagy kulccsal":"Free models too, via account or key","Weboldal ↗":"Website ↗","Token létrehozása ↗":"Create token ↗","OpenRouter-fiók összekötve":"OpenRouter account connected","Bejelentkezés fiókkal":"Signed in with account","Ingyenes csapat (OpenRouter-fiókkal)":"Free team (OpenRouter account)","Ingyenes modellekkel dolgozik. Elég egyszer belépni: AI mag → OpenRouter → Bejelentkezés OpenRouter-fiókkal.":"Uses free models. Just sign in once: AI Core → OpenRouter → Sign in with OpenRouter account.","Ingyenes kerettel, fiókkal":"Free credits, with an account","Lépj be az enter.pollinations.ai oldalon (pl. GitHub-fiókkal), és ott kapsz ingyenes kulcsot.":"Sign in at enter.pollinations.ai (e.g. with GitHub) to get a free key.","Ingyenes kulcs ↗":"Free key ↗","Hugging Face fiók → Settings → Access Tokens → új token („Make calls to Inference Providers” joggal).":"Hugging Face account → Settings → Access Tokens → new token (with “Make calls to Inference Providers”).","A console.mistral.ai oldalon az ingyenes „Experiment” csomaggal kapsz kulcsot.":"Get a key with the free “Experiment” plan at console.mistral.ai.","A „:free” végű modellek ingyenesek (napi korláttal). A „Kulcs ellenőrzése” betölti az összes elérhető modellt.":"Models ending in “:free” are free (with daily limits). “Check key” loads every available model.","hibás hozzáférési kód (másold be a Cloudflare-be)":"wrong access code (paste it into Cloudflare)","nincs tároló kötve a hídhoz":"no storage bound to the bridge","túl sok adat":"too much data","nem érhető el":"unreachable","a felhőben lévő adat más jelszóval készült":"cloud data was made with a different password","[ide írd a szöveget]":"[write your text here]"
+  "Működik":"Working","Fókusz":"Focus","Fókusz ma":"Focus today","Szünet":"Pause","Folytatás":"Resume","+5 perc":"+5 min","Háttérzaj":"Ambient noise","Háttérzaj: be":"Ambient noise: on","Befejezés":"Finish","Időzített, zavartalan munka. A végén Jarvis szól, és jár egy rövid szünet.":"Timed, undisturbed work. Jarvis tells you when it is over, then you get a short break.","Időtartam":"Duration","25 perc":"25 min","50 perc":"50 min","90 perc":"90 min","Egyéni perc":"Custom minutes","Min dolgozol?":"What are you working on?","Szabad fókusz (nincs konkrét feladat)":"Free focus (no specific task)","✎ Más feladat…":"✎ Other task…","Min dolgozol most?":"What are you working on now?","Ne zavarj: értesítések némítása":"Do not disturb: mute notifications","Háttérzaj (barna zaj) a koncentrációhoz":"Ambient (brown) noise for concentration","Jarvis bemondja a kezdést és a végét":"Jarvis announces the start and the end","Fókusz indítása":"Start focus","Fókusz mód":"Focus mode","Fókusz · szüneteltetve":"Focus · paused","Szabad fókusz":"Free focus","Állj fel, nyújtózz, igyál egy pohár vizet.":"Stand up, stretch, have a glass of water.","Kész a feladat?":"Is the task done?","Igen, kész":"Yes, done","Még nem":"Not yet","Szép munka.":"Nice work.","Fókusz indult":"Focus started","Fókusz befejezve":"Focus finished","Fókusz idő vége":"Focus time is up","Ne zavarj":"Do not disturb","Jarvis személyisége":"Jarvis's personality","Így beszél Jarvis a végső válaszokban és hangos beszélgetésben.":"This is how Jarvis speaks in final answers and voice chat.","Alapértelmezett":"Default","Gyors hangos válasz: beszélgetéskor csak Jarvis felel (a csapat helyett), és emlékszik az előző mondatokra":"Fast voice replies: in voice chat only Jarvis answers (instead of the team) and remembers the previous lines","Ez a böngésző nem támogatja a hangbevitelt":"This browser does not support voice input","Feldolgozás…":"Processing…","Figyelek… ha abbahagyod, Jarvis válaszol":"Listening… when you stop, Jarvis answers","Koppints, és beszélj Jarvishoz":"Tap and talk to Jarvis","Nem hallottam semmit.":"I didn't hear anything.","A böngésző beszédfelismerője nem működik, átváltok felvételes módra.":"The browser's speech recognition isn't working, switching to recording mode.","Ebben a böngészőben a beszédhez egy ingyenes Groq-kulcs kell (AI mag → Groq).":"In this browser, voice needs a free Groq key (AI Core → Groq).","Nagyon olcsó, erős modellek":"Very cheap, strong models","A platform.deepseek.com oldalon kapsz kulcsot. Kis feltöltés kell hozzá, de nagyon olcsó (a deepseek-reasoner gondolkodó modell).":"Get a key at platform.deepseek.com. It needs a small top-up but is very cheap (deepseek-reasoner is the reasoning model).","Automatikus váltás: ha egy AI kifogy vagy hibázik, egy másik működő veszi át":"Automatic failover: if an AI runs out or fails, another working one takes over","Nincs működő AI-szolgáltató beállítva.":"No working AI provider is configured.","Automatikus váltás":"Automatic failover","nincs beállítva":"not configured","Kulcs nem kell":"No key needed","Nem kell kulcs vagy fiók, azonnal használható. Ingyenes, ezért lassabb lehet, és naponta korlátozott.":"No key or account needed, works right away. It is free, so it can be slower and has daily limits.","Bejelentkezés OpenRouter-fiókkal":"Sign in with OpenRouter account","vagy illeszd be lent a kulcsot":"or paste a key below","Alapértelmezett modell":"Default model","✎ Egyéni modell…":"✎ Custom model…","Írd be a modell azonosítóját":"Enter the model ID","Hozzáférési token":"Access token","Ingyenes, kulcs és fiók nélkül":"Free, no key or account","Ingyenes havi keret, tokennel":"Free monthly credits, with a token","Ingyenes kísérleti csomag":"Free experiment plan","Ingyenes, villámgyors":"Free, lightning fast","Ingyenes modellek is, fiókkal vagy kulccsal":"Free models too, via account or key","Weboldal ↗":"Website ↗","Token létrehozása ↗":"Create token ↗","OpenRouter-fiók összekötve":"OpenRouter account connected","Bejelentkezés fiókkal":"Signed in with account","Ingyenes csapat (OpenRouter-fiókkal)":"Free team (OpenRouter account)","Ingyenes modellekkel dolgozik. Elég egyszer belépni: AI mag → OpenRouter → Bejelentkezés OpenRouter-fiókkal.":"Uses free models. Just sign in once: AI Core → OpenRouter → Sign in with OpenRouter account.","Ingyenes kerettel, fiókkal":"Free credits, with an account","Lépj be az enter.pollinations.ai oldalon (pl. GitHub-fiókkal), és ott kapsz ingyenes kulcsot.":"Sign in at enter.pollinations.ai (e.g. with GitHub) to get a free key.","Ingyenes kulcs ↗":"Free key ↗","Hugging Face fiók → Settings → Access Tokens → új token („Make calls to Inference Providers” joggal).":"Hugging Face account → Settings → Access Tokens → new token (with “Make calls to Inference Providers”).","A console.mistral.ai oldalon az ingyenes „Experiment” csomaggal kapsz kulcsot.":"Get a key with the free “Experiment” plan at console.mistral.ai.","A „:free” végű modellek ingyenesek (napi korláttal). A „Kulcs ellenőrzése” betölti az összes elérhető modellt.":"Models ending in “:free” are free (with daily limits). “Check key” loads every available model.","hibás hozzáférési kód (másold be a Cloudflare-be)":"wrong access code (paste it into Cloudflare)","nincs tároló kötve a hídhoz":"no storage bound to the bridge","túl sok adat":"too much data","nem érhető el":"unreachable","a felhőben lévő adat más jelszóval készült":"cloud data was made with a different password","[ide írd a szöveget]":"[write your text here]"
 };
 const WX_EN={"Derült":"Clear","Többnyire derült":"Mostly clear","Részben felhős":"Partly cloudy","Borult":"Overcast","Köd":"Fog","Zúzmarás köd":"Rime fog","Szitálás":"Drizzle","Erős szitálás":"Heavy drizzle","Ónos szitálás":"Freezing drizzle",
   "Gyenge eső":"Light rain","Eső":"Rain","Erős eső":"Heavy rain","Ónos eső":"Freezing rain","Gyenge havazás":"Light snow","Havazás":"Snow","Erős havazás":"Heavy snow","Hószemcse":"Snow grains","Zápor":"Showers","Heves zápor":"Heavy showers","Hózápor":"Snow showers","Zivatar":"Thunderstorm","Zivatar jégesővel":"Thunderstorm with hail"};
@@ -685,7 +699,7 @@ const EN_PATTERNS=[
   [/^Működik · (\d+) modell \(kattints a modell mezőre a listához\)$/,"Working · $1 models (click the model field for the list)"],
   [/^Felhő: szinkronizálva (.+)$/,"Cloud: synced $1"],[/^szinkronizálva (.+)$/,"synced $1"],[/^Felhő: (.+)$/,m=>"Cloud: "+trCore(m.slice(7))],
   [/^Lejárt: (.+)$/,"Overdue: $1"],[/^Határidő: (.+)$/,"Due: $1"],[/^Feladat: (.+)$/,"Task: $1"],[/^Megjegyzésed: (.+)$/,"Your note: $1"],[/^Feladat határidő · (.+)$/,"Task deadline · $1"],
-  [/^(\d+) ügynök$/,"$1 agents"],[/^Az átírás nem sikerült: (.+)$/,"Transcription failed: $1"],[/^(.+) nem elérhető → (.+)$/,"$1 unavailable → $2"],[/^(.+) nem elérhető, átváltok: (.+)$/,"$1 unavailable, switching to: $2"],[/^Alapértelmezett \((.+)\)$/,"Default ($1)"],[/^(.+): (\d+) modell betöltve a listába$/,"$1: $2 models loaded into the list"],[/^Az OpenRouter-bejelentkezés nem sikerült: (.+)$/,"OpenRouter sign-in failed: $1"],[/^(.+) \(alapértelmezett\)$/,"$1 (default)"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
+  [/^(\d+) ügynök$/,"$1 agents"],[/^Fókusz: (\d+) perc(.*)$/,"Focus: $1 min$2"],[/^Fókusz mód vége\. Ma összesen: (\d+) perc$/,"Focus mode ended. Today in total: $1 min"],[/^(Folyamatban|Szünet) · (.+)$/,(m,a,b)=>(a==="Szünet"?"Break · ":"In progress · ")+b],[/^(fókusz|szünet) · (.+)$/,(m,a,b)=>(a==="szünet"?"break · ":"focus · ")+b],[/^(.+) · Ne zavarj$/,"$1 · Do not disturb"],[/^Lejárt az idő, uram\. (\d+) perc fókusz megvan\. Tartson (\d+) perc szünetet\.$/,"Time is up, sir. $1 minutes of focus done. Take a $2 minute break."],[/^Vége a szünetnek, uram\. Ha készen áll, folytathatjuk\.$/,"Break is over, sir. Ready when you are."],[/^Az átírás nem sikerült: (.+)$/,"Transcription failed: $1"],[/^(.+) nem elérhető → (.+)$/,"$1 unavailable → $2"],[/^(.+) nem elérhető, átváltok: (.+)$/,"$1 unavailable, switching to: $2"],[/^Alapértelmezett \((.+)\)$/,"Default ($1)"],[/^(.+): (\d+) modell betöltve a listába$/,"$1: $2 models loaded into the list"],[/^Az OpenRouter-bejelentkezés nem sikerült: (.+)$/,"OpenRouter sign-in failed: $1"],[/^(.+) \(alapértelmezett\)$/,"$1 (default)"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
   [/^Nincs beállítva: (.+?)\. Add meg az AI mag oldalon\.$/,"Not configured: $1. Add it on the AI Core page."],[/^Nincs beállítva: (.+)$/,"Not configured: $1"],
   [/^(.+?): a kulcs érvénytelen vagy nincs jogosultsága\. Ellenőrizd az AI mag oldalon\. \((.*)\)$/,"$1: invalid key or no permission. Check it on the AI Core page. ($2)"],
   [/^(.+?): nincs ilyen modell\. Válassz másikat az AI mag oldalon\. \((.*)\)$/,"$1: no such model. Pick another on the AI Core page. ($2)"],
@@ -904,7 +918,7 @@ const hhmm = t => t ? new Date(t).toLocaleTimeString(LOC(),{hour:"2-digit",minut
 const dstr = d => d.toLocaleDateString("sv-SE");
 const todayStr = () => dstr(new Date());
 function relTime(ms){ const m=Math.round(Math.abs(ms)/60000); if (m<60) return `${m} perc`; return `${Math.floor(m/60)} ó ${m%60} p`; }
-function toast(msg){ const t=el("div",{class:"toast",role:"status"},msg); document.body.append(t); setTimeout(()=>t.remove(),2400); }
+function toast(msg,force){ if (window.__jfQuiet && !force) return; const t=el("div",{class:"toast",role:"status"},msg); document.body.append(t); setTimeout(()=>t.remove(),2400); }
 async function copyText(text){
   try{ await navigator.clipboard.writeText(text); toast("Kimásolva"); }
   catch(e){ const ta=el("textarea",{style:"position:fixed;opacity:0"}); ta.value=text; document.body.append(ta); ta.select(); try{document.execCommand("copy"); toast("Kimásolva");}catch(_){ toast("Nem sikerült másolni"); } ta.remove(); }
@@ -973,7 +987,7 @@ setInterval(()=>{ if(view==="command"){ renderTimeline(); renderFeed(); } render
 $("#opIcon").innerHTML=svg("user"); $("#sIco").innerHTML=svg("search");
 $("#focusBtn").innerHTML=svg("focus"); $("#setBtn").innerHTML=svg("gear");
 function applyFocus(){ document.body.classList.toggle("focus",!!settings.focus); $("#focusBtn").classList.toggle("on",!!settings.focus); $("#focusBtn2").innerHTML=svg("focus")+(settings.focus?"Fókusz mód: be":"Fókusz mód"); }
-function toggleFocus(){ settings.focus=!settings.focus; saveAll(); applyFocus(); toast(settings.focus?"Fókusz mód bekapcsolva":"Fókusz mód kikapcsolva"); }
+function toggleFocus(){ if (settings.focus || focusS) endFocus(true); else openFocusModal(); }
 $("#focusBtn").addEventListener("click",toggleFocus); $("#focusBtn2").addEventListener("click",toggleFocus);
 function renderOp(){ $("#opName").textContent=settings.opName||"Operátor"; $("#opTitle").textContent=settings.opTitle||""; }
 $("#opBtn").addEventListener("click",()=>openSettings()); $("#setBtn").addEventListener("click",()=>openSettings());
@@ -1217,12 +1231,13 @@ function renderOverview(){
     ["mic","Hang",SR?(recOn?"Figyel…":"Elérhető"):"Nem támogatott",SR?"var(--ok)":"var(--muted)","var(--ok)"],
     ["users","Ügynökök",`${team.length} tag · ${working} dolgozik`,working?"var(--cyan)":"var(--violet)","var(--violet)"],
     ["cpu","LLM-ek",`${conf.length} beállítva`,conf.length?"var(--warn)":"var(--muted)","var(--warn)"],
+    ["focus","Fókusz ma",focusS?(focusS.phase==="break"?"Szünet · ":"Folyamatban · ")+fmtMs(focusLeft()):`${focusMinutesToday()} perc`,focusS?"var(--cyan)":"var(--muted)","var(--cyan)"],
     ["db","Felhő mentés",syncStatusText().replace(/^Felhő( mentés)?: /,""),sync.state==="err"?"var(--warn)":accessKey()&&settings.syncOn!==false?"var(--ok)":"var(--muted)","var(--blue)"],
     ["shield","Rendszer",!navigator.onLine?"Nincs internet":need.length?"Hiányzó kulcs":"Optimális",need.length||!navigator.onLine?"var(--err)":"var(--ok)","var(--ok)"]];
   $("#overview").replaceChildren(...items.map(([i,t,s,sc,c])=>el("div",{class:"stat"},ico(i,c),el("div",{},el("b",{},t),el("small",{style:`--sc:${sc}`},s)))));
   $("#sysPill").className="pill"+(running?" busy":need.length||!navigator.onLine?" warn":"");
   $("#sysSt").textContent=incog?"INKOGNITÓ":running?"DOLGOZIK":!navigator.onLine?"OFFLINE":need.length?"KULCS HIÁNYZIK":"OPTIMÁLIS";
-  $("#orbSub").textContent=incog?"inkognitó mód":running?`v3.0 · ${running.round}. kör folyamatban`:"v3.0 · készenlétben";
+  $("#orbSub").textContent=focusS?(focusS.phase==="break"?"szünet · ":"fókusz · ")+fmtMs(focusLeft()):incog?"inkognitó mód":running?`v3.0 · ${running.round}. kör folyamatban`:"v3.0 · készenlétben";
 }
 function alerts(){
   const a=[], od=overdueTasks(), now=Date.now();
@@ -2033,11 +2048,96 @@ function setIncog(on,announce){
 $("#incogBtn").innerHTML='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><path d="M3 3l18 18"/></svg>';
 $("#incogBtn").addEventListener("click",()=>setIncog(!incog,true));
 
+// ================= fókusz mód =================
+// Időzített fókusz-munkamenet: választott feladat, „ne zavarj”, háttérzaj, Jarvis bemondja az elejét és a végét, utána szünet.
+let focusS=store.get("focusS",null), focusLog=store.get("focusLog",[]), noiseCtx=null;
+const fmtMs=ms=>{ const s=Math.max(0,Math.ceil(ms/1000)); return String(Math.floor(s/60)).padStart(2,"0")+":"+String(s%60).padStart(2,"0"); };
+const focusLeft=()=>focusS?(focusS.pausedAt?focusS.end-focusS.pausedAt:focusS.end-Date.now()):0;
+const focusMinutesToday=()=>focusLog.filter(x=>x.d===todayStr()).reduce((a,x)=>a+x.min,0);
+function saveFocus(){ store.set("focusS",focusS); store.set("focusLog",focusLog.slice(-200)); }
+function notifyUser(text){ try{ if (window.Notification && Notification.permission==="granted") new Notification("Jarvis",{body:text}); }catch(_){} }
+function startNoise(){ if (noiseCtx) return; try{ noiseCtx=new (window.AudioContext||window.webkitAudioContext)(); const len=2*noiseCtx.sampleRate, b=noiseCtx.createBuffer(1,len,noiseCtx.sampleRate), d=b.getChannelData(0); let last=0;
+  for (let i=0;i<len;i++){ const w=Math.random()*2-1; last=(last+0.02*w)/1.02; d[i]=last*3.5; }
+  const s=noiseCtx.createBufferSource(); s.buffer=b; s.loop=true; const g=noiseCtx.createGain(); g.gain.value=0.22; s.connect(g); g.connect(noiseCtx.destination); s.start(); }catch(_){ noiseCtx=null; } renderFocusHud(); }
+function stopNoise(){ try{ noiseCtx&&noiseCtx.close(); }catch(_){} noiseCtx=null; renderFocusHud(); }
+function openFocusModal(){
+  let dur=25; const open=tasks.filter(t=>!t.done);
+  const durBtns=[25,50,90].map(m=>el("button",{class:"btn small",type:"button","aria-pressed":String(m===dur),onclick:e=>{ dur=m; custom.value=""; durBtns.forEach(b=>b.setAttribute("aria-pressed",String(b===e.currentTarget))); }},`${m} perc`));
+  const custom=el("input",{type:"number",min:"5",max:"240",placeholder:"Egyéni perc",style:"max-width:140px","aria-label":"Egyéni időtartam percben"});
+  custom.addEventListener("input",()=>{ const v=+custom.value; if (v>=5){ dur=v; durBtns.forEach(b=>b.setAttribute("aria-pressed","false")); } });
+  const sel=el("select",{id:"fTask","aria-label":"Feladat"}); sel.append(el("option",{value:""},"Szabad fókusz (nincs konkrét feladat)")); open.forEach(t=>sel.append(el("option",{value:t.id},t.title))); sel.append(el("option",{value:"__new"},"✎ Más feladat…"));
+  const other=el("input",{placeholder:"Min dolgozol most?",hidden:true,"aria-label":"Feladat"}); sel.addEventListener("change",()=>{ other.hidden=sel.value!=="__new"; if(!other.hidden) other.focus(); });
+  const dnd=el("input",{type:"checkbox",checked:true}), noise=el("input",{type:"checkbox"}), voice=el("input",{type:"checkbox",checked:true});
+  openModal("Fókusz mód",el("form",{class:"stack",onsubmit:e=>{ e.preventDefault();
+      const t=open.find(x=>x.id===sel.value); startFocus({dur,task:t?t.title:(sel.value==="__new"?other.value.trim():""),taskId:t?t.id:null,dnd:dnd.checked,noise:noise.checked,voice:voice.checked}); }},
+    el("p",{class:"hint"},"Időzített, zavartalan munka. A végén Jarvis szól, és jár egy rövid szünet."),
+    el("label",{},"Időtartam"),el("div",{class:"fdur"},...durBtns,custom),
+    el("label",{for:"fTask"},"Min dolgozol?"),sel,other,
+    el("label",{class:"chk"},dnd,"Ne zavarj: értesítések némítása"),
+    el("label",{class:"chk"},noise,"Háttérzaj (barna zaj) a koncentrációhoz"),
+    el("label",{class:"chk"},voice,"Jarvis bemondja a kezdést és a végét"),
+    el("button",{class:"btn primary",type:"submit",html:svg("focus")+"Fókusz indítása"})));
+}
+function startFocus(o){
+  const now=Date.now();
+  focusS={phase:"work",start:now,end:now+o.dur*60000,dur:o.dur,brk:o.dur>=50?10:5,task:o.task||"",taskId:o.taskId,dnd:o.dnd,voice:o.voice,pausedAt:null};
+  saveFocus(); closeModal(); settings.focus=true; saveAll(); applyFocus(); window.__jfQuiet=!!o.dnd;
+  if (o.noise) startNoise();
+  try{ if (window.Notification && Notification.permission==="default") Notification.requestPermission(); }catch(_){}
+  log("info","Fókusz indult",(o.task?o.task+" · ":"")+o.dur+" perc");
+  toast(`Fókusz: ${o.dur} perc`+(o.task?` · ${o.task}`:""),true);
+  if (o.voice) speak(isEN()?`Focus mode engaged, sir. ${o.dur} minutes${o.task?" on "+o.task:""}. I shall hold all distractions.`:`Fókusz mód aktiválva, uram. ${o.dur} perc${o.task?", feladat: "+o.task:""}. A zavaró tényezőket távol tartom.`);
+  showView("command"); focusTick();
+}
+function endFocus(manual){
+  if (focusS && focusS.phase==="work"){ const min=Math.round(((focusS.pausedAt||Date.now())-focusS.start)/60000); if (min>0){ focusLog.push({d:todayStr(),min,task:focusS.task}); log("ok","Fókusz befejezve",`${min} perc`+(focusS.task?" · "+focusS.task:"")); } }
+  focusS=null; saveFocus(); stopNoise(); window.__jfQuiet=false; settings.focus=false; saveAll(); applyFocus(); document.title=incog?(isEN()?"Jarvis · Incognito":"Jarvis · Inkognitó"):"Jarvis";
+  if (manual) toast(`Fókusz mód vége. Ma összesen: ${focusMinutesToday()} perc`,true);
+  renderFocusHud(); if (view==="command") renderAll();
+}
+function workDone(){
+  const s=focusS; focusLog.push({d:todayStr(),min:s.dur,task:s.task}); log("ok","Fókusz idő vége",`${s.dur} perc`+(s.task?" · "+s.task:""));
+  stopNoise(); window.__jfQuiet=false;
+  focusS={...s,phase:"break",start:Date.now(),end:Date.now()+s.brk*60000,pausedAt:null}; saveFocus();
+  const msg=isEN()?`Time is up, sir. ${s.dur} minutes of focus. Take a ${s.brk} minute break.`:`Lejárt az idő, uram. ${s.dur} perc fókusz megvan. Tartson ${s.brk} perc szünetet.`;
+  toast(msg,true); notifyUser(msg); if (s.voice) speak(msg);
+  if (s.taskId){ const t=tasks.find(x=>x.id===s.taskId); if (t && !t.done) openModal("Kész a feladat?",el("div",{class:"stack"},el("p",{},t.title),el("div",{class:"row"},
+    el("button",{class:"btn primary",type:"button",onclick:()=>{ t.done=true; saveAll(); renderNav(); closeModal(); log("ok","Feladat kész",t.title); toast("Szép munka.",true); }},"Igen, kész"),
+    el("button",{class:"btn",type:"button",onclick:closeModal},"Még nem")))); }
+}
+function breakDone(){ const v=focusS.voice; const msg=isEN()?"Break is over, sir. Ready when you are.":"Vége a szünetnek, uram. Ha készen áll, folytathatjuk."; focusS=null; saveFocus(); settings.focus=false; saveAll(); applyFocus(); document.title=incog?(isEN()?"Jarvis · Incognito":"Jarvis · Inkognitó"):"Jarvis"; toast(msg,true); notifyUser(msg); if (v) speak(msg); renderFocusHud(); if (view==="command") renderAll(); }
+function renderFocusHud(){
+  const hud=$("#focusHud"); if (!hud) return;
+  if (!focusS){ hud.hidden=true; return; }
+  hud.hidden=false; hud.classList.toggle("brk",focusS.phase==="break");
+  const left=focusLeft(), total=focusS.end-focusS.start;
+  $("#fhTime").textContent=fmtMs(left);
+  $("#fhTitle").textContent=focusS.phase==="break"?"Szünet":(focusS.pausedAt?"Fókusz · szüneteltetve":"Fókusz");
+  $("#fhTask").textContent=focusS.phase==="break"?"Állj fel, nyújtózz, igyál egy pohár vizet.":(focusS.task||"Szabad fókusz")+(focusS.dnd?" · Ne zavarj":"");
+  $("#fhBar").style.width=Math.min(100,Math.max(0,(1-left/total)*100))+"%";
+  $("#fhPause").textContent=focusS.pausedAt?"Folytatás":"Szünet"; $("#fhPause").hidden=focusS.phase==="break";
+  $("#fhPlus").hidden=focusS.phase==="break"; $("#fhNoise").textContent=noiseCtx?"Háttérzaj: be":"Háttérzaj"; $("#fhNoise").classList.toggle("on",!!noiseCtx);
+}
+function focusTick(){
+  if (!focusS){ renderFocusHud(); return; }
+  if (!focusS.pausedAt && Date.now()>=focusS.end){ if (focusS.phase==="work") workDone(); else breakDone(); }
+  renderFocusHud();
+  if (focusS) document.title=`${fmtMs(focusLeft())} · ${focusS.phase==="break"?(isEN()?"Break":"Szünet"):(isEN()?"Focus":"Fókusz")} · Jarvis`;
+  if (focusS && view==="command"){ const o=$("#orbSub"); if (o) o.textContent=(focusS.phase==="break"?"szünet · ":"fókusz · ")+fmtMs(focusLeft()); }
+}
+setInterval(focusTick,1000);
+$("#fhPause").addEventListener("click",()=>{ if(!focusS) return; if (focusS.pausedAt){ focusS.end+=Date.now()-focusS.pausedAt; focusS.pausedAt=null; } else focusS.pausedAt=Date.now(); saveFocus(); renderFocusHud(); });
+$("#fhPlus").addEventListener("click",()=>{ if(!focusS) return; focusS.end+=5*60000; saveFocus(); renderFocusHud(); toast("+5 perc",true); });
+$("#fhNoise").addEventListener("click",()=>{ noiseCtx?stopNoise():startNoise(); });
+$("#fhEnd").addEventListener("click",()=>endFocus(true));
+
 // ================= indulás =================
 taskEl.value=task;
 history=history.filter(h=>!h.pending);
 renderOp(); applyFocus(); setMicUI(); renderNet(); loadWeather(); showView("command"); autoGrow();
 finishOpenRouterLogin();
+// fókusz folytatása újratöltés után (régi „fókusz be” állapot időzítő nélkül → kikapcsol)
+if (focusS){ settings.focus=true; window.__jfQuiet=focusS.phase==="work"&&!!focusS.dnd; applyFocus(); focusTick(); } else if (settings.focus){ settings.focus=false; applyFocus(); }
 try{ if (sessionStorage.getItem("jarvis:incog")==="1"){ sessionStorage.removeItem("jarvis:incog"); setIncog(true,false); } }catch(_){}
 if (authToken()===getCred().hash && accessKey() && sget("jarvis:sk")) unlock();
 else if (authToken()===getCred().hash){
