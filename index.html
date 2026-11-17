@@ -354,6 +354,7 @@ body:not(.locked) .login{display:none}
       <div class="lbl" id="micLbl">Koppints a beszédhez</div>
       <button class="btn small" id="focusBtn2" style="align-self:stretch"></button>
     </div>
+    <div class="hint" id="syncSide" style="font:600 12px var(--f-label);text-align:center"></div>
     <button class="btn small danger" id="logoutBtn">Kijelentkezés</button>
   </aside>
 
@@ -661,7 +662,7 @@ let myWf = store.get("workflows",[]);
 let convs = store.get("convs",[]);
 let convId = store.get("convId",null);
 let stats = {apiCalls:0, ...store.get("stats",{})};
-let settings = {opName:"Operátor",opTitle:"Parancsnok",lang:"hu-HU",tts:false,voice:"",useMem:true,useKb:true,focus:false,place:"",lat:null,lon:null, ...store.get("settings",{})};
+let settings = {opName:"Operátor",opTitle:"Parancsnok",lang:"hu-HU",tts:false,voice:"",ttsEngine:"fish",syncOn:true,useMem:true,useKb:true,focus:false,place:"",lat:null,lon:null, ...store.get("settings",{})};
 let running = null;
 
 function upsertConv(){
@@ -673,7 +674,8 @@ function upsertConv(){
   if (c) Object.assign(c,data); else convs.unshift({...data, created:Date.now()});
   convs = convs.slice(0,60);
 }
-function saveAll(){
+function saveAll(){ saveLocal(); if (typeof markDirty==="function") markDirty(); }
+function saveLocal(){
   upsertConv();
   const S={keys,keyOk,models,team,history,task,feed:feed.slice(0,40),tasks,events,memories,kb,skills:mySkills,workflows:myWf,convs,convId,stats,settings};
   for (const [k,v] of Object.entries(S)) store.set(k,v);
@@ -919,6 +921,7 @@ function renderOverview(){
     ["mic","Hang",SR?(recOn?"Figyel…":"Elérhető"):"Nem támogatott",SR?"var(--ok)":"var(--muted)","var(--ok)"],
     ["users","Ügynökök",`${team.length} tag · ${working} dolgozik`,working?"var(--cyan)":"var(--violet)","var(--violet)"],
     ["cpu","LLM-ek",`${conf.length} beállítva`,conf.length?"var(--warn)":"var(--muted)","var(--warn)"],
+    ["db","Felhő mentés",syncStatusText().replace(/^Felhő( mentés)?: /,""),sync.state==="err"?"var(--warn)":accessKey()&&settings.syncOn!==false?"var(--ok)":"var(--muted)","var(--blue)"],
     ["shield","Rendszer",!navigator.onLine?"Nincs internet":need.length?"Hiányzó kulcs":"Optimális",need.length||!navigator.onLine?"var(--err)":"var(--ok)","var(--ok)"]];
   $("#overview").replaceChildren(...items.map(([i,t,s,sc,c])=>el("div",{class:"stat"},ico(i,c),el("div",{},el("b",{},t),el("small",{style:`--sc:${sc}`},s)))));
   $("#sysPill").className="pill"+(running?" busy":need.length||!navigator.onLine?" warn":"");
@@ -1307,8 +1310,8 @@ async function premiumTTS(eng,text){
     return await r.blob();
   }
   if (eng==="fish"){
-    const url=(settings.fishProxy||"").trim(); if(!url) throw new Error("nincs megadva a Fish Audio híd címe a Beállításokban");
-    const r=await fetch(url,{method:"POST",headers:{"content-type":"application/json","x-jarvis-key":settings.fishAccess||""},body:JSON.stringify({text,reference_id:(settings.fishVoice||FISH_DEFAULT_VOICE).trim()})});
+    const ak=accessKey(); if(!ak) throw new Error("jelentkezz ki és be újra a hang használatához");
+    const r=await fetch(bridgeUrl()+"/tts",{method:"POST",headers:{"content-type":"application/json","x-jarvis-key":ak},body:JSON.stringify({text,reference_id:(settings.fishVoice||FISH_DEFAULT_VOICE).trim()})});
     if(!r.ok){ const d=await r.json().catch(()=>({})); throw new Error(d?.message||("HTTP "+r.status)); }
     return await r.blob();
   }
@@ -1398,18 +1401,27 @@ function openSettings(){
   const reset=el("button",{class:"btn danger",type:"button"},"Minden adat törlése ezen az eszközön");
   armButton(reset,"Minden adat törlése ezen az eszközön",()=>{ try{ Object.keys(localStorage).filter(k=>k.startsWith("aimuhely:")).forEach(k=>localStorage.removeItem(k)); }catch(_){} location.reload(); });
   const eng=el("select",{id:"stEng"}); for (const [v,l] of [["fish","Jarvis hang (Fish Audio)"],["openai","OpenAI prémium hang"],["browser","Böngésző beépített hangja (ingyenes)"]]) eng.append(el("option",{value:v,selected:(settings.ttsEngine||"browser")===v},l));
-  const fProxy=el("input",{id:"stFishProxy",type:"url",placeholder:"https://jarvis-hang.valami.workers.dev",value:settings.fishProxy||""});
-  const fAccess=el("input",{id:"stFishAccess",type:"password",autocomplete:"off",placeholder:"A hídnál beállított hozzáférési kulcs",value:settings.fishAccess||""});
+  const fProxy=el("input",{id:"stFishProxy",type:"url",placeholder:DEFAULT_BRIDGE,value:settings.fishProxy||""});
+  const syncOn=el("input",{type:"checkbox",id:"stSync",checked:settings.syncOn!==false});
+  const ak=accessKey();
+  const bridgeBox=el("div",{class:"stack",style:"border-top:1px solid var(--line);padding-top:12px"},
+    el("label",{},"Felhő mentés és hang híd"),
+    el("label",{class:"chk"},syncOn,"Mentés a felhőbe, hogy minden eszközön ugyanaz legyen"),
+    el("div",{class:"row"},el("span",{class:"status",id:"stSyncSt"},syncStatusText()),el("span",{class:"grow"}),el("button",{class:"btn small",type:"button",onclick:async()=>{ await syncPull(true); $("#stSyncSt")&&($("#stSyncSt").textContent=syncStatusText()); }},"Szinkronizálás most")),
+    el("label",{for:"stFishProxy"},"Híd címe"),fProxy,
+    ak?el("div",{class:"stack"},el("p",{class:"hint"},"Hozzáférési kód a Cloudflare-hez: ezt másold be az ACCESS_KEY titokhoz. A jelszavadból készül, ne oszd meg senkivel."),
+      el("button",{class:"btn small",type:"button",onclick:()=>copyText(ak),html:svg("copy")+"Hozzáférési kód másolása"}))
+      :el("p",{class:"hint",style:"color:var(--warn)"},"Jelentkezz ki, majd be újra, hogy a felhő mentés és a Jarvis hang működjön."));
   const fVoice=el("input",{id:"stFishVoice",placeholder:FISH_DEFAULT_VOICE,value:settings.fishVoice||""});
   const oaV=el("select",{id:"stOaVoice"}); for (const v of ["onyx","echo","fable","ash","sage","alloy","nova","shimmer","coral","ballad","verse"]) oaV.append(el("option",{value:v,selected:(settings.oaVoice||"onyx")===v},v));
   const fishBox=el("div",{class:"stack"},
-    el("p",{class:"hint"},"A Fish Audio nem engedi, hogy a böngésző közvetlenül hívja, ezért egy kis „híd” kell hozzá (ingyenes Cloudflare Worker). A Fish Audio kulcsod a hídban marad, nem itt."),
-    el("label",{for:"stFishProxy"},"Híd címe"),fProxy,el("label",{for:"stFishAccess"},"Hozzáférési kulcs"),fAccess,el("label",{for:"stFishVoice"},"Hangmodell azonosító"),fVoice);
+    el("p",{class:"hint"},"A Fish Audio a lenti Cloudflare hídon keresztül szól. A Fish Audio kulcsod a hídban marad, nem itt."),
+    el("label",{for:"stFishVoice"},"Hangmodell azonosító"),fVoice);
   const oaBox=el("div",{class:"stack"},el("p",{class:"hint"},"A ChatGPT-kulcsodat használja. Mély, nyugodt hanghoz az „onyx” vagy „echo” ajánlott."),el("label",{for:"stOaVoice"},"OpenAI hang"),oaV);
   const brBox=el("div",{class:"stack"},TTS?el("label",{for:"stVoice"},"Böngészőhang"):el("p",{class:"hint"},"Ez a böngésző nem tud felolvasni."),TTS?voice:null);
   const syncEng=()=>{ fishBox.hidden=eng.value!=="fish"; oaBox.hidden=eng.value!=="openai"; brBox.hidden=eng.value!=="browser"; };
   eng.addEventListener("change",syncEng); syncEng();
-  const collect=()=>({lang:lang.value,tts:tts.checked,voice:voice.value,ttsEngine:eng.value,fishProxy:fProxy.value.trim(),fishAccess:fAccess.value.trim(),fishVoice:fVoice.value.trim(),oaVoice:oaV.value});
+  const collect=()=>({lang:lang.value,tts:tts.checked,voice:voice.value,ttsEngine:eng.value,fishProxy:fProxy.value.trim(),syncOn:syncOn.checked,fishVoice:fVoice.value.trim(),oaVoice:oaV.value});
   openModal("Beállítások",el("form",{class:"stack",onsubmit:e=>{ e.preventDefault();
       Object.assign(settings,{opName:n.value.trim()||"Operátor",opTitle:t.value.trim()},collect()); saveAll(); renderOp(); closeModal(); toast("Beállítások mentve"); }},
     el("label",{for:"stName"},"Neved"),n,el("label",{for:"stTitle"},"Titulus"),t,
@@ -1417,6 +1429,7 @@ function openSettings(){
     el("label",{class:"chk"},tts,"Jarvis hangosan felolvassa a végeredményt"),
     el("label",{for:"stEng"},"Jarvis hangja"),eng,fishBox,oaBox,brBox,
     el("button",{class:"btn small",type:"button",onclick:()=>{ const o={...settings}; Object.assign(settings,collect()); speak(`Üdvözlöm, ${n.value||"uram"}. Jarvis szolgálatra kész. Minden rendszer működik.`); settings=o; },html:svg("speaker")+"Hang kipróbálása"}),
+    bridgeBox,
     el("button",{class:"btn",type:"button",onclick:()=>{ closeModal(); locate(); },html:svg("pin")+"Hely és időjárás beállítása"}),
     el("button",{class:"btn primary",type:"submit"},"Mentés"),
     el("div",{class:"row",style:"border-top:1px solid var(--line);padding-top:12px"},
@@ -1457,8 +1470,13 @@ async function pbkdf2(pass,salt,iter){
   return [...new Uint8Array(bits)].map(b=>b.toString(16).padStart(2,"0")).join("");
 }
 function authToken(){ try{ return sessionStorage.getItem("jarvis:auth")||localStorage.getItem("jarvis:auth"); }catch(e){ return null; } }
-function unlock(){ document.body.classList.remove("locked"); showView("command"); renderAll(); }
-function lock(){ try{ sessionStorage.removeItem("jarvis:auth"); localStorage.removeItem("jarvis:auth"); }catch(e){} closeModal(); document.body.classList.add("locked"); $("#lPass").value=""; $("#lErr").textContent=""; $("#lUser").focus(); }
+function sget(k){ try{ return sessionStorage.getItem(k)||localStorage.getItem(k); }catch(e){ return null; } }
+async function deriveSessionKeys(pass,store){
+  const ak=await pbkdf2(pass,"jarvis-access-v1",250000), sk=await pbkdf2(pass,"jarvis-sync-v1",250000);
+  try{ store.setItem("jarvis:ak",ak); store.setItem("jarvis:sk",sk); }catch(_){}
+}
+function unlock(){ document.body.classList.remove("locked"); showView("command"); renderAll(); syncPull(false); }
+function lock(){ try{ for (const k of ["jarvis:auth","jarvis:ak","jarvis:sk"]){ sessionStorage.removeItem(k); localStorage.removeItem(k); } }catch(e){} closeModal(); renderSyncSt(); document.body.classList.add("locked"); $("#lPass").value=""; $("#lErr").textContent=""; $("#lUser").focus(); }
 $("#loginForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const err=$("#lErr"), btn=$("#lBtn"), until=+(sessionStorage.getItem("jarvis:wait")||0);
@@ -1475,7 +1493,11 @@ $("#loginForm").addEventListener("submit",async e=>{
     $("#lPass").select(); return;
   }
   sessionStorage.setItem("jarvis:fails",0);
-  try{ ($("#lRemember").checked?localStorage:sessionStorage).setItem("jarvis:auth",c.hash); }catch(_){}
+  const st=$("#lRemember").checked?localStorage:sessionStorage;
+  try{ st.setItem("jarvis:auth",c.hash); }catch(_){}
+  btn.disabled=true; btn.textContent="Rendszerek indítása…";
+  try{ await deriveSessionKeys($("#lPass").value,st); }catch(_){}
+  btn.disabled=false; btn.textContent="Belépés";
   $("#lPass").value=""; unlock(); log("info","Sikeres bejelentkezés",c.user==="admin"?"Admin":c.user);
 });
 $("#logoutBtn").addEventListener("click",lock);
@@ -1487,13 +1509,95 @@ function openPassChange(){
       if (nw.value!==nw2.value){ st.className="status bad"; st.textContent="A két új jelszó nem egyezik."; return; }
       const salt=[...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,"0")).join("");
       const nc={user:c.user,salt,iter:250000,hash:await pbkdf2(nw.value,salt,250000)};
-      try{ localStorage.setItem("jarvis:cred",JSON.stringify(nc)); if(localStorage.getItem("jarvis:auth")) localStorage.setItem("jarvis:auth",nc.hash); sessionStorage.setItem("jarvis:auth",nc.hash); }catch(_){}
-      closeModal(); toast("Jelszó módosítva ezen az eszközön"); }},
-    el("p",{class:"hint"},"Az új jelszó csak ezen az eszközön és böngészőben érvényes. A többi eszközön a régi marad, amíg ott is meg nem változtatod."),
+      const remembered=!!localStorage.getItem("jarvis:auth");
+      try{ localStorage.setItem("jarvis:cred",JSON.stringify(nc)); if(remembered) localStorage.setItem("jarvis:auth",nc.hash); sessionStorage.setItem("jarvis:auth",nc.hash); }catch(_){}
+      await deriveSessionKeys(nw.value,remembered?localStorage:sessionStorage);
+      closeModal(); toast("Jelszó módosítva. Másold be az új hozzáférési kódot a Cloudflare-be (Beállítások).");
+      syncPush(true); }},
+    el("p",{class:"hint"},"Az új jelszó csak ezen az eszközön érvényes, a többi eszközön is változtasd meg ugyanerre. Felhő mentésnél utána az új hozzáférési kódot (Beállítások) be kell másolni a Cloudflare ACCESS_KEY titokhoz."),
     el("label",{for:"pwCur"},"Jelenlegi jelszó"),cur,el("label",{for:"pwNew"},"Új jelszó"),nw,el("label",{for:"pwNew2"},"Új jelszó még egyszer"),nw2,st,
     el("button",{class:"btn primary",type:"submit"},"Mentés")));
   cur.focus();
 }
+
+// ================= felhő mentés (titkosítva) =================
+// Az adatokat a böngésző a jelszóból származó kulccsal (AES-GCM) titkosítja, a híd csak olvashatatlan adatot tárol.
+const DEFAULT_BRIDGE="https://snowy-cloud-8f1f.joosantika9.workers.dev";
+function bridgeUrl(){ return (settings.fishProxy||DEFAULT_BRIDGE).trim().replace(/\/+$/,""); }
+function accessKey(){ return sget("jarvis:ak")||""; }
+let sync={state:"idle",msg:"",at:+(localStorage.getItem("jarvis:lastSync")||0),busy:false,timer:null};
+const syncReady=()=>settings.syncOn!==false && !!accessKey() && !!sget("jarvis:sk") && !document.body.classList.contains("locked");
+function setSync(state,msg){ sync.state=state; sync.msg=msg||""; renderSyncSt(); }
+function syncStatusText(){
+  if (settings.syncOn===false) return "Felhő mentés: kikapcsolva";
+  if (!accessKey()) return "Felhő mentés: jelentkezz be újra";
+  if (sync.state==="busy") return "Felhő: mentés…";
+  if (sync.state==="err") return "Felhő: "+sync.msg;
+  return sync.at ? "Felhő: szinkronizálva "+hhmm(sync.at) : "Felhő: még nincs mentés";
+}
+function renderSyncSt(){ const s=$("#syncSide"); if(s){ s.textContent=syncStatusText(); s.style.color=sync.state==="err"?"var(--warn)":""; } const m=$("#stSyncSt"); if(m) m.textContent=syncStatusText(); }
+const SYNC_FIELDS=["keys","keyOk","models","team","history","task","feed","tasks","events","memories","kb","skills","workflows","convs","convId","stats","settings"];
+function snapshot(){ return {keys,keyOk,models,team,history:history.filter(h=>!h.pending),task,feed:feed.slice(0,40),tasks,events,memories,kb,skills:mySkills,workflows:myWf,convs,convId,stats,settings}; }
+function applySnapshot(d){
+  if (!d||typeof d!=="object") return;
+  if (d.keys) keys={...keys,...d.keys}; if (d.keyOk) keyOk=d.keyOk; if (d.models) models={...models,...d.models};
+  if (Array.isArray(d.team)) team=d.team; if (Array.isArray(d.history)) history=d.history; if (typeof d.task==="string") task=d.task;
+  if (Array.isArray(d.feed)) feed=d.feed; if (Array.isArray(d.tasks)) tasks=d.tasks; if (Array.isArray(d.events)) events=d.events;
+  if (Array.isArray(d.memories)) memories=d.memories; if (Array.isArray(d.kb)) kb=d.kb; if (Array.isArray(d.skills)) mySkills=d.skills;
+  if (Array.isArray(d.workflows)) myWf=d.workflows; if (Array.isArray(d.convs)) convs=d.convs; if ("convId" in d) convId=d.convId;
+  if (d.stats) stats={...stats,...d.stats}; if (d.settings) settings={...settings,...d.settings,focus:settings.focus};
+  saveLocal(); taskEl.value=task; autoGrow(); renderOp(); applyFocus(); loadWeather();
+  if (view==="command") renderAll(); else RENDER_VIEW[view]?.(); renderNav();
+}
+const hex2u8=h=>new Uint8Array(h.match(/../g).map(x=>parseInt(x,16)));
+function u8b64(u8){ let s=""; for(let i=0;i<u8.length;i+=0x8000) s+=String.fromCharCode.apply(null,u8.subarray(i,i+0x8000)); return btoa(s); }
+const b64u8=b=>Uint8Array.from(atob(b),c=>c.charCodeAt(0));
+async function aesKey(){ return crypto.subtle.importKey("raw",hex2u8(sget("jarvis:sk")),"AES-GCM",false,["encrypt","decrypt"]); }
+async function encryptObj(o){ const iv=crypto.getRandomValues(new Uint8Array(12)); const ct=await crypto.subtle.encrypt({name:"AES-GCM",iv},await aesKey(),new TextEncoder().encode(JSON.stringify(o))); return {iv:u8b64(iv),data:u8b64(new Uint8Array(ct))}; }
+async function decryptObj(iv,data){ const pt=await crypto.subtle.decrypt({name:"AES-GCM",iv:b64u8(iv)},await aesKey(),b64u8(data)); return JSON.parse(new TextDecoder().decode(pt)); }
+function syncErr(status,fallback){
+  if (status===401) return "hibás hozzáférési kód (másold be a Cloudflare-be)";
+  if (status===501) return "nincs tároló kötve a hídhoz";
+  if (status===413) return "túl sok adat";
+  return fallback||("hiba ("+status+")");
+}
+function markDirty(){
+  if (!syncReady()) return;
+  try{ localStorage.setItem("jarvis:dirtyAt",Date.now()); }catch(_){}
+  clearTimeout(sync.timer); sync.timer=setTimeout(()=>syncPush(false),2500);
+}
+async function syncPush(force){
+  if (!syncReady()||sync.busy) return; if (running && !force) { clearTimeout(sync.timer); sync.timer=setTimeout(()=>syncPush(false),5000); return; }
+  sync.busy=true; setSync("busy");
+  try{
+    const updated=Date.now(), enc=await encryptObj(snapshot());
+    const r=await fetch(bridgeUrl()+"/sync",{method:"PUT",headers:{"content-type":"application/json","x-jarvis-key":accessKey()},body:JSON.stringify({...enc,updated,force:!!force,device:navigator.userAgent.includes("Mobile")?"telefon":"gép"})});
+    if (r.status===409){ sync.busy=false; return syncPull(true); }
+    if (!r.ok){ const d=await r.json().catch(()=>({})); setSync("err",syncErr(r.status,d.message)); return; }
+    sync.at=updated; try{ localStorage.setItem("jarvis:lastSync",updated); localStorage.removeItem("jarvis:dirtyAt"); }catch(_){}
+    setSync("ok");
+  }catch(e){ setSync("err","nem érhető el"); }
+  finally{ sync.busy=false; }
+}
+async function syncPull(manual){
+  if (!syncReady()||sync.busy||running) { if(manual) renderSyncSt(); return; }
+  sync.busy=true; setSync("busy");
+  try{
+    const r=await fetch(bridgeUrl()+"/sync",{headers:{"x-jarvis-key":accessKey()}});
+    const d=await r.json().catch(()=>({}));
+    if (!r.ok){ setSync("err",syncErr(r.status,d.message)); return; }
+    const dirtyAt=+(localStorage.getItem("jarvis:dirtyAt")||0);
+    if (d.data && d.updated>sync.at && !(dirtyAt>d.updated)){
+      let obj; try{ obj=await decryptObj(d.iv,d.data); }catch(_){ setSync("err","a felhőben lévő adat más jelszóval készült"); return; }
+      applySnapshot(obj); sync.at=d.updated; try{ localStorage.setItem("jarvis:lastSync",d.updated); localStorage.removeItem("jarvis:dirtyAt"); }catch(_){}
+      setSync("ok"); if (manual!==false) toast("Adatok betöltve a felhőből"); log("info","Felhő szinkron","Adatok betöltve ("+(d.device||"másik eszköz")+")");
+    } else if (!d.data || dirtyAt || d.updated<sync.at || manual) { sync.busy=false; return syncPush(true); }
+    else setSync("ok");
+  }catch(e){ setSync("err","nem érhető el"); }
+  finally{ sync.busy=false; }
+}
+setInterval(()=>{ if(!document.hidden) syncPull(false); },60000);
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) syncPull(false); });
 
 // ================= indulás =================
 taskEl.value=task;
