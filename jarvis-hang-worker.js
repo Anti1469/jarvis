@@ -29,9 +29,21 @@ export default {
     const err = (status, message) => json(status, { message });
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: cors });
-    if (!env.ACCESS_KEY || request.headers.get("x-jarvis-key") !== env.ACCESS_KEY) return err(401, "Hibás hozzáférési kód.");
+
+    // Próbálkozás-korlát: IP-nként 15 percen belül legfeljebb 10 hibás kód, utána tiltás.
+    const ip = request.headers.get("CF-Connecting-IP") || "ismeretlen";
+    const failKey = "fail:" + ip;
+    const fails = env.JARVIS_KV ? Number(await env.JARVIS_KV.get(failKey)) || 0 : 0;
+    if (fails >= 10) return err(429, "Túl sok sikertelen próbálkozás. Próbáld újra 15 perc múlva.");
+    if (!env.ACCESS_KEY || request.headers.get("x-jarvis-key") !== env.ACCESS_KEY) {
+      if (env.JARVIS_KV) await env.JARVIS_KV.put(failKey, String(fails + 1), { expirationTtl: 900 });
+      return err(401, "Hibás hozzáférési kód.");
+    }
 
     const path = new URL(request.url).pathname.replace(/\/+$/, "") || "/";
+
+    // ---------- bejelentkezés ellenőrzése ----------
+    if (path === "/auth") return json(200, { ok: true });
 
     // ---------- felhő mentés ----------
     if (path === "/sync") {

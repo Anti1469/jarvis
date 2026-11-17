@@ -368,6 +368,7 @@ body:not(.locked) .login{display:none}
       <div class="vbars" id="vbars"></div>
       <button class="mic" id="micBig" aria-label="Diktálás indítása"></button>
       <div class="lbl" id="micLbl">Koppints a beszédhez</div>
+      <div class="lbl" id="wakeLbl" style="color:var(--cyan)"></div>
       <button class="btn small" id="focusBtn2" style="align-self:stretch"></button>
     </div>
     <div class="hint" id="syncSide" style="font:600 12px var(--f-label);text-align:center"></div>
@@ -687,7 +688,7 @@ const EN = {
   "kikapcsolva":"off","jelentkezz be újra":"sign in again","mentés…":"saving…","még nincs mentés":"not saved yet",
   "Claude Code: a híd nem fut ezen a gépen. Indítsd el a Jarvis-Claude-inditas.bat fájlt (dupla kattintás), és hagyd nyitva az ablakát.":"Claude Code: the bridge is not running on this computer. Start Jarvis-Claude-inditas.bat (double-click) and keep its window open.",
   "Ollama: nem érhető el. Fut az Ollama a gépeden? Indítsd el így: OLLAMA_ORIGINS=* ollama serve":"Ollama is unreachable. Is it running? Start it with: OLLAMA_ORIGINS=* ollama serve",
-  "Működik":"Working","Fókusz":"Focus","Fókusz ma":"Focus today","Szünet":"Pause","Folytatás":"Resume","+5 perc":"+5 min","Háttérzaj":"Ambient noise","Háttérzaj: be":"Ambient noise: on","Befejezés":"Finish","Időzített, zavartalan munka. A végén Jarvis szól, és jár egy rövid szünet.":"Timed, undisturbed work. Jarvis tells you when it is over, then you get a short break.","Időtartam":"Duration","25 perc":"25 min","50 perc":"50 min","90 perc":"90 min","Egyéni perc":"Custom minutes","Min dolgozol?":"What are you working on?","Szabad fókusz (nincs konkrét feladat)":"Free focus (no specific task)","✎ Más feladat…":"✎ Other task…","Min dolgozol most?":"What are you working on now?","Ne zavarj: értesítések némítása":"Do not disturb: mute notifications","Háttérzaj (barna zaj) a koncentrációhoz":"Ambient (brown) noise for concentration","Jarvis bemondja a kezdést és a végét":"Jarvis announces the start and the end","Fókusz indítása":"Start focus","Fókusz mód":"Focus mode","Fókusz · szüneteltetve":"Focus · paused","Szabad fókusz":"Free focus","Állj fel, nyújtózz, igyál egy pohár vizet.":"Stand up, stretch, have a glass of water.","Kész a feladat?":"Is the task done?","Igen, kész":"Yes, done","Még nem":"Not yet","Szép munka.":"Nice work.","Fókusz indult":"Focus started","Fókusz befejezve":"Focus finished","Fókusz idő vége":"Focus time is up","Ne zavarj":"Do not disturb","Jarvis személyisége":"Jarvis's personality","Így beszél Jarvis a végső válaszokban és hangos beszélgetésben.":"This is how Jarvis speaks in final answers and voice chat.","Alapértelmezett":"Default","Gyors hangos válasz: beszélgetéskor csak Jarvis felel (a csapat helyett), és emlékszik az előző mondatokra":"Fast voice replies: in voice chat only Jarvis answers (instead of the team) and remembers the previous lines","Ez a böngésző nem támogatja a hangbevitelt":"This browser does not support voice input","Feldolgozás…":"Processing…","Figyelek… ha abbahagyod, Jarvis válaszol":"Listening… when you stop, Jarvis answers","Koppints, és beszélj Jarvishoz":"Tap and talk to Jarvis","Nem hallottam semmit.":"I didn't hear anything.","A böngésző beszédfelismerője nem működik, átváltok felvételes módra.":"The browser's speech recognition isn't working, switching to recording mode.","Ebben a böngészőben a beszédhez egy ingyenes Groq-kulcs kell (AI mag → Groq).":"In this browser, voice needs a free Groq key (AI Core → Groq).","Nagyon olcsó, erős modellek":"Very cheap, strong models","A platform.deepseek.com oldalon kapsz kulcsot. Kis feltöltés kell hozzá, de nagyon olcsó (a deepseek-reasoner gondolkodó modell).":"Get a key at platform.deepseek.com. It needs a small top-up but is very cheap (deepseek-reasoner is the reasoning model).","Automatikus váltás: ha egy AI kifogy vagy hibázik, egy másik működő veszi át":"Automatic failover: if an AI runs out or fails, another working one takes over","Nincs működő AI-szolgáltató beállítva.":"No working AI provider is configured.","Automatikus váltás":"Automatic failover","nincs beállítva":"not configured","Kulcs nem kell":"No key needed","Nem kell kulcs vagy fiók, azonnal használható. Ingyenes, ezért lassabb lehet, és naponta korlátozott.":"No key or account needed, works right away. It is free, so it can be slower and has daily limits.","Bejelentkezés OpenRouter-fiókkal":"Sign in with OpenRouter account","vagy illeszd be lent a kulcsot":"or paste a key below","Alapértelmezett modell":"Default model","✎ Egyéni modell…":"✎ Custom model…","Írd be a modell azonosítóját":"Enter the model ID","Hozzáférési token":"Access token","Ingyenes, kulcs és fiók nélkül":"Free, no key or account","Ingyenes havi keret, tokennel":"Free monthly credits, with a token","Ingyenes kísérleti csomag":"Free experiment plan","Ingyenes, villámgyors":"Free, lightning fast","Ingyenes modellek is, fiókkal vagy kulccsal":"Free models too, via account or key","Weboldal ↗":"Website ↗","Token létrehozása ↗":"Create token ↗","OpenRouter-fiók összekötve":"OpenRouter account connected","Bejelentkezés fiókkal":"Signed in with account","Ingyenes csapat (OpenRouter-fiókkal)":"Free team (OpenRouter account)","Ingyenes modellekkel dolgozik. Elég egyszer belépni: AI mag → OpenRouter → Bejelentkezés OpenRouter-fiókkal.":"Uses free models. Just sign in once: AI Core → OpenRouter → Sign in with OpenRouter account.","Ingyenes kerettel, fiókkal":"Free credits, with an account","Lépj be az enter.pollinations.ai oldalon (pl. GitHub-fiókkal), és ott kapsz ingyenes kulcsot.":"Sign in at enter.pollinations.ai (e.g. with GitHub) to get a free key.","Ingyenes kulcs ↗":"Free key ↗","Hugging Face fiók → Settings → Access Tokens → új token („Make calls to Inference Providers” joggal).":"Hugging Face account → Settings → Access Tokens → new token (with “Make calls to Inference Providers”).","A console.mistral.ai oldalon az ingyenes „Experiment” csomaggal kapsz kulcsot.":"Get a key with the free “Experiment” plan at console.mistral.ai.","A „:free” végű modellek ingyenesek (napi korláttal). A „Kulcs ellenőrzése” betölti az összes elérhető modellt.":"Models ending in “:free” are free (with daily limits). “Check key” loads every available model.","hibás hozzáférési kód (másold be a Cloudflare-be)":"wrong access code (paste it into Cloudflare)","nincs tároló kötve a hídhoz":"no storage bound to the bridge","túl sok adat":"too much data","nem érhető el":"unreachable","a felhőben lévő adat más jelszóval készült":"cloud data was made with a different password","[ide írd a szöveget]":"[write your text here]"
+  "Működik":"Working","Beszélgetés vége.":"Conversation ended.","Igen, uram?":"Yes, sir?","Mondd: „Jarvis…”":"Say “Jarvis…”","Ébresztőszó szünetel":"Wake word paused","Az ébresztőszóhoz ebben a böngészőben Groq-kulcs kell (AI mag → Groq).":"In this browser the wake word needs a Groq key (AI Core → Groq).","Folyamatos beszélgetés: a válasz után Jarvis újra figyel, amíg azt nem mondod: „köszönöm, Jarvis”":"Continuous conversation: after replying Jarvis listens again until you say “thank you, Jarvis”","„Hé Jarvis” ébresztőszó: ha nyitva van az oldal, a „Jarvis” szóra figyelni kezd":"“Hey Jarvis” wake word: while the page is open, saying “Jarvis” starts listening","Chrome-ban és Edge-ben a felismerés a böngészőben történik. Operában beszéd hallatán rövid hangrészletek mennek a Groq átírójához.":"In Chrome and Edge recognition happens in the browser. In Opera, short speech clips are sent to Groq for transcription.","Webes keresés: friss kérdéseknél (hírek, árak, időjárás, „keress rá”) a neten is utánanéz (Gemini vagy Groq kell hozzá)":"Web search: for fresh questions (news, prices, weather, “look it up”) it also searches the web (needs Gemini or Groq)","Webes keresés":"Web search","Nincs kapcsolat a szerverrel. Ellenőrizd az internetet, és próbáld újra.":"No connection to the server. Check your internet and try again.","Túl sok sikertelen próbálkozás. Próbáld újra 15 perc múlva.":"Too many failed attempts. Try again in 15 minutes.","Még egy lépés":"One more step","Az új jelszó csak akkor lép életbe, ha a Cloudflare-ben az ACCESS_KEY titkot lecseréled erre az új hozzáférési kódra:":"The new password takes effect once you replace the ACCESS_KEY secret in Cloudflare with this new access code:","Új hozzáférési kód másolása":"Copy new access code","Kész, bemásoltam":"Done, I pasted it","Jelszó módosítva":"Password changed","Az új jelszót a Cloudflare-híd ellenőrzi, ezért a végén egy új hozzáférési kódot kell bemásolnod a Cloudflare-be.":"The new password is checked by the Cloudflare bridge, so at the end you need to paste a new access code into Cloudflare.","Fókusz":"Focus","Fókusz ma":"Focus today","Szünet":"Pause","Folytatás":"Resume","+5 perc":"+5 min","Háttérzaj":"Ambient noise","Háttérzaj: be":"Ambient noise: on","Befejezés":"Finish","Időzített, zavartalan munka. A végén Jarvis szól, és jár egy rövid szünet.":"Timed, undisturbed work. Jarvis tells you when it is over, then you get a short break.","Időtartam":"Duration","25 perc":"25 min","50 perc":"50 min","90 perc":"90 min","Egyéni perc":"Custom minutes","Min dolgozol?":"What are you working on?","Szabad fókusz (nincs konkrét feladat)":"Free focus (no specific task)","✎ Más feladat…":"✎ Other task…","Min dolgozol most?":"What are you working on now?","Ne zavarj: értesítések némítása":"Do not disturb: mute notifications","Háttérzaj (barna zaj) a koncentrációhoz":"Ambient (brown) noise for concentration","Jarvis bemondja a kezdést és a végét":"Jarvis announces the start and the end","Fókusz indítása":"Start focus","Fókusz mód":"Focus mode","Fókusz · szüneteltetve":"Focus · paused","Szabad fókusz":"Free focus","Állj fel, nyújtózz, igyál egy pohár vizet.":"Stand up, stretch, have a glass of water.","Kész a feladat?":"Is the task done?","Igen, kész":"Yes, done","Még nem":"Not yet","Szép munka.":"Nice work.","Fókusz indult":"Focus started","Fókusz befejezve":"Focus finished","Fókusz idő vége":"Focus time is up","Ne zavarj":"Do not disturb","Jarvis személyisége":"Jarvis's personality","Így beszél Jarvis a végső válaszokban és hangos beszélgetésben.":"This is how Jarvis speaks in final answers and voice chat.","Alapértelmezett":"Default","Gyors hangos válasz: beszélgetéskor csak Jarvis felel (a csapat helyett), és emlékszik az előző mondatokra":"Fast voice replies: in voice chat only Jarvis answers (instead of the team) and remembers the previous lines","Ez a böngésző nem támogatja a hangbevitelt":"This browser does not support voice input","Feldolgozás…":"Processing…","Figyelek… ha abbahagyod, Jarvis válaszol":"Listening… when you stop, Jarvis answers","Koppints, és beszélj Jarvishoz":"Tap and talk to Jarvis","Nem hallottam semmit.":"I didn't hear anything.","A böngésző beszédfelismerője nem működik, átváltok felvételes módra.":"The browser's speech recognition isn't working, switching to recording mode.","Ebben a böngészőben a beszédhez egy ingyenes Groq-kulcs kell (AI mag → Groq).":"In this browser, voice needs a free Groq key (AI Core → Groq).","Nagyon olcsó, erős modellek":"Very cheap, strong models","A platform.deepseek.com oldalon kapsz kulcsot. Kis feltöltés kell hozzá, de nagyon olcsó (a deepseek-reasoner gondolkodó modell).":"Get a key at platform.deepseek.com. It needs a small top-up but is very cheap (deepseek-reasoner is the reasoning model).","Automatikus váltás: ha egy AI kifogy vagy hibázik, egy másik működő veszi át":"Automatic failover: if an AI runs out or fails, another working one takes over","Nincs működő AI-szolgáltató beállítva.":"No working AI provider is configured.","Automatikus váltás":"Automatic failover","nincs beállítva":"not configured","Kulcs nem kell":"No key needed","Nem kell kulcs vagy fiók, azonnal használható. Ingyenes, ezért lassabb lehet, és naponta korlátozott.":"No key or account needed, works right away. It is free, so it can be slower and has daily limits.","Bejelentkezés OpenRouter-fiókkal":"Sign in with OpenRouter account","vagy illeszd be lent a kulcsot":"or paste a key below","Alapértelmezett modell":"Default model","✎ Egyéni modell…":"✎ Custom model…","Írd be a modell azonosítóját":"Enter the model ID","Hozzáférési token":"Access token","Ingyenes, kulcs és fiók nélkül":"Free, no key or account","Ingyenes havi keret, tokennel":"Free monthly credits, with a token","Ingyenes kísérleti csomag":"Free experiment plan","Ingyenes, villámgyors":"Free, lightning fast","Ingyenes modellek is, fiókkal vagy kulccsal":"Free models too, via account or key","Weboldal ↗":"Website ↗","Token létrehozása ↗":"Create token ↗","OpenRouter-fiók összekötve":"OpenRouter account connected","Bejelentkezés fiókkal":"Signed in with account","Ingyenes csapat (OpenRouter-fiókkal)":"Free team (OpenRouter account)","Ingyenes modellekkel dolgozik. Elég egyszer belépni: AI mag → OpenRouter → Bejelentkezés OpenRouter-fiókkal.":"Uses free models. Just sign in once: AI Core → OpenRouter → Sign in with OpenRouter account.","Ingyenes kerettel, fiókkal":"Free credits, with an account","Lépj be az enter.pollinations.ai oldalon (pl. GitHub-fiókkal), és ott kapsz ingyenes kulcsot.":"Sign in at enter.pollinations.ai (e.g. with GitHub) to get a free key.","Ingyenes kulcs ↗":"Free key ↗","Hugging Face fiók → Settings → Access Tokens → új token („Make calls to Inference Providers” joggal).":"Hugging Face account → Settings → Access Tokens → new token (with “Make calls to Inference Providers”).","A console.mistral.ai oldalon az ingyenes „Experiment” csomaggal kapsz kulcsot.":"Get a key with the free “Experiment” plan at console.mistral.ai.","A „:free” végű modellek ingyenesek (napi korláttal). A „Kulcs ellenőrzése” betölti az összes elérhető modellt.":"Models ending in “:free” are free (with daily limits). “Check key” loads every available model.","hibás hozzáférési kód (másold be a Cloudflare-be)":"wrong access code (paste it into Cloudflare)","nincs tároló kötve a hídhoz":"no storage bound to the bridge","túl sok adat":"too much data","nem érhető el":"unreachable","a felhőben lévő adat más jelszóval készült":"cloud data was made with a different password","[ide írd a szöveget]":"[write your text here]"
 };
 const WX_EN={"Derült":"Clear","Többnyire derült":"Mostly clear","Részben felhős":"Partly cloudy","Borult":"Overcast","Köd":"Fog","Zúzmarás köd":"Rime fog","Szitálás":"Drizzle","Erős szitálás":"Heavy drizzle","Ónos szitálás":"Freezing drizzle",
   "Gyenge eső":"Light rain","Eső":"Rain","Erős eső":"Heavy rain","Ónos eső":"Freezing rain","Gyenge havazás":"Light snow","Havazás":"Snow","Erős havazás":"Heavy snow","Hószemcse":"Snow grains","Zápor":"Showers","Heves zápor":"Heavy showers","Hózápor":"Snow showers","Zivatar":"Thunderstorm","Zivatar jégesővel":"Thunderstorm with hail"};
@@ -699,7 +700,7 @@ const EN_PATTERNS=[
   [/^Működik · (\d+) modell \(kattints a modell mezőre a listához\)$/,"Working · $1 models (click the model field for the list)"],
   [/^Felhő: szinkronizálva (.+)$/,"Cloud: synced $1"],[/^szinkronizálva (.+)$/,"synced $1"],[/^Felhő: (.+)$/,m=>"Cloud: "+trCore(m.slice(7))],
   [/^Lejárt: (.+)$/,"Overdue: $1"],[/^Határidő: (.+)$/,"Due: $1"],[/^Feladat: (.+)$/,"Task: $1"],[/^Megjegyzésed: (.+)$/,"Your note: $1"],[/^Feladat határidő · (.+)$/,"Task deadline · $1"],
-  [/^(\d+) ügynök$/,"$1 agents"],[/^Fókusz: (\d+) perc(.*)$/,"Focus: $1 min$2"],[/^Fókusz mód vége\. Ma összesen: (\d+) perc$/,"Focus mode ended. Today in total: $1 min"],[/^(Folyamatban|Szünet) · (.+)$/,(m,a,b)=>(a==="Szünet"?"Break · ":"In progress · ")+b],[/^(fókusz|szünet) · (.+)$/,(m,a,b)=>(a==="szünet"?"break · ":"focus · ")+b],[/^(.+) · Ne zavarj$/,"$1 · Do not disturb"],[/^Lejárt az idő, uram\. (\d+) perc fókusz megvan\. Tartson (\d+) perc szünetet\.$/,"Time is up, sir. $1 minutes of focus done. Take a $2 minute break."],[/^Vége a szünetnek, uram\. Ha készen áll, folytathatjuk\.$/,"Break is over, sir. Ready when you are."],[/^Az átírás nem sikerült: (.+)$/,"Transcription failed: $1"],[/^(.+) nem elérhető → (.+)$/,"$1 unavailable → $2"],[/^(.+) nem elérhető, átváltok: (.+)$/,"$1 unavailable, switching to: $2"],[/^Alapértelmezett \((.+)\)$/,"Default ($1)"],[/^(.+): (\d+) modell betöltve a listába$/,"$1: $2 models loaded into the list"],[/^Az OpenRouter-bejelentkezés nem sikerült: (.+)$/,"OpenRouter sign-in failed: $1"],[/^(.+) \(alapértelmezett\)$/,"$1 (default)"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
+  [/^(\d+) ügynök$/,"$1 agents"],[/^(\d+) művelet elvégezve$/,"$1 actions done"],[/^Elintézve: (.+)$/,"Done: $1"],[/^Emlékeztető, uram: (.+)$/,"Reminder, sir: $1"],[/^Hallottam: (.+)$/,"Heard: $1"],[/^Fókusz: (\d+) perc(.*)$/,"Focus: $1 min$2"],[/^Fókusz mód vége\. Ma összesen: (\d+) perc$/,"Focus mode ended. Today in total: $1 min"],[/^(Folyamatban|Szünet) · (.+)$/,(m,a,b)=>(a==="Szünet"?"Break · ":"In progress · ")+b],[/^(fókusz|szünet) · (.+)$/,(m,a,b)=>(a==="szünet"?"break · ":"focus · ")+b],[/^(.+) · Ne zavarj$/,"$1 · Do not disturb"],[/^Lejárt az idő, uram\. (\d+) perc fókusz megvan\. Tartson (\d+) perc szünetet\.$/,"Time is up, sir. $1 minutes of focus done. Take a $2 minute break."],[/^Vége a szünetnek, uram\. Ha készen áll, folytathatjuk\.$/,"Break is over, sir. Ready when you are."],[/^Az átírás nem sikerült: (.+)$/,"Transcription failed: $1"],[/^(.+) nem elérhető → (.+)$/,"$1 unavailable → $2"],[/^(.+) nem elérhető, átváltok: (.+)$/,"$1 unavailable, switching to: $2"],[/^Alapértelmezett \((.+)\)$/,"Default ($1)"],[/^(.+): (\d+) modell betöltve a listába$/,"$1: $2 models loaded into the list"],[/^Az OpenRouter-bejelentkezés nem sikerült: (.+)$/,"OpenRouter sign-in failed: $1"],[/^(.+) \(alapértelmezett\)$/,"$1 (default)"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
   [/^Nincs beállítva: (.+?)\. Add meg az AI mag oldalon\.$/,"Not configured: $1. Add it on the AI Core page."],[/^Nincs beállítva: (.+)$/,"Not configured: $1"],
   [/^(.+?): a kulcs érvénytelen vagy nincs jogosultsága\. Ellenőrizd az AI mag oldalon\. \((.*)\)$/,"$1: invalid key or no permission. Check it on the AI Core page. ($2)"],
   [/^(.+?): nincs ilyen modell\. Válassz másikat az AI mag oldalon\. \((.*)\)$/,"$1: no such model. Pick another on the AI Core page. ($2)"],
@@ -1029,7 +1030,7 @@ async function finishOpenRouterLogin(){
   }catch(e){ toast("Az OpenRouter-bejelentkezés nem sikerült: "+e.message); }
 }
 const configured = () => PIDS.filter(hasKey);
-async function callAI(provider,model,system,user,signal){
+async function callAI(provider,model,system,user,signal,opts){
   const P=PROVIDERS[provider], key=(keys[provider]||"").trim();
   if (!key && !P.noKey) throw new Error(`Nincs beállítva: ${P.name}. Add meg az AI mag oldalon.`);
   if (provider==="claude" && isSubToken(key)) throw new Error(SUB_TOKEN_MSG+" Tipp: használd helyette a „Claude Code” szolgáltatót.");
@@ -1042,9 +1043,12 @@ async function callAI(provider,model,system,user,signal){
   }
   if (P.kind==="gemini"){
     res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(model)}:generateContent`,{method:"POST",signal,headers:{"content-type":"application/json","x-goog-api-key":key},
-      body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:user}]}]})});
+      body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:user}]}],...(opts&&opts.web?{tools:[{google_search:{}}]}:{})})});
     data=await res.json().catch(()=>({})); if(!res.ok) throw apiError(provider,res,data?.error?.message);
-    return (data.candidates?.[0]?.content?.parts||[]).map(p=>p.text||"").join("");
+    let gtxt=(data.candidates?.[0]?.content?.parts||[]).map(p=>p.text||"").join("");
+    const src=(data.candidates?.[0]?.groundingMetadata?.groundingChunks||[]).map(c=>c.web).filter(Boolean).slice(0,5);
+    if (opts&&opts.web&&src.length&&!opts.noSources) gtxt+="\n\n"+(isEN()?"Sources: ":"Források: ")+src.map(w=>`[${w.title||"link"}](${w.uri})`).join(" · ");
+    return gtxt;
   }
   if (P.kind==="cc"){
     res=await fetch(key.replace(/\/+$/,"")+"/chat",{method:"POST",signal,headers:{"content-type":"application/json"},body:JSON.stringify({system,user,model})});
@@ -1066,11 +1070,11 @@ function failoverCandidates(skip){
   const now=Date.now();
   return FAILOVER_ORDER.filter(p=>PROVIDERS[p] && hasKey(p) && !skip.includes(p) && !(exhausted[p]>now));
 }
-async function callWithFailover(provider,model,system,user,signal,onSwitch){
+async function callWithFailover(provider,model,system,user,signal,onSwitch,opts){
   const tried=[]; let p=provider, mdl=model, lastErr=null;
   if (!hasKey(p) && settings.autoFailover!==false){ tried.push(p); p=failoverCandidates(tried)[0]; mdl=p?models[p]:null; if(p&&onSwitch) onSwitch(provider,p,"nincs beállítva"); }
   while (p){
-    try{ const text=await callAI(p,mdl,system,user,signal); keyOk[p]=true; return {text,provider:p,model:mdl}; }
+    try{ const text=await callAI(p,mdl,system,user,signal,(p===provider?opts:null)); keyOk[p]=true; return {text,provider:p,model:mdl}; }
     catch(e){
       if (e.name==="AbortError" || settings.autoFailover===false) throw e;
       lastErr=e; tried.push(p);
@@ -1146,6 +1150,7 @@ ${others}
 A felhasználó neve: ${settings.opName||"Operátor"}. Mai dátum: ${new Date().toLocaleDateString(LOC(),{year:"numeric",month:"long",day:"numeric",weekday:"long"})}.
 Csak a saját szerepedet töltsd be. Építs a többiek munkájára, ne ismételd feleslegesen. ${isEN()?"Always answer in English, even if the task or the team instructions are in Hungarian.":"Válaszolj a feladat nyelvén (alapból magyarul)."} Használhatsz Markdown formázást.`+contextBlock()
     +(idx===team.length-1 && (settings.persona||DEFAULT_PERSONA).trim() ? `\n\nSZEMÉLYISÉG – a végső választ te adod, így ebben a stílusban beszélj (te vagy Jarvis):\n${(settings.persona||DEFAULT_PERSONA).trim()}\nA felhasználót tisztelettudóan szólítsd meg${isEN()?' ("sir")':' (pl. „uram”)'}.` : "")
+    +(idx===team.length-1 ? actionInstructions() : "")
     +(voiceChat ? `\n\nEZ HANGOS BESZÉLGETÉS: a válaszod fel lesz olvasva. Válaszolj röviden (legfeljebb 3-4 mondat), természetes beszélt nyelven, Markdown, felsorolás, táblázat és emoji nélkül. Pontosan arra a kérdésre válaszolj, amit a felhasználó most kérdezett; ne térj el a témától, és ne találj ki új témát.${(speakEnglish()&&!isEN())?" FONTOS: a válaszodat ANGOLUL írd (brit angol, Jarvis stílusában), mert angolul lesz felolvasva.":""}` : "");
   let user=`FELADAT:\n${task}\n`;
   if (voiceChat && voiceLog.length) user=`KORÁBBI BESZÉLGETÉS (csak háttér; kizárólag akkor használd, ha az új kérdés erre hivatkozik):\n${voiceLog.map(v=>`Felhasználó: ${v.q}\nJarvis: ${v.a}`).join("\n")}\n\nAZ ÚJ KÉRDÉS, AMIRE MOST VÁLASZOLNOD KELL:\n`+user;
@@ -1186,9 +1191,11 @@ async function run({newRound,note}){
     history.push(pending); renderAll();
     try{
       const {system,user}=buildPrompts(m,i,round,prior,roundNote);
-      const r=await callWithFailover(m.provider,model,system,user,running.controller.signal,(from,to,why)=>{
+      const web=(i===team.length-1 && needsWeb(task)) ? webProvider() : null;
+      if (web){ pending.provider=web.p; pending.model=web.model; pending.web=true; renderAll(); }
+      const r=await callWithFailover(web?web.p:m.provider,web?web.model:model,system,user,running.controller.signal,(from,to,why)=>{
         pending.via=pending.via||PROVIDERS[from].name; pending.provider=to; pending.model=models[to]; renderAll();
-        log("warn",`${PROVIDERS[from].name} nem elérhető → ${PROVIDERS[to].name}`,why.slice(0,90)); toast(`${PROVIDERS[from].name} nem elérhető, átváltok: ${PROVIDERS[to].name}`); });
+        log("warn",`${PROVIDERS[from].name} nem elérhető → ${PROVIDERS[to].name}`,why.slice(0,90)); toast(`${PROVIDERS[from].name} nem elérhető, átváltok: ${PROVIDERS[to].name}`); },web?{web:true,noSources:voiceChat}:null);
       Object.assign(pending,{pending:false,text:r.text||"(üres válasz)",provider:r.provider,model:r.model,endedAt:Date.now()});
       log("ok",`${m.name} végzett`,`${PROVIDERS[r.provider].name} · ${Math.round((pending.endedAt-pending.startedAt)/1000)} mp`);
     }catch(e){
@@ -1204,8 +1211,12 @@ async function run({newRound,note}){
   if (savedTeam) team=savedTeam;
   if (ok && voiceChat){ voiceLog.push({q:task,a:plain(finalText()||"").slice(0,600)}); voiceLog=voiceLog.slice(-6); }
   running=null; saveAll(); renderAll(); renderNav();
-  if (ok && (settings.tts || voiceChat)) speak(finalText());
-  voiceChat=false;
+  if (ok) runActionsFromFinal();
+  const wasVoice=voiceChat; voiceChat=false;
+  if (ok && (settings.tts || wasVoice)){
+    const p=speak(finalText());
+    if (wasVoice && convo) p.then(()=>{ if (convo && !running && !recOn && !sttBusy) listenAgain(); });
+  } else if (wasVoice) { convo=false; resumeWake(); }
 }
 const taskEl=$("#task");
 $("#stopBtn").addEventListener("click",()=>running?.controller.abort());
@@ -1315,6 +1326,8 @@ function renderResults(){
     if (h.note){ r.append(el("div",{class:"note"},"Megjegyzésed: "+h.text)); continue; }
     const isFinal=!running&&h===lastDone&&h===real[real.length-1];
     const head=el("div",{class:"card-head"},el("h5",{},h.name),el("span",{class:"prov",style:`--pc:${pColor(h.provider)}`},PROVIDERS[h.provider]?.name||h.provider),el("span",{class:"meta"},h.model),el("span",{class:"sp"}),
+      h.web?el("span",{class:"tag"},"Webes keresés"):null,
+      h.actions?el("span",{class:"tag ok",title:h.actions.join(" · ")},`${h.actions.length} művelet elvégezve`):null,
       h.via?el("span",{class:"tag warn",title:"Automatikus váltás"},`${h.via} → ${PROVIDERS[h.provider]?.name||h.provider}`):null,
       isFinal?el("span",{class:"tag ok"},"Végeredmény"):null,
       (!h.pending&&!h.error&&TTS)?el("button",{class:"btn small",onclick:()=>speak(h.text),html:svg("speaker")+"Felolvasás"}):null,
@@ -1608,19 +1621,26 @@ function setMicUI(){
   if (view==="command"){ renderOverview(); renderButtons(); }
 }
 const sttProvider=()=>["groq","openai"].find(p=>hasKey(p));
+// ---- folyamatos beszélgetés: a válasz után Jarvis újra figyel, amíg el nem köszönsz ----
+let convo=false;
+const END_RE=/\b(k(o|ö)sz(o|ö)n(o|ö)m|k(o|ö)szi|kosz|k(o|ö)sz)\b.{0,12}\bjarvis|^(ennyi|ennyi volt|viszl(a|á)t|viszontl(a|á)t(a|á)sra|v(e|é)ge|le(a|á)llhatsz|ez minden)\b|thank(s| you),? jarvis|that'?s all|good ?bye|stop listening/i;
+function endConvo(say){ convo=false; voiceChat=false; if (say) speak(isEN()?"At your service, sir.":"Szívesen, uram. Szóljon, ha szüksége van rám.").then(resumeWake); else resumeWake(); }
 function handleSpoken(text){
   text=(text||"").trim();
-  if (!text){ voiceChat=false; toast("Nem hallottam semmit."); return; }
-  const cmd=parseModeCommand(text); if (cmd){ voiceChat=false; setIncog(cmd==="on",true); return; }
+  if (!text){ voiceChat=false; if (convo){ convo=false; toast("Beszélgetés vége."); } else toast("Nem hallottam semmit."); resumeWake(); return; }
+  if (END_RE.test(text.toLowerCase())){ toast((isEN()?"Heard: ":"Hallottam: ")+text.slice(0,80)); endConvo(true); return; }
+  const cmd=parseModeCommand(text); if (cmd){ voiceChat=false; convo=false; setIncog(cmd==="on",true); resumeWake(); return; }
   taskEl.value=text; task=text; autoGrow(); toast((isEN()?"Heard: ":"Hallottam: ")+text.slice(0,80)); run({newRound:false});
 }
-// Mikrofon gomb: beszélsz → szünet → Jarvis elküldi és hangosan válaszol.
+function listenAgain(){ if (!SR||running) return; voiceChat=true; taskEl.value=""; autoGrow(); if (sttMode==="native") startNative(); else startRecorder(); }
+// Mikrofon gomb: beszélsz → szünet → Jarvis válaszol → újra figyel (folyamatos beszélgetés).
 function toggleMic(){
   if (!SR) return;
-  if (recOn){ if (sttMode==="native") rec?.stop(); else recFinish?.(false); return; }
+  if (recOn){ convo=false; if (sttMode==="native") rec?.stop(); else recFinish?.(false); return; }
+  if (convo && speaking){ stopSpeak(); endConvo(false); return; }
   if (running||sttBusy) return;
   if (view!=="command") showView("command");
-  stopSpeak(); voiceChat=true; taskEl.value=""; autoGrow();
+  pauseWake(); stopSpeak(); convo=settings.convoMode!==false; voiceChat=true; taskEl.value=""; autoGrow();
   if (sttMode==="native") startNative(); else startRecorder();
 }
 function startVoiceChat(){ toggleMic(); }
@@ -1711,23 +1731,35 @@ async function toEnglish(text){
   if (!out || out.length>text.length*1.8+40) return text;
   saveLocal(); trCache={src:text,out:out||text}; return trCache.out;
 }
+// A speak() megvárja, amíg Jarvis befejezi a beszédet (a folyamatos beszélgetéshez kell).
+let speaking=false;
 async function speak(text){
-  if (!text) return; stopSpeak();
-  const eng=settings.ttsEngine||"browser"; let clean=plain(text);
-  if (speakEnglish()){ try{ clean=plain(await toEnglish(clean)); }catch(e){ toast("A fordítás nem sikerült, eredeti nyelven olvasom fel."); } }
-  if (eng!=="browser"){
-    try{ const blob=await premiumTTS(eng,clean.slice(0,eng==="fish"?2500:4000)); const url=URL.createObjectURL(blob);
-      const a=new Audio(url); curAudio=a; a.onended=()=>{ URL.revokeObjectURL(url); if(curAudio===a) curAudio=null; }; await a.play(); return; }
-    catch(e){ toast("Prémium hang nem elérhető ("+(e.message||e)+"). Böngészőhangon olvasom fel."); }
-  }
-  browserSpeak(clean);
+  if (!text) return; stopSpeak(); speaking=true;
+  try{
+    const eng=settings.ttsEngine||"browser"; let clean=plain(text);
+    if (speakEnglish()){ try{ clean=plain(await toEnglish(clean)); }catch(e){ toast("A fordítás nem sikerült, eredeti nyelven olvasom fel."); } }
+    if (eng!=="browser"){
+      try{ const blob=await premiumTTS(eng,clean.slice(0,eng==="fish"?2500:4000)); const url=URL.createObjectURL(blob);
+        const a=new Audio(url); curAudio=a;
+        await new Promise((res,rej)=>{ a.onended=()=>res(); a.onpause=()=>res(); a.onerror=()=>rej(new Error("lejátszási hiba")); a.play().catch(rej); });
+        URL.revokeObjectURL(url); if(curAudio===a) curAudio=null; return; }
+      catch(e){ toast("Prémium hang nem elérhető ("+(e.message||e)+"). Böngészőhangon olvasom fel."); }
+    }
+    await browserSpeak(clean);
+  } finally { speaking=false; }
 }
 function browserSpeak(clean){
-  if (!TTS) return;
+  if (!TTS) return Promise.resolve();
   const parts=clean.slice(0,4000).match(/[^.!?]+[.!?]*/g)||[];
   const vs=speechSynthesis.getVoices(); const lang=speakEnglish()?"en-GB":(settings.lang||"hu-HU");
   const v=(!speakEnglish()&&vs.find(v=>v.name===settings.voice))||(speakEnglish()&&vs.find(v=>/en-GB/i.test(v.lang)&&/male|george|ryan|daniel|arthur/i.test(v.name)))||vs.find(v=>v.lang===lang)||vs.find(v=>v.lang.startsWith(lang.slice(0,2)));
-  for (const p of parts){ const u=new SpeechSynthesisUtterance(p); u.lang=lang; if(v) u.voice=v; speechSynthesis.speak(u); }
+  return new Promise(res=>{
+    if (!parts.length) return res();
+    const guard=setTimeout(res, Math.min(120000, 4000+clean.length*90));
+    parts.forEach((p,i)=>{ const u=new SpeechSynthesisUtterance(p); u.lang=lang; if(v) u.voice=v;
+      if (i===parts.length-1){ u.onend=()=>{ clearTimeout(guard); res(); }; u.onerror=()=>{ clearTimeout(guard); res(); }; }
+      speechSynthesis.speak(u); });
+  });
 }
 $("#micBig").innerHTML=svg("mic"); $("#micSmall").innerHTML=svg("mic");
 $("#micBig").addEventListener("click",toggleMic); $("#micSmall").addEventListener("click",toggleMic);
@@ -1821,9 +1853,12 @@ function openSettings(){
   const afo=el("input",{type:"checkbox",id:"stAfo",checked:settings.autoFailover!==false});
   const per=el("textarea",{id:"stPersona",rows:"4"}); per.value=settings.persona||DEFAULT_PERSONA;
   const qv=el("input",{type:"checkbox",id:"stQv",checked:settings.quickVoice!==false});
-  const collect=()=>({lang:lang.value,tts:tts.checked,voice:voice.value,ttsEngine:eng.value,fishProxy:fProxy.value.trim(),syncOn:syncOn.checked,speakLang:spL.value,autoFailover:afo.checked,persona:per.value.trim()||DEFAULT_PERSONA,quickVoice:qv.checked,fishVoice:fVoice.value.trim(),oaVoice:oaV.value});
+  const cvm=el("input",{type:"checkbox",id:"stCvm",checked:settings.convoMode!==false});
+  const wk=el("input",{type:"checkbox",id:"stWake",checked:!!settings.wake});
+  const wbs=el("input",{type:"checkbox",id:"stWeb",checked:settings.webSearch!==false});
+  const collect=()=>({lang:lang.value,tts:tts.checked,voice:voice.value,ttsEngine:eng.value,fishProxy:fProxy.value.trim(),syncOn:syncOn.checked,speakLang:spL.value,autoFailover:afo.checked,persona:per.value.trim()||DEFAULT_PERSONA,quickVoice:qv.checked,convoMode:cvm.checked,wake:wk.checked,webSearch:wbs.checked,fishVoice:fVoice.value.trim(),oaVoice:oaV.value});
   openModal("Beállítások",el("form",{class:"stack",onsubmit:e=>{ e.preventDefault();
-      const langChanged=uiL.value!==(settings.uiLang||"hu"); Object.assign(settings,{opName:n.value.trim()||"Operátor",opTitle:t.value.trim(),uiLang:uiL.value},collect()); saveAll(); renderOp(); closeModal(); toast("Beállítások mentve"); if (langChanged){ clearTimeout(sync.timer); syncPush(false).finally(()=>location.reload()); } }},
+      const langChanged=uiL.value!==(settings.uiLang||"hu"); Object.assign(settings,{opName:n.value.trim()||"Operátor",opTitle:t.value.trim(),uiLang:uiL.value},collect()); saveAll(); renderOp(); closeModal(); toast("Beállítások mentve"); if (settings.wake) resumeWake(); else stopWakeEngines(); if (langChanged){ clearTimeout(sync.timer); syncPush(false).finally(()=>location.reload()); } }},
     el("label",{for:"stUiLang"},"Nyelv / Language"),uiL,
     el("label",{for:"stName"},"Neved"),n,el("label",{for:"stTitle"},"Titulus"),t,
     el("label",{for:"stLang"},"Beszéd nyelve (diktálás)"),lang,
@@ -1832,6 +1867,10 @@ function openSettings(){
     el("label",{for:"stPersona"},"Jarvis személyisége"),per,
     el("div",{class:"row"},el("span",{class:"hint grow"},"Így beszél Jarvis a végső válaszokban és hangos beszélgetésben."),el("button",{class:"btn small",type:"button",onclick:()=>{ per.value=DEFAULT_PERSONA; }},"Alapértelmezett")),
     el("label",{class:"chk"},qv,"Gyors hangos válasz: beszélgetéskor csak Jarvis felel (a csapat helyett), és emlékszik az előző mondatokra"),
+    el("label",{class:"chk"},cvm,"Folyamatos beszélgetés: a válasz után Jarvis újra figyel, amíg azt nem mondod: „köszönöm, Jarvis”"),
+    el("label",{class:"chk"},wk,"„Hé Jarvis” ébresztőszó: ha nyitva van az oldal, a „Jarvis” szóra figyelni kezd"),
+    el("p",{class:"hint"},"Chrome-ban és Edge-ben a felismerés a böngészőben történik. Operában beszéd hallatán rövid hangrészletek mennek a Groq átírójához."),
+    el("label",{class:"chk"},wbs,"Webes keresés: friss kérdéseknél (hírek, árak, időjárás, „keress rá”) a neten is utánanéz (Gemini vagy Groq kell hozzá)"),
     el("label",{for:"stEng"},"Jarvis hangja"),eng,fishBox,oaBox,brBox,
     el("label",{for:"stSpL"},"Felolvasás nyelve"),spL,
     el("p",{class:"hint"},"Angolnál a képernyőn magyarul marad a válasz, Jarvis felolvasás előtt lefordítja angolra (egy rövid AI-hívás)."),
@@ -1868,9 +1907,22 @@ function openSettings(){
 addEventListener("resize",()=>{ if(view==="command") drawMap($("#memMap"),false); if(view==="memory") drawMap($("#memBig"),true); });
 
 // ================= bejelentkezés =================
-// A jelszó nincs a kódban, csak egy sózott PBKDF2-SHA256 lenyomat. A jelszó módosítása ezen az eszközön felülírja.
-const DEFAULT_CRED = {user:"admin", salt:"e5a7fc7e6a8840cd7caf1ff5e2bfec57", hash:"7a4bc8c92ebb307461d0d3e07f5a848796ba3ddb1ce3a0bfe68ee4e3a885291a", iter:250000};
-function getCred(){ try{ const c=JSON.parse(localStorage.getItem("jarvis:cred")||"null"); if(c&&c.hash) return c; }catch(e){} return DEFAULT_CRED; }
+// Szerveres ellenőrzés: a jelszóból származó hozzáférési kódot a Cloudflare-híd ellenőrzi (próbálkozás-korláttal).
+// A kódban nincs jelszó-lenyomat, így a jelszót nem lehet offline kitalálni a nyilvános forrásból.
+// Internet nélkül csak azon az eszközön lehet belépni, ahol korábban már sikeres volt a belépés (helyi, véletlen sóval).
+async function serverLogin(pw){
+  const ak=await pbkdf2(pw,"jarvis-access-v1",250000);
+  try{
+    const r=await fetch(bridgeUrl()+"/auth",{headers:{"x-jarvis-key":ak}});
+    if (r.status===401) return {ok:false,msg:"Hibás felhasználónév vagy jelszó."};
+    if (r.status===429) return {ok:false,msg:"Túl sok sikertelen próbálkozás. Próbáld újra 15 perc múlva."};
+    return {ok:true,ak};
+  }catch(_){
+    try{ const dv=JSON.parse(localStorage.getItem("jarvis:dv")||"null"); if (dv && await pbkdf2(pw,dv.salt,150000)===dv.hash) return {ok:true,ak,offline:true}; }catch(__){}
+    return {ok:false,msg:"Nincs kapcsolat a szerverrel. Ellenőrizd az internetet, és próbáld újra."};
+  }
+}
+async function saveDeviceVerifier(pw){ try{ const salt=[...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,"0")).join(""); localStorage.setItem("jarvis:dv",JSON.stringify({salt,hash:await pbkdf2(pw,salt,150000)})); localStorage.removeItem("jarvis:cred"); }catch(_){} }
 async function pbkdf2(pass,salt,iter){
   const enc=new TextEncoder(); const key=await crypto.subtle.importKey("raw",enc.encode(pass),"PBKDF2",false,["deriveBits"]);
   const bits=await crypto.subtle.deriveBits({name:"PBKDF2",salt:enc.encode(salt),iterations:iter,hash:"SHA-256"},key,256);
@@ -1882,15 +1934,15 @@ async function deriveSessionKeys(pass,store){
   const ak=await pbkdf2(pass,"jarvis-access-v1",250000), sk=await pbkdf2(pass,"jarvis-sync-v1",250000);
   try{ store.setItem("jarvis:ak",ak); store.setItem("jarvis:sk",sk); }catch(_){}
 }
-function unlock(){ document.body.classList.remove("locked"); showView("command"); renderAll(); syncPull(false); }
-function lock(){ if (incog) setIncog(false,false); try{ for (const k of ["jarvis:auth","jarvis:ak","jarvis:sk"]){ sessionStorage.removeItem(k); localStorage.removeItem(k); } }catch(e){} closeModal(); renderSyncSt(); document.body.classList.add("locked"); $("#lPass").value=""; $("#lErr").textContent=""; $("#lUser").focus(); }
+function unlock(){ document.body.classList.remove("locked"); showView("command"); renderAll(); syncPull(false); resumeWake(); }
+function lock(){ stopWakeEngines(); convo=false; if (incog) setIncog(false,false); try{ for (const k of ["jarvis:auth","jarvis:ak","jarvis:sk"]){ sessionStorage.removeItem(k); localStorage.removeItem(k); } }catch(e){} closeModal(); renderSyncSt(); document.body.classList.add("locked"); $("#lPass").value=""; $("#lErr").textContent=""; $("#lUser").focus(); }
 $("#loginForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const err=$("#lErr"), btn=$("#lBtn"), until=+(sessionStorage.getItem("jarvis:wait")||0);
   if (Date.now()<until){ err.textContent=`Túl sok sikertelen próbálkozás. Próbáld újra ${Math.ceil((until-Date.now())/1000)} mp múlva.`; return; }
   btn.disabled=true; btn.textContent="Azonosítás…"; err.textContent=""; err.style.color="";
-  const c=getCred(); let ok=false;
-  try{ ok = $("#lUser").value.trim().toLowerCase()===c.user && await pbkdf2($("#lPass").value,c.salt,c.iter)===c.hash; }
+  const pw=$("#lPass").value; let ok=false, res=null;
+  try{ if ($("#lUser").value.trim().toLowerCase()==="admin"){ res=await serverLogin(pw); ok=res.ok; if (!ok) err.textContent=res.msg; } }
   catch(_){ err.textContent="Ez a böngésző nem támogatja a biztonságos bejelentkezést."; }
   btn.disabled=false; btn.textContent="Belépés";
   if (!ok){
@@ -1901,27 +1953,28 @@ $("#loginForm").addEventListener("submit",async e=>{
   }
   sessionStorage.setItem("jarvis:fails",0);
   const st=$("#lRemember").checked?localStorage:sessionStorage;
-  try{ st.setItem("jarvis:auth",c.hash); }catch(_){}
+  try{ st.setItem("jarvis:auth","ok"); }catch(_){}
   btn.disabled=true; btn.textContent="Rendszerek indítása…";
-  try{ await deriveSessionKeys($("#lPass").value,st); }catch(_){}
+  try{ await deriveSessionKeys(pw,st); if (!res.offline) await saveDeviceVerifier(pw); }catch(_){}
   btn.disabled=false; btn.textContent="Belépés";
-  $("#lPass").value=""; unlock(); log("info","Sikeres bejelentkezés",c.user==="admin"?"Admin":c.user);
+  $("#lPass").value=""; unlock(); log("info","Sikeres bejelentkezés",res.offline?"Admin · offline":"Admin");
 });
 $("#logoutBtn").addEventListener("click",lock);
 function openPassChange(){
   const cur=el("input",{id:"pwCur",type:"password",autocomplete:"current-password"}), nw=el("input",{id:"pwNew",type:"password",autocomplete:"new-password"}), nw2=el("input",{id:"pwNew2",type:"password",autocomplete:"new-password"}), st=el("div",{class:"status"});
-  openModal("Jelszó módosítása",el("form",{class:"stack",onsubmit:async e=>{ e.preventDefault(); const c=getCred();
-      if (await pbkdf2(cur.value,c.salt,c.iter)!==c.hash){ st.className="status bad"; st.textContent="A jelenlegi jelszó nem jó."; return; }
+  openModal("Jelszó módosítása",el("form",{class:"stack",onsubmit:async e=>{ e.preventDefault();
+      if (await pbkdf2(cur.value,"jarvis-access-v1",250000)!==accessKey()){ st.className="status bad"; st.textContent="A jelenlegi jelszó nem jó."; return; }
       if (nw.value.length<8){ st.className="status bad"; st.textContent="Az új jelszó legalább 8 karakter legyen."; return; }
       if (nw.value!==nw2.value){ st.className="status bad"; st.textContent="A két új jelszó nem egyezik."; return; }
-      const salt=[...crypto.getRandomValues(new Uint8Array(16))].map(b=>b.toString(16).padStart(2,"0")).join("");
-      const nc={user:c.user,salt,iter:250000,hash:await pbkdf2(nw.value,salt,250000)};
       const remembered=!!localStorage.getItem("jarvis:auth");
-      try{ localStorage.setItem("jarvis:cred",JSON.stringify(nc)); if(remembered) localStorage.setItem("jarvis:auth",nc.hash); sessionStorage.setItem("jarvis:auth",nc.hash); }catch(_){}
-      await deriveSessionKeys(nw.value,remembered?localStorage:sessionStorage);
-      closeModal(); toast("Jelszó módosítva. Másold be az új hozzáférési kódot a Cloudflare-be (Beállítások).");
-      syncPush(true); }},
-    el("p",{class:"hint"},"Az új jelszó csak ezen az eszközön érvényes, a többi eszközön is változtasd meg ugyanerre. Felhő mentésnél utána az új hozzáférési kódot (Beállítások) be kell másolni a Cloudflare ACCESS_KEY titokhoz."),
+      await deriveSessionKeys(nw.value,remembered?localStorage:sessionStorage); await saveDeviceVerifier(nw.value);
+      const nak=accessKey();
+      openModal("Még egy lépés",el("div",{class:"stack"},
+        el("p",{},"Az új jelszó csak akkor lép életbe, ha a Cloudflare-ben az ACCESS_KEY titkot lecseréled erre az új hozzáférési kódra:"),
+        el("button",{class:"btn",type:"button",onclick:()=>copyText(nak),html:svg("copy")+"Új hozzáférési kód másolása"}),
+        el("p",{class:"hint"},"Cloudflare → a Worker → Settings → Variables and Secrets → ACCESS_KEY → szerkesztés → beillesztés → Deploy. Utána a többi eszközön már az új jelszóval lépj be."),
+        el("button",{class:"btn primary",type:"button",onclick:()=>{ closeModal(); syncPush(true); toast("Jelszó módosítva"); }},"Kész, bemásoltam"))); }},
+    el("p",{class:"hint"},"Az új jelszót a Cloudflare-híd ellenőrzi, ezért a végén egy új hozzáférési kódot kell bemásolnod a Cloudflare-be."),
     el("label",{for:"pwCur"},"Jelenlegi jelszó"),cur,el("label",{for:"pwNew"},"Új jelszó"),nw,el("label",{for:"pwNew2"},"Új jelszó még egyszer"),nw2,st,
     el("button",{class:"btn primary",type:"submit"},"Mentés")));
   cur.focus();
@@ -2048,6 +2101,107 @@ function setIncog(on,announce){
 $("#incogBtn").innerHTML='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><path d="M3 3l18 18"/></svg>';
 $("#incogBtn").addEventListener("click",()=>setIncog(!incog,true));
 
+// ================= „Hé Jarvis” ébresztőszó =================
+// Chrome/Edge: a böngésző folyamatos felismerője figyeli a „Jarvis” szót (helyben, a böngészőben).
+// Opera és társai: csak beszéd hallatán vesz fel egy rövid (max. 4 mp) részletet, és azt íratja át a Groq-kal.
+const WAKE_RE=/\b(jarvis|jarvisz|dzsarvisz|dzservisz|jervis|jarvi|jarwis)\b/i;
+let wake={on:false,rec:null,stream:null,ac:null,timer:null,mr:null,chunks:null,segStart:0,paused:false};
+const wakeBusy=()=>wake.paused||recOn||sttBusy||!!running||speaking||convo||document.body.classList.contains("locked");
+function afterWake(text){ const m=text.match(WAKE_RE); return m?text.slice(m.index+m[0].length).replace(/^[\s,.!?:;-]+/,"").trim():""; }
+function wakeHit(rest){
+  if (wakeBusy()) return;
+  stopWakeEngines(); toast(isEN()?"Yes, sir?":"Igen, uram?",true);
+  if (view!=="command") showView("command");
+  convo=settings.convoMode!==false; voiceChat=true;
+  if (rest && rest.split(/\s+/).length>=2) handleSpoken(rest);
+  else speak(isEN()?"Yes, sir?":"Igen, uram?").then(()=>listenAgain());
+}
+function pauseWake(){ wake.paused=true; stopWakeEngines(); }
+function resumeWake(){ wake.paused=false; if (settings.wake) setTimeout(()=>{ if (!wakeBusy()) startWake(); },600); renderWakeUI(); }
+function stopWakeEngines(){
+  try{ wake.rec&&(wake.rec.onend=null,wake.rec.abort()); }catch(_){} wake.rec=null;
+  clearInterval(wake.timer); wake.timer=null; try{ wake.mr&&wake.mr.state!=="inactive"&&wake.mr.stop(); }catch(_){} wake.mr=null;
+  try{ wake.stream&&wake.stream.getTracks().forEach(t=>t.stop()); }catch(_){} wake.stream=null; try{ wake.ac&&wake.ac.close(); }catch(_){} wake.ac=null;
+  wake.on=false; renderWakeUI();
+}
+function renderWakeUI(){ const l=$("#wakeLbl"); if (l) l.textContent=settings.wake?(wake.on?(isEN()?"Say “Jarvis…”":"Mondd: „Jarvis…”"):(isEN()?"Wake word paused":"Ébresztőszó szünetel")):""; }
+async function startWake(){
+  if (!settings.wake || wake.on || wakeBusy()) return;
+  if (sttMode==="native" && NATIVE_SR){
+    const r=new NATIVE_SR(); r.lang=isEN()?"en-US":(settings.lang||"hu-HU"); r.continuous=true; r.interimResults=false; wake.rec=r; wake.on=true;
+    r.onresult=e=>{ for (let i=e.resultIndex;i<e.results.length;i++){ const t=e.results[i][0].transcript; if (e.results[i].isFinal && WAKE_RE.test(t)) return wakeHit(afterWake(t)); } };
+    r.onerror=e=>{ if (["network","service-not-allowed"].includes(e.error)){ sttMode="rec"; wake.on=false; wake.rec=null; setTimeout(startWake,300); } };
+    r.onend=()=>{ wake.on=false; wake.rec=null; if (settings.wake && !wakeBusy()) setTimeout(startWake,400); renderWakeUI(); };
+    try{ r.start(); }catch(_){ wake.on=false; }
+    renderWakeUI(); return;
+  }
+  const prov=sttProvider(); if (!prov){ toast("Az ébresztőszóhoz ebben a böngészőben Groq-kulcs kell (AI mag → Groq).",true); return; }
+  try{ wake.stream=await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true,noiseSuppression:true}}); }catch(_){ toast("A mikrofon nincs engedélyezve",true); settings.wake=false; saveAll(); return; }
+  if (!settings.wake || wakeBusy()){ stopWakeEngines(); return; }
+  wake.ac=new (window.AudioContext||window.webkitAudioContext)(); const an=wake.ac.createAnalyser(); an.fftSize=1024; wake.ac.createMediaStreamSource(wake.stream).connect(an);
+  const buf=new Float32Array(an.fftSize); let floor=0.01, silent=0; wake.on=true; renderWakeUI();
+  wake.timer=setInterval(()=>{
+    if (wakeBusy()){ stopWakeEngines(); return; }
+    an.getFloatTimeDomainData(buf); let s=0; for (const v of buf) s+=v*v; const rms=Math.sqrt(s/buf.length);
+    const th=Math.max(0.015,floor*3);
+    if (!wake.mr){
+      if (rms>th){ wake.chunks=[]; wake.mr=new MediaRecorder(wake.stream); wake.mr.ondataavailable=e=>{ if(e.data.size) wake.chunks.push(e.data); }; wake.segStart=Date.now(); silent=0;
+        const mr=wake.mr; mr.onstop=async()=>{ const dur=Date.now()-wake.segStart, chunks=wake.chunks; if (wake.mr===mr) wake.mr=null;
+          if (dur<400||dur>5000||!chunks.length) return;
+          try{ const t=await transcribe(new Blob(chunks,{type:mr.mimeType||"audio/webm"}),prov); if (WAKE_RE.test(t)) wakeHit(afterWake(t)); }catch(_){} };
+        mr.start(200); }
+      else floor=floor*0.95+rms*0.05;
+    } else {
+      if (rms<th) silent+=100; else silent=0;
+      if (silent>=700 || Date.now()-wake.segStart>4000){ try{ wake.mr.stop(); }catch(_){} }
+    }
+  },100);
+}
+
+// ================= Jarvis cselekvései és emlékeztetők =================
+let reminders=store.get("reminders",[]);
+function actionInstructions(){
+  const now=new Date(), iso=new Date(now.getTime()-now.getTimezoneOffset()*60000).toISOString().slice(0,16);
+  return `\n\nCSELEKVÉSEK: Ha a felhasználó KIFEJEZETTEN kéri, hogy vegyél fel feladatot vagy naptáreseményt, állíts emlékeztetőt vagy időzítőt, indíts fókuszt, vagy jegyezz meg valamit, a válaszod LEGVÉGÉRE írj egy külön sort pontosan így:
+<<JARVIS_ACTIONS [ ... ]>>
+A tömb elemei (csak a szükségeseket használd):
+{"type":"add_task","title":"...","due":"YYYY-MM-DDTHH:MM vagy üres","prio":"low|mid|high"}
+{"type":"add_event","title":"...","date":"YYYY-MM-DD","time":"HH:MM vagy üres","dur":30}
+{"type":"reminder","minutes":10,"text":"..."}  vagy  {"type":"reminder","at":"YYYY-MM-DDTHH:MM","text":"..."}
+{"type":"start_focus","minutes":25,"task":"..."}
+{"type":"remember","text":"..."}
+A szövegben röviden erősítsd meg, mit intéztél. Ha nincs ilyen kérés, ne írj ilyen sort. A pontos idő most: ${iso} (${now.toLocaleDateString("hu-HU",{weekday:"long"})}).`;
+}
+function runActionsFromFinal(){
+  const real=history.filter(h=>!h.note&&!h.error&&!h.pending); const h=real[real.length-1]; if (!h||!h.text) return;
+  const m=h.text.match(/<<\s*JARVIS_ACTIONS\s*(\[[\s\S]*?\])\s*>>/); if (!m) return;
+  h.text=h.text.replace(m[0],"").trim(); let acts=[]; try{ acts=JSON.parse(m[1]); }catch(_){ saveAll(); renderAll(); return; }
+  const done=[];
+  for (const a of (Array.isArray(acts)?acts:[]).slice(0,8)){
+    try{
+      if (a.type==="add_task" && a.title){ tasks.push({id:uid(),title:String(a.title).slice(0,200),due:/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(a.due||"")?a.due:"",prio:["low","mid","high"].includes(a.prio)?a.prio:"mid",done:false,created:Date.now()}); done.push((isEN()?"Task: ":"Feladat: ")+a.title); }
+      else if (a.type==="add_event" && a.title && /^\d{4}-\d\d-\d\d$/.test(a.date||"")){ events.push({id:uid(),title:String(a.title).slice(0,200),date:a.date,time:/^\d\d:\d\d$/.test(a.time||"")?a.time:"",dur:Math.max(0,Math.min(600,+a.dur||30))}); done.push((isEN()?"Event: ":"Esemény: ")+a.title+" ("+a.date+(a.time?" "+a.time:"")+")"); }
+      else if (a.type==="reminder" && a.text){ const at=a.at&&/^\d{4}-\d\d-\d\dT\d\d:\d\d$/.test(a.at)?new Date(a.at).getTime():Date.now()+Math.max(1,Math.min(10080,+a.minutes||5))*60000; reminders.push({id:uid(),at,text:String(a.text).slice(0,200)}); store.set("reminders",reminders); done.push((isEN()?"Reminder: ":"Emlékeztető: ")+a.text+" · "+new Date(at).toLocaleTimeString(LOC(),{hour:"2-digit",minute:"2-digit"})); }
+      else if (a.type==="start_focus"){ const mins=Math.max(5,Math.min(240,+a.minutes||25)); setTimeout(()=>startFocus({dur:mins,task:a.task||"",taskId:null,dnd:true,noise:false,voice:false}),1500); done.push((isEN()?"Focus: ":"Fókusz: ")+mins+(isEN()?" min":" perc")); }
+      else if (a.type==="remember" && a.text){ memories.unshift({id:uid(),text:String(a.text).slice(0,300),created:Date.now()}); done.push((isEN()?"Remembered: ":"Megjegyezve: ")+a.text); }
+    }catch(_){}
+  }
+  for (const d of done) log("ok",d,"Jarvis");
+  if (done.length){ h.actions=done; toast((isEN()?"Done: ":"Elintézve: ")+done.join(" · ").slice(0,120),true); }
+  saveAll(); renderAll(); renderNav();
+}
+function checkReminders(){
+  const now=Date.now(), due=reminders.filter(r=>r.at<=now); if (!due.length) return;
+  reminders=reminders.filter(r=>r.at>now); store.set("reminders",reminders);
+  for (const r of due){ const msg=(isEN()?"Reminder, sir: ":"Emlékeztető, uram: ")+r.text; toast(msg,true); notifyUser(msg); log("warn",(isEN()?"Reminder: ":"Emlékeztető: ")+r.text,""); if (!recOn) speak(msg); }
+}
+setInterval(checkReminders,5000);
+
+// ================= webes keresés =================
+const WEB_RE=/\b(ma|mai|most|jelenleg|aktu(a|á)lis|leg(u|ú)jabb|h(i|í)r(ek|t)?|(a|á)rfolyam|(a|á)r(a|ak)?|mennyibe|id(o|ő)j(a|á)r(a|á)s|eredm(e|é)ny|ki nyert|mikor lesz|keress|keresd|n(e|é)zz? ut(a|á)na|google|interneten|neten|today|now|current|latest|news|price|weather|score|who won|search|look up)\b/i;
+const needsWeb=t=>settings.webSearch!==false && WEB_RE.test(t||"");
+function webProvider(){ if (hasKey("gemini")&&!(exhausted.gemini>Date.now())) return {p:"gemini",model:models.gemini||"gemini-2.5-flash"}; if (hasKey("groq")&&!(exhausted.groq>Date.now())) return {p:"groq",model:"groq/compound-mini"}; return null; }
+
 // ================= fókusz mód =================
 // Időzített fókusz-munkamenet: választott feladat, „ne zavarj”, háttérzaj, Jarvis bemondja az elejét és a végét, utána szünet.
 let focusS=store.get("focusS",null), focusLog=store.get("focusLog",[]), noiseCtx=null;
@@ -2139,8 +2293,8 @@ finishOpenRouterLogin();
 // fókusz folytatása újratöltés után (régi „fókusz be” állapot időzítő nélkül → kikapcsol)
 if (focusS){ settings.focus=true; window.__jfQuiet=focusS.phase==="work"&&!!focusS.dnd; applyFocus(); focusTick(); } else if (settings.focus){ settings.focus=false; applyFocus(); }
 try{ if (sessionStorage.getItem("jarvis:incog")==="1"){ sessionStorage.removeItem("jarvis:incog"); setIncog(true,false); } }catch(_){}
-if (authToken()===getCred().hash && accessKey() && sget("jarvis:sk")) unlock();
-else if (authToken()===getCred().hash){
+if (authToken() && accessKey() && sget("jarvis:sk")) unlock();
+else if (authToken()){
   // Régi bejelentkezés felhő-kulcs nélkül: egyszeri újbelépés kell, utána minden automatikus.
   lock(); $("#lUser").value="Admin"; $("#lRemember").checked=true; $("#lPass").focus();
   $("#lErr").style.color="var(--cyan)"; $("#lErr").textContent="Egyszeri újbelépés kell, hogy a felhő mentés automatikus legyen.";
