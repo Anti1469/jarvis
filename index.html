@@ -14,7 +14,7 @@
   --line:rgba(86,190,255,.15); --line-2:rgba(86,200,255,.38);
   --cyan:#3fd6ff; --fg:#d6eaf6; --muted:#7896ad;
   --ok:#3ee6a1; --warn:#ffb547; --err:#ff5d6c; --violet:#a77bff; --blue:#5aa8ff;
-  --claude:#ff9b6b; --openai:#3ee6a1; --gemini:#6aa8ff; --groq:#ff6a4d; --openrouter:#a99bff; --ollama:#d0dae5;
+  --claude:#ff9b6b; --openai:#3ee6a1; --gemini:#6aa8ff; --groq:#ff6a4d; --openrouter:#a99bff; --ollama:#d0dae5; --claudecode:#ffb37a;
   --f-hud:"Orbitron","Rajdhani",ui-sans-serif,system-ui,sans-serif;
   --f-label:"Rajdhani","Inter",ui-sans-serif,system-ui,sans-serif;
   --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -597,7 +597,11 @@ const PROVIDERS = {
   gemini:{name:"Gemini",vendor:"Google",kind:"gemini",keyUrl:"https://aistudio.google.com/apikey",keyHint:"AIza…",models:["gemini-2.5-flash","gemini-2.5-pro"]},
   groq:{name:"Groq",vendor:"Gyors nyílt modellek",kind:"oa",base:"https://api.groq.com/openai/v1",keyUrl:"https://console.groq.com/keys",keyHint:"gsk_…",models:["llama-3.3-70b-versatile","llama-3.1-8b-instant"]},
   openrouter:{name:"OpenRouter",vendor:"Több száz modell egy kulccsal",kind:"oa",base:"https://openrouter.ai/api/v1",keyUrl:"https://openrouter.ai/keys",keyHint:"sk-or-…",models:["openrouter/auto"]},
-  ollama:{name:"Ollama",vendor:"Helyi modellek a gépeden",kind:"oa",local:true,keyHint:"http://localhost:11434/v1",keyUrl:"https://ollama.com/download",models:["llama3.2"]}
+  claudecode:{name:"Claude Code",vendor:"A gépeden futó Claude Code, az előfizetéseddel",kind:"cc",local:true,keyHint:"http://127.0.0.1:8765",defAddr:"http://127.0.0.1:8765",
+    hint:"Csak azon a gépen működik, ahol a Claude Code telepítve van és a híd fut (Jarvis-Claude-inditas.bat). API-kulcs nem kell.",
+    linkText:"Híd letöltése ↗",keyUrl:"https://github.com/Anti1469/jarvis/tree/main/helyi",models:["sonnet","opus","haiku"]},
+  ollama:{name:"Ollama",vendor:"Helyi modellek a gépeden",kind:"oa",local:true,keyHint:"http://localhost:11434/v1",defAddr:"http://localhost:11434/v1",
+    hint:"Csak azon a gépen működik, ahol az Ollama fut. Indítás: OLLAMA_ORIGINS=* ollama serve",linkText:"Ollama letöltése ↗",keyUrl:"https://ollama.com/download",models:["llama3.2"]}
 };
 const PIDS = Object.keys(PROVIDERS);
 const pColor = p => `var(--${p})`;
@@ -605,25 +609,25 @@ const pColor = p => `var(--${p})`;
 const DEFAULT_TEAM = [
   {name:"Kutató ügynök",provider:"gemini",instruction:"Gyűjtsd össze a feladathoz szükséges tényeket, szempontokat és ötleteket. Szedd pontokba, tömören. A végleges szöveget még ne írd meg."},
   {name:"Író ügynök",provider:"openai",instruction:"A kutató anyagára építve készítsd el a feladat kért végeredményét, igényesen és teljes terjedelemben."},
-  {name:"Ellenőr ügynök",provider:"claude",instruction:"Ellenőrizd az író munkáját: hibák, hiányok, pontatlanságok, stílus. Írd le röviden, mit javítottál, majd add meg a javított, végleges változatot."}
+  {name:"Ellenőr ügynök",provider:"gemini",instruction:"Ellenőrizd az író munkáját: hibák, hiányok, pontatlanságok, stílus. Írd le röviden, mit javítottál, majd add meg a javított, végleges változatot."}
 ];
 const BUILTIN_WF = [
   {id:"wf-std",name:"Kutatás → Írás → Ellenőrzés",desc:"Általános szövegek, cikkek, leírások.",team:DEFAULT_TEAM},
   {id:"wf-brain",name:"Ötletbörze",desc:"Két AI egymástól függetlenül ötletel, a harmadik összegzi és rangsorolja.",team:[
     {name:"Ötletgyáros A",provider:"openai",instruction:"Adj 8-10 merész, kreatív ötletet a feladatra, mindegyikhez egy mondat indoklással."},
     {name:"Ötletgyáros B",provider:"gemini",instruction:"Adj 8-10 olyan ötletet, ami eltér az előző tagétól: gyakorlatias, olcsón megvalósítható irányok."},
-    {name:"Összegző",provider:"claude",instruction:"Válaszd ki az 5 legjobb ötletet a két listából, rangsorold őket, és mindegyikhez írd le az első 3 lépést."}]},
+    {name:"Összegző",provider:"gemini",instruction:"Válaszd ki az 5 legjobb ötletet a két listából, rangsorold őket, és mindegyikhez írd le az első 3 lépést."}]},
   {id:"wf-code",name:"Kódfejlesztés",desc:"Terv, megvalósítás és kódellenőrzés.",team:[
-    {name:"Tervező",provider:"claude",instruction:"Készíts rövid műszaki tervet: felépítés, fájlok, fő függvények, buktatók. Kódot még ne írj."},
+    {name:"Tervező",provider:"gemini",instruction:"Készíts rövid műszaki tervet: felépítés, fájlok, fő függvények, buktatók. Kódot még ne írj."},
     {name:"Fejlesztő",provider:"openai",instruction:"A terv alapján írd meg a teljes, futtatható kódot, kódblokkokban."},
     {name:"Tesztelő",provider:"gemini",instruction:"Nézd át a kódot: hibák, szélső esetek, biztonság. Sorold fel a gondokat, majd add meg a javított kódot."}]},
   {id:"wf-debate",name:"Vita és döntés",desc:"Érvek mellette és ellene, majd egy pártatlan döntés.",team:[
     {name:"Mellette",provider:"openai",instruction:"Érvelj meggyőzően a felvetés MELLETT. Konkrét érvek, példák."},
     {name:"Ellene",provider:"gemini",instruction:"Érvelj meggyőzően a felvetés ELLEN, és reagálj az előző tag érveire."},
-    {name:"Bíró",provider:"claude",instruction:"Mérlegeld pártatlanul mindkét oldalt, és hozz indokolt döntést vagy ajánlást."}]},
+    {name:"Bíró",provider:"gemini",instruction:"Mérlegeld pártatlanul mindkét oldalt, és hozz indokolt döntést vagy ajánlást."}]},
   {id:"wf-trans",name:"Fordítás és lektorálás",desc:"Pontos fordítás, majd anyanyelvi szintű csiszolás.",team:[
     {name:"Fordító",provider:"openai",instruction:"Fordítsd le pontosan a szöveget a kért nyelvre (ha nincs megadva: magyarról angolra, egyébként magyarra)."},
-    {name:"Lektor",provider:"claude",instruction:"Csiszold a fordítást természetes, anyanyelvi szintűre. Csak a végleges szöveget add vissza."}]}
+    {name:"Lektor",provider:"gemini",instruction:"Csiszold a fordítást természetes, anyanyelvi szintűre. Csak a végleges szöveget add vissza."}]}
 ];
 const BUILTIN_SKILLS = [
   {id:"sk-sum",name:"Összefoglalás",desc:"Hosszú szövegből rövid, pontokba szedett kivonat.",template:"Foglald össze pontokba szedve, a legfontosabb tanulságokkal:\n\n{input}"},
@@ -771,10 +775,14 @@ function renderOp(){ $("#opName").textContent=settings.opName||"Operátor"; $("#
 $("#opBtn").addEventListener("click",()=>openSettings()); $("#setBtn").addEventListener("click",()=>openSettings());
 
 // ================= API =================
-const configured = () => PIDS.filter(p=>(keys[p]||"").trim());
+const isSubToken=k=>/^sk-ant-(oat|sid)/i.test((k||"").trim());
+const SUB_TOKEN_MSG="Ez a Claude előfizetés tokenje (sk-ant-oat…), nem API-kulcs, ezért a Jarvis nem használhatja. API-kulcs: console.anthropic.com, vagy cseréld a Claude-ot másik AI-ra.";
+const hasKey=p=>{ const k=(keys[p]||"").trim(); return !!k && !(p==="claude"&&isSubToken(k)); };
+const configured = () => PIDS.filter(hasKey);
 async function callAI(provider,model,system,user,signal){
   const P=PROVIDERS[provider], key=(keys[provider]||"").trim();
   if (!key) throw new Error(`Nincs beállítva: ${P.name}. Add meg az AI mag oldalon.`);
+  if (provider==="claude" && isSubToken(key)) throw new Error(SUB_TOKEN_MSG+" Tipp: használd helyette a „Claude Code” szolgáltatót.");
   stats.apiCalls++; let res,data;
   if (P.kind==="anthropic"){
     res=await fetch("https://api.anthropic.com/v1/messages",{method:"POST",signal,headers:{"content-type":"application/json","x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"},
@@ -787,6 +795,11 @@ async function callAI(provider,model,system,user,signal){
       body:JSON.stringify({systemInstruction:{parts:[{text:system}]},contents:[{role:"user",parts:[{text:user}]}]})});
     data=await res.json().catch(()=>({})); if(!res.ok) throw apiError(provider,res,data?.error?.message);
     return (data.candidates?.[0]?.content?.parts||[]).map(p=>p.text||"").join("");
+  }
+  if (P.kind==="cc"){
+    res=await fetch(key.replace(/\/+$/,"")+"/chat",{method:"POST",signal,headers:{"content-type":"application/json"},body:JSON.stringify({system,user,model})});
+    data=await res.json().catch(()=>({})); if(!res.ok) throw new Error(`Claude Code: ${data.message||("hiba "+res.status)}`);
+    return data.text||"";
   }
   const base = P.local ? key.replace(/\/+$/,"") : P.base;
   const h={"content-type":"application/json"}; if(!P.local) h.authorization="Bearer "+key;
@@ -807,13 +820,20 @@ function netMsg(provider,e){
   if (e.name==="AbortError") return "Leállítva.";
   if (e instanceof TypeError) return provider==="ollama"
     ? "Ollama: nem érhető el. Fut az Ollama a gépeden? Indítsd el így: OLLAMA_ORIGINS=* ollama serve"
-    : `${PROVIDERS[provider].name}: nem sikerült elérni a szolgáltatót. Ellenőrizd az internetkapcsolatot és a kulcsot.`;
+    : provider==="claudecode"
+    ? "Claude Code: a híd nem fut ezen a gépen. Indítsd el a Jarvis-Claude-inditas.bat fájlt (dupla kattintás), és hagyd nyitva az ablakát."
+    :`${PROVIDERS[provider].name}: nem sikerült elérni a szolgáltatót. Ellenőrizd az internetkapcsolatot és a kulcsot.`;
   return e.message;
 }
 async function listModels(provider){
   const P=PROVIDERS[provider], key=(keys[provider]||"").trim();
   if (!key) throw new Error(P.local?"Előbb add meg a címet.":"Előbb add meg a kulcsot.");
   let res,data;
+  if (provider==="claude" && isSubToken(key)) throw new Error(SUB_TOKEN_MSG);
+  if (P.kind==="cc"){
+    res=await fetch(key.replace(/\/+$/,"")+"/health"); data=await res.json().catch(()=>({}));
+    if(!res.ok||!data.ok) throw new Error("Claude Code: a híd nem válaszol megfelelően."); return data.models||P.models;
+  }
   if (P.kind==="anthropic"){
     res=await fetch("https://api.anthropic.com/v1/models?limit=100",{headers:{"x-api-key":key,"anthropic-version":"2023-06-01","anthropic-dangerous-direct-browser-access":"true"}});
     data=await res.json().catch(()=>({})); if(!res.ok) throw apiError(provider,res,data?.error?.message); return (data.data||[]).map(m=>m.id);
@@ -854,7 +874,7 @@ Csak a saját szerepedet töltsd be. Építs a többiek munkájára, ne ismétel
   user+=`\nMost te következel (${round}. kör, ${idx+1}/${team.length}. lépés): ${member.name}. ${member.instruction}`;
   return {system,user};
 }
-const missingKeys = () => [...new Set(team.map(m=>m.provider))].filter(p=>!(keys[p]||"").trim());
+const missingKeys = () => [...new Set(team.map(m=>m.provider))].filter(p=>!hasKey(p));
 
 // ================= futtatás =================
 async function run({newRound,note}){
@@ -982,7 +1002,7 @@ function renderQuick(){
     ["refresh","Még egy kör",()=>{ $("#nextBox").scrollIntoView({behavior:"smooth",block:"center"}); $("#note").focus(); },!!running||!has||history.some(h=>h.error)]];
   $("#quick").replaceChildren(...q.map(([i,t,fn,dis])=>el("button",{onclick:fn,disabled:dis,html:svg(i)},t)));
 }
-function provStatus(id){ const has=!!(keys[id]||"").trim(); if(!has) return ["Nincs beállítva",""]; if(keyOk[id]===true) return ["Csatlakoztatva","ok"]; if(keyOk[id]===false) return ["Hibás kulcs","warn"]; return ["Beállítva","ok"]; }
+function provStatus(id){ const has=!!(keys[id]||"").trim(); if(!has) return ["Nincs beállítva",""]; if(id==="claude"&&isSubToken(keys[id])) return ["Előfizetési token","warn"]; if(keyOk[id]===true) return ["Csatlakoztatva","ok"]; if(keyOk[id]===false) return ["Hibás kulcs","warn"]; return ["Beállítva","ok"]; }
 function renderLLM(){
   $("#llms").replaceChildren(...PIDS.map(id=>{ const s=provStatus(id);
     return el("button",{class:"llm",onclick:()=>showView("core")},ico("cpu",pColor(id)),el("div",{style:"flex:1;min-width:0"},el("b",{},PROVIDERS[id].name),el("small",{class:s[1]},s[0]))); }));
@@ -1112,7 +1132,7 @@ function renderTeam(){
   if (!team.length) t.append(el("div",{class:"empty-s"},"Nincs ügynök. Adj hozzá egyet, vagy tölts be egy munkafolyamatot."));
 }
 $("#addMember").innerHTML=svg("plus")+"Új ügynök";
-$("#addMember").addEventListener("click",()=>{ team.push({id:uid(),name:"Új ügynök",provider:"claude",instruction:"Írd le, mi legyen a feladata."}); saveAll(); renderTeam(); renderNav(); });
+$("#addMember").addEventListener("click",()=>{ team.push({id:uid(),name:"Új ügynök",provider:"gemini",instruction:"Írd le, mi legyen a feladata."}); saveAll(); renderTeam(); renderNav(); });
 $("#saveWfBtn").innerHTML=svg("flow")+"Mentés munkafolyamatként";
 $("#saveWfBtn").addEventListener("click",()=>{
   const inp=el("input",{id:"wfName",placeholder:"Pl. Blogcikk csapat"}), d=el("input",{id:"wfDesc",placeholder:"Rövid leírás (nem kötelező)"});
@@ -1142,10 +1162,12 @@ function renderKeys(){
     k.append(el("div",{class:"panel stack"},
       el("div",{class:"row"},ico("cpu",pColor(id)),el("div",{style:"min-width:0"},el("b",{style:"font:700 16px var(--f-label)"},P.name),el("div",{class:"hint"},P.vendor)),el("span",{class:"grow"}),el("span",{class:"tag "+(s[1]||"mute")},s[0])),
       el("label",{for:"key-"+id},P.local?"Szerver címe":"API-kulcs"),
-      el("div",{class:"row"},el("div",{class:"grow"},key),show),
-      P.local?el("p",{class:"hint"},"Csak azon a gépen működik, ahol az Ollama fut. Indítás: OLLAMA_ORIGINS=* ollama serve"):null,
+      el("div",{class:"row"},el("div",{class:"grow"},key),show,
+        P.local&&!keys[id]?el("button",{class:"btn small",type:"button",onclick:()=>{ key.value=P.defAddr; keys[id]=P.defAddr; delete keyOk[id]; saveAll(); renderNav(); load.click(); }},"Bekapcsolás"):null),
+      id==="claude"&&isSubToken(keys[id])?el("p",{class:"hint",style:"color:var(--warn)"},SUB_TOKEN_MSG):null,
+      P.hint?el("p",{class:"hint"},P.hint):null,
       el("label",{for:"model-"+id},"Modell"),model,
-      el("div",{class:"row"},load,el("a",{href:P.keyUrl,target:"_blank",rel:"noopener",style:"font:600 13px var(--f-label)"},P.local?"Ollama letöltése ↗":"Kulcs létrehozása ↗")),
+      el("div",{class:"row"},load,el("a",{href:P.keyUrl,target:"_blank",rel:"noopener",style:"font:600 13px var(--f-label)"},P.linkText||"Kulcs létrehozása ↗")),
       status));
   }
 }
@@ -1323,7 +1345,7 @@ let trCache={src:"",out:""};
 async function toEnglish(text){
   if (trCache.src===text) return trCache.out;
   if (!/[áéíóöőúüű]/i.test(text)) return text; // már angol (nincs magyar ékezet)
-  const prov=["claude","openai","gemini","groq","openrouter","ollama"].find(p=>(keys[p]||"").trim());
+  const prov=["gemini","openai","groq","openrouter","claude","claudecode","ollama"].find(hasKey);
   if (!prov) return text;
   const out=(await callAI(prov,models[prov],"Translate the user's text into natural, spoken British English, the way J.A.R.V.I.S. from the films would say it: calm, polite, concise. If it is already English, return it unchanged. Output only the text to be spoken, without notes, quotes, lists or markdown.",text.slice(0,3000))).trim();
   saveLocal(); trCache={src:text,out:out||text}; return trCache.out;
@@ -1351,7 +1373,7 @@ $("#micBig").addEventListener("click",toggleMic); $("#micSmall").addEventListene
 
 // ================= vezetői összefoglaló =================
 $("#briefBtn").addEventListener("click",async()=>{
-  const prov=["claude","openai","gemini","groq","openrouter","ollama"].find(p=>(keys[p]||"").trim());
+  const prov=["gemini","openai","groq","openrouter","claude","claudecode","ollama"].find(hasKey);
   const body=el("div",{class:"stack"}); openModal("Vezetői összefoglaló",body);
   if (!prov){ body.append(el("p",{class:"hint"},"Ehhez legalább egy AI-szolgáltatót be kell állítanod az AI mag oldalon."),el("button",{class:"btn",onclick:()=>{ closeModal(); showView("core"); }},"AI mag megnyitása")); return; }
   body.append(el("div",{class:"note"},el("span",{class:"dots"},el("i"),el("i"),el("i"))," ",`${PROVIDERS[prov].name} összeállítja a napod áttekintését…`));
