@@ -270,6 +270,13 @@ label.chk{display:flex;align-items:center;gap:8px;text-transform:none;letter-spa
 .toast{position:fixed;left:50%;bottom:max(100px,calc(env(safe-area-inset-bottom,0px) + 100px));transform:translateX(-50%);background:#0e2b44;border:1px solid var(--cyan);color:#e6f6ff;padding:9px 16px;border-radius:99px;font:600 14px var(--f-label);z-index:60;max-width:calc(100% - 32px);box-shadow:0 0 18px rgba(63,214,255,.35)}
 .wrap-views{display:flex;flex-direction:column;gap:14px;padding-bottom:6px}
 details summary{cursor:pointer;font:700 13px var(--f-label);letter-spacing:.12em;text-transform:uppercase}
+body.incog{--cyan:#c18cff;--line:rgba(180,130,255,.18);--line-2:rgba(190,140,255,.45);--blue:#c18cff;
+  background-image:radial-gradient(1200px 600px at 55% 10%,rgba(140,60,210,.22),transparent 60%),radial-gradient(800px 500px at 0% 100%,rgba(90,40,170,.16),transparent 60%),radial-gradient(rgba(190,140,255,.07) 1px,transparent 1.2px)}
+body.incog #orb{filter:hue-rotate(75deg) saturate(1.2)}
+body.incog .orb .label b{color:#e4c9ff;text-shadow:0 0 18px rgba(190,120,255,.9),0 0 40px rgba(160,90,255,.5)}
+body.incog .pill .dot{background:var(--cyan);box-shadow:0 0 8px var(--cyan)} body.incog .pill .st{color:var(--cyan)}
+body.incog .btn.primary{background:linear-gradient(180deg,#a86cf0,#7a3fd0);border-color:#c79bff;color:#fff;box-shadow:0 0 18px rgba(170,110,255,.4)}
+body.incog .panel::before,body.incog .panel::after{border-color:var(--cyan)}
 body.focus .nf{display:none!important}
 body.focus .g1{grid-template-columns:minmax(0,1fr)}
 body.focus .orb{min-height:200px}
@@ -367,6 +374,7 @@ body:not(.locked) .login{display:none}
       <div class="clock"><div class="d" id="date"></div><div class="t" id="time"></div></div>
       <div class="top-r">
         <div class="search"><span id="sIco"></span><input id="search" type="search" placeholder="Keresés…" autocomplete="off" aria-label="Keresés"><div class="drop" id="sDrop" hidden></div></div>
+        <button class="ibtn" id="incogBtn" aria-label="Inkognitó mód" title="Inkognitó mód"></button>
         <button class="ibtn hide-s" id="focusBtn" aria-label="Fókusz mód"></button>
         <div style="position:relative"><button class="ibtn" id="bellBtn" aria-label="Értesítések"></button><div class="drop" id="bellDrop" hidden></div></div>
         <button class="ibtn" id="setBtn" aria-label="Beállítások"></button>
@@ -680,6 +688,7 @@ function upsertConv(){
 }
 function saveAll(){ saveLocal(); if (typeof markDirty==="function") markDirty(); }
 function saveLocal(){
+  if (typeof incog!=="undefined" && incog) return; // inkognitóban semmi nem mentődik
   upsertConv();
   const S={keys,keyOk,models,team,history,task,feed:feed.slice(0,40),tasks,events,memories,kb,skills:mySkills,workflows:myWf,convs,convId,stats,settings};
   for (const [k,v] of Object.entries(S)) store.set(k,v);
@@ -711,7 +720,7 @@ function renderMd(text){
   else { div.style.whiteSpace="pre-wrap"; div.textContent=text; }
   return div;
 }
-function log(type,text,sub){ feed.unshift({t:Date.now(),type,text,sub}); feed=feed.slice(0,40); store.set("feed",feed); if(view==="command") renderFeed(); renderBell(); }
+function log(type,text,sub){ if (typeof incog!=="undefined" && incog) return; feed.unshift({t:Date.now(),type,text,sub}); feed=feed.slice(0,40); store.set("feed",feed); if(view==="command") renderFeed(); renderBell(); }
 function armButton(btn,label,fn){ let armed=false; btn.addEventListener("click",()=>{ if(!armed){ armed=true; btn.textContent="Biztos? Kattints újra"; setTimeout(()=>{ if(armed){ armed=false; btn.textContent=label; } },3000); return; } armed=false; btn.textContent=label; fn(); }); }
 
 // ================= modal =================
@@ -880,6 +889,7 @@ const missingKeys = () => [...new Set(team.map(m=>m.provider))].filter(p=>!hasKe
 async function run({newRound,note}){
   if (running) return;
   task=taskEl.value.trim();
+  { const cmd=parseModeCommand(task); if (cmd){ taskEl.value=""; task=""; autoGrow(); setIncog(cmd==="on",true); return; } }
   if (!task){ toast("Írd be a küldetést"); taskEl.focus(); return; }
   if (!team.length){ toast("Adj hozzá legalább egy ügynököt"); showView("agents"); return; }
   const missing=missingKeys();
@@ -927,7 +937,7 @@ function finalText(){ const f=[...history].reverse().find(h=>!h.note&&!h.error&&
 $("#copyFinalBtn").addEventListener("click",()=>{ const f=finalText(); if(f) copyText(f); });
 $("#saveKbBtn").addEventListener("click",()=>{ const f=finalText(); if(!f) return; kb.unshift({id:uid(),title:task.slice(0,60)||"Küldetés eredmény",text:f,active:false,created:Date.now()}); saveAll(); renderNav(); toast("Elmentve a tudásbázisba"); });
 function autoGrow(){ taskEl.style.height="auto"; taskEl.style.height=Math.min(taskEl.scrollHeight,180)+"px"; }
-taskEl.addEventListener("input",()=>{ task=taskEl.value; store.set("task",task); autoGrow(); if (typeof markDirty==="function") markDirty(); });
+taskEl.addEventListener("input",()=>{ task=taskEl.value; if(!incog) store.set("task",task); autoGrow(); if (typeof markDirty==="function") markDirty(); });
 taskEl.addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); run({newRound:false}); } });
 
 // ================= parancsközpont render =================
@@ -945,8 +955,8 @@ function renderOverview(){
     ["shield","Rendszer",!navigator.onLine?"Nincs internet":need.length?"Hiányzó kulcs":"Optimális",need.length||!navigator.onLine?"var(--err)":"var(--ok)","var(--ok)"]];
   $("#overview").replaceChildren(...items.map(([i,t,s,sc,c])=>el("div",{class:"stat"},ico(i,c),el("div",{},el("b",{},t),el("small",{style:`--sc:${sc}`},s)))));
   $("#sysPill").className="pill"+(running?" busy":need.length||!navigator.onLine?" warn":"");
-  $("#sysSt").textContent=running?"DOLGOZIK":!navigator.onLine?"OFFLINE":need.length?"KULCS HIÁNYZIK":"OPTIMÁLIS";
-  $("#orbSub").textContent=running?`v3.0 · ${running.round}. kör folyamatban`:"v3.0 · készenlétben";
+  $("#sysSt").textContent=incog?"INKOGNITÓ":running?"DOLGOZIK":!navigator.onLine?"OFFLINE":need.length?"KULCS HIÁNYZIK":"OPTIMÁLIS";
+  $("#orbSub").textContent=incog?"inkognitó mód":running?`v3.0 · ${running.round}. kör folyamatban`:"v3.0 · készenlétben";
 }
 function alerts(){
   const a=[], od=overdueTasks(), now=Date.now();
@@ -1313,6 +1323,7 @@ function toggleMic(){
   recBase=taskEl.value&&!voiceChat?taskEl.value.replace(/\s*$/," "):"";
   if (voiceChat) taskEl.value="";
   rec.onresult=e=>{ let fin="",tmp=""; for(let i=0;i<e.results.length;i++){ const r=e.results[i]; if(r.isFinal) fin+=r[0].transcript; else tmp+=r[0].transcript; }
+    { const cmd=parseModeCommand(fin); if (cmd){ voiceChat=false; try{ rec.onend=()=>{ recOn=false; setMicUI(); }; rec.stop(); }catch(_){} taskEl.value=recBase.trim(); autoGrow(); setIncog(cmd==="on",true); return; } }
     taskEl.value=recBase+fin+tmp; task=taskEl.value; store.set("task",task); autoGrow(); };
   rec.onend=()=>{ recOn=false; setMicUI(); if(voiceChat){ if(taskEl.value.trim()) run({newRound:false}); else voiceChat=false; } };
   rec.onerror=e=>{ recOn=false; voiceChat=false; setMicUI(); if(e.error==="not-allowed") toast("A mikrofon nincs engedélyezve"); };
@@ -1513,7 +1524,7 @@ async function deriveSessionKeys(pass,store){
   try{ store.setItem("jarvis:ak",ak); store.setItem("jarvis:sk",sk); }catch(_){}
 }
 function unlock(){ document.body.classList.remove("locked"); showView("command"); renderAll(); syncPull(false); }
-function lock(){ try{ for (const k of ["jarvis:auth","jarvis:ak","jarvis:sk"]){ sessionStorage.removeItem(k); localStorage.removeItem(k); } }catch(e){} closeModal(); renderSyncSt(); document.body.classList.add("locked"); $("#lPass").value=""; $("#lErr").textContent=""; $("#lUser").focus(); }
+function lock(){ if (incog) setIncog(false,false); try{ for (const k of ["jarvis:auth","jarvis:ak","jarvis:sk"]){ sessionStorage.removeItem(k); localStorage.removeItem(k); } }catch(e){} closeModal(); renderSyncSt(); document.body.classList.add("locked"); $("#lPass").value=""; $("#lErr").textContent=""; $("#lUser").focus(); }
 $("#loginForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const err=$("#lErr"), btn=$("#lBtn"), until=+(sessionStorage.getItem("jarvis:wait")||0);
@@ -1563,7 +1574,7 @@ const DEFAULT_BRIDGE="https://snowy-cloud-8f1f.joosantika9.workers.dev";
 function bridgeUrl(){ return (settings.fishProxy||DEFAULT_BRIDGE).trim().replace(/\/+$/,""); }
 function accessKey(){ return sget("jarvis:ak")||""; }
 let sync={state:"idle",msg:"",at:+(localStorage.getItem("jarvis:lastSync")||0),busy:false,timer:null};
-const syncReady=()=>settings.syncOn!==false && !!accessKey() && !!sget("jarvis:sk") && !document.body.classList.contains("locked");
+const syncReady=()=>!incog && settings.syncOn!==false && !!accessKey() && !!sget("jarvis:sk") && !document.body.classList.contains("locked");
 function setSync(state,msg){ sync.state=state; sync.msg=msg||""; renderSyncSt(); }
 function syncStatusText(){
   if (settings.syncOn===false) return "Felhő mentés: kikapcsolva";
@@ -1641,10 +1652,48 @@ addEventListener("focus",()=>syncPull(false));
 addEventListener("pagehide",flushSync);
 addEventListener("online",()=>{ flushSync(); syncPull(false); });
 
+// ================= inkognitó mód =================
+// „Jarvis, activate goon mode” → semmi nem mentődik (előzmények, hírfolyam, felhő), kilépéskor minden eldobódik.
+let incog=false, incogStash=null;
+function normCmd(s){ return (s||"").toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/[^a-z0-9 ]/g," ").replace(/ +/g," ").trim(); }
+function parseModeCommand(text){
+  const t=" "+normCmd(text)+" "; if (t.trim().length===0 || t.length>82) return null;
+  const has=list=>list.some(w=>t.includes(" "+w));
+  const named=has(["jarvis","dzsarvisz","jarvisz","jervis","dzservisz"]);
+  const mode=has(["goon","gun ","gune","gyun","gon ","inkognit","incognit"]);
+  if (!named || !mode) return null;
+  if (has(["deactivate","deaktiv","kikapcs","off ","exit","kilep","stop","ki "])) return "off";
+  if (has(["activate","aktiv","bekapcs","on ","start","enable","indits","be "])) return "on";
+  return null;
+}
+function setIncog(on,announce){
+  if (on===incog){ toast(on?"Az inkognitó mód már aktív.":"Az inkognitó mód nincs bekapcsolva."); return; }
+  if (on){
+    incogStash={history,task,convId};
+    history=[]; convId=null; task=""; taskEl.value="";
+    incog=true; try{ sessionStorage.setItem("jarvis:incog","1"); }catch(_){}
+  } else {
+    const s=incogStash||{history:store.get("history",[]),task:store.get("task",""),convId:store.get("convId",null)};
+    history=s.history||[]; task=s.task||""; convId=s.convId||null; taskEl.value=task; incogStash=null;
+    incog=false; try{ sessionStorage.removeItem("jarvis:incog"); }catch(_){}
+  }
+  document.body.classList.toggle("incog",incog);
+  document.title=incog?"Jarvis · Inkognitó":"Jarvis";
+  $("#incogBtn").classList.toggle("on",incog);
+  $("#orbSub").textContent=incog?"inkognitó mód":"v3.0 · készenlétben";
+  autoGrow(); if (view==="command") renderAll(); renderSyncSt();
+  toast(incog?"Inkognitó mód aktív. Semmi nem mentődik.":"Inkognitó mód kikapcsolva. Az inkognitóban végzett munka törölve.");
+  if (announce) speak(incog?"Incognito mode activated. Nothing will be recorded, sir.":"Incognito mode deactivated. Logging resumed, sir.");
+  if (!incog) syncPull(false);
+}
+$("#incogBtn").innerHTML='<svg class="i" viewBox="0 0 24 24" aria-hidden="true"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12z"/><path d="M3 3l18 18"/></svg>';
+$("#incogBtn").addEventListener("click",()=>setIncog(!incog,true));
+
 // ================= indulás =================
 taskEl.value=task;
 history=history.filter(h=>!h.pending);
 renderOp(); applyFocus(); setMicUI(); renderNet(); loadWeather(); showView("command"); autoGrow();
+try{ if (sessionStorage.getItem("jarvis:incog")==="1"){ sessionStorage.removeItem("jarvis:incog"); setIncog(true,false); } }catch(_){}
 if (authToken()===getCred().hash && accessKey() && sget("jarvis:sk")) unlock();
 else if (authToken()===getCred().hash){
   // Régi bejelentkezés felhő-kulcs nélkül: egyszeri újbelépés kell, utána minden automatikus.
