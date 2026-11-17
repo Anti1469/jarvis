@@ -907,7 +907,7 @@ function finalText(){ const f=[...history].reverse().find(h=>!h.note&&!h.error&&
 $("#copyFinalBtn").addEventListener("click",()=>{ const f=finalText(); if(f) copyText(f); });
 $("#saveKbBtn").addEventListener("click",()=>{ const f=finalText(); if(!f) return; kb.unshift({id:uid(),title:task.slice(0,60)||"Küldetés eredmény",text:f,active:false,created:Date.now()}); saveAll(); renderNav(); toast("Elmentve a tudásbázisba"); });
 function autoGrow(){ taskEl.style.height="auto"; taskEl.style.height=Math.min(taskEl.scrollHeight,180)+"px"; }
-taskEl.addEventListener("input",()=>{ task=taskEl.value; store.set("task",task); autoGrow(); });
+taskEl.addEventListener("input",()=>{ task=taskEl.value; store.set("task",task); autoGrow(); if (typeof markDirty==="function") markDirty(); });
 taskEl.addEventListener("keydown",e=>{ if(e.key==="Enter"&&(e.ctrlKey||e.metaKey)){ e.preventDefault(); run({newRound:false}); } });
 
 // ================= parancsközpont render =================
@@ -1496,7 +1496,7 @@ $("#loginForm").addEventListener("submit",async e=>{
   e.preventDefault();
   const err=$("#lErr"), btn=$("#lBtn"), until=+(sessionStorage.getItem("jarvis:wait")||0);
   if (Date.now()<until){ err.textContent=`Túl sok sikertelen próbálkozás. Próbáld újra ${Math.ceil((until-Date.now())/1000)} mp múlva.`; return; }
-  btn.disabled=true; btn.textContent="Azonosítás…"; err.textContent="";
+  btn.disabled=true; btn.textContent="Azonosítás…"; err.textContent=""; err.style.color="";
   const c=getCred(); let ok=false;
   try{ ok = $("#lUser").value.trim().toLowerCase()===c.user && await pbkdf2($("#lPass").value,c.salt,c.iter)===c.hash; }
   catch(_){ err.textContent="Ez a böngésző nem támogatja a biztonságos bejelentkezést."; }
@@ -1611,14 +1611,25 @@ async function syncPull(manual){
   }catch(e){ setSync("err","nem érhető el"); }
   finally{ sync.busy=false; }
 }
-setInterval(()=>{ if(!document.hidden) syncPull(false); },60000);
-document.addEventListener("visibilitychange",()=>{ if(!document.hidden) syncPull(false); });
+// Automatikus szinkron: 15 mp-enként letöltés, visszatéréskor azonnal; elhagyáskor a függő mentés azonnal felmegy.
+const flushSync=()=>{ if (localStorage.getItem("jarvis:dirtyAt")){ clearTimeout(sync.timer); syncPush(false); } };
+setInterval(()=>{ if(!document.hidden && !localStorage.getItem("jarvis:dirtyAt")) syncPull(false); },15000);
+document.addEventListener("visibilitychange",()=>{ if(document.hidden) flushSync(); else syncPull(false); });
+addEventListener("focus",()=>syncPull(false));
+addEventListener("pagehide",flushSync);
+addEventListener("online",()=>{ flushSync(); syncPull(false); });
 
 // ================= indulás =================
 taskEl.value=task;
 history=history.filter(h=>!h.pending);
 renderOp(); applyFocus(); setMicUI(); renderNet(); loadWeather(); showView("command"); autoGrow();
-if (authToken()===getCred().hash) unlock(); else $("#lUser").focus();
+if (authToken()===getCred().hash && accessKey() && sget("jarvis:sk")) unlock();
+else if (authToken()===getCred().hash){
+  // Régi bejelentkezés felhő-kulcs nélkül: egyszeri újbelépés kell, utána minden automatikus.
+  lock(); $("#lUser").value="Admin"; $("#lRemember").checked=true; $("#lPass").focus();
+  $("#lErr").style.color="var(--cyan)"; $("#lErr").textContent="Egyszeri újbelépés kell, hogy a felhő mentés automatikus legyen.";
+}
+else $("#lUser").focus();
 </script>
 </body>
 </html>
