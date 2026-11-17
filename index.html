@@ -14,7 +14,7 @@
   --line:rgba(86,190,255,.15); --line-2:rgba(86,200,255,.38);
   --cyan:#3fd6ff; --fg:#d6eaf6; --muted:#7896ad;
   --ok:#3ee6a1; --warn:#ffb547; --err:#ff5d6c; --violet:#a77bff; --blue:#5aa8ff;
-  --claude:#ff9b6b; --openai:#3ee6a1; --gemini:#6aa8ff; --groq:#ff6a4d; --openrouter:#a99bff; --ollama:#d0dae5; --claudecode:#ffb37a;
+  --claude:#ff9b6b; --openai:#3ee6a1; --gemini:#6aa8ff; --groq:#ff6a4d; --openrouter:#a99bff; --ollama:#d0dae5; --claudecode:#ffb37a; --pollinations:#7ee8c4; --huggingface:#ffd24d; --mistral:#ff8a3d; --cerebras:#f26b8a;
   --f-hud:"Orbitron","Rajdhani",ui-sans-serif,system-ui,sans-serif;
   --f-label:"Rajdhani","Inter",ui-sans-serif,system-ui,sans-serif;
   --f-body:"Inter",ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;
@@ -673,7 +673,7 @@ const EN = {
   "kikapcsolva":"off","jelentkezz be újra":"sign in again","mentés…":"saving…","még nincs mentés":"not saved yet",
   "Claude Code: a híd nem fut ezen a gépen. Indítsd el a Jarvis-Claude-inditas.bat fájlt (dupla kattintás), és hagyd nyitva az ablakát.":"Claude Code: the bridge is not running on this computer. Start Jarvis-Claude-inditas.bat (double-click) and keep its window open.",
   "Ollama: nem érhető el. Fut az Ollama a gépeden? Indítsd el így: OLLAMA_ORIGINS=* ollama serve":"Ollama is unreachable. Is it running? Start it with: OLLAMA_ORIGINS=* ollama serve",
-  "Működik":"Working","hibás hozzáférési kód (másold be a Cloudflare-be)":"wrong access code (paste it into Cloudflare)","nincs tároló kötve a hídhoz":"no storage bound to the bridge","túl sok adat":"too much data","nem érhető el":"unreachable","a felhőben lévő adat más jelszóval készült":"cloud data was made with a different password","[ide írd a szöveget]":"[write your text here]"
+  "Működik":"Working","Kulcs nem kell":"No key needed","Nem kell kulcs vagy fiók, azonnal használható. Ingyenes, ezért lassabb lehet, és naponta korlátozott.":"No key or account needed, works right away. It is free, so it can be slower and has daily limits.","Bejelentkezés OpenRouter-fiókkal":"Sign in with OpenRouter account","vagy illeszd be lent a kulcsot":"or paste a key below","Alapértelmezett modell":"Default model","✎ Egyéni modell…":"✎ Custom model…","Írd be a modell azonosítóját":"Enter the model ID","Hozzáférési token":"Access token","Ingyenes, kulcs és fiók nélkül":"Free, no key or account","Ingyenes havi keret, tokennel":"Free monthly credits, with a token","Ingyenes kísérleti csomag":"Free experiment plan","Ingyenes, villámgyors":"Free, lightning fast","Ingyenes modellek is, fiókkal vagy kulccsal":"Free models too, via account or key","Weboldal ↗":"Website ↗","Token létrehozása ↗":"Create token ↗","OpenRouter-fiók összekötve":"OpenRouter account connected","Bejelentkezés fiókkal":"Signed in with account","Ingyenes csapat (OpenRouter-fiókkal)":"Free team (OpenRouter account)","Ingyenes modellekkel dolgozik. Elég egyszer belépni: AI mag → OpenRouter → Bejelentkezés OpenRouter-fiókkal.":"Uses free models. Just sign in once: AI Core → OpenRouter → Sign in with OpenRouter account.","Ingyenes kerettel, fiókkal":"Free credits, with an account","Lépj be az enter.pollinations.ai oldalon (pl. GitHub-fiókkal), és ott kapsz ingyenes kulcsot.":"Sign in at enter.pollinations.ai (e.g. with GitHub) to get a free key.","Ingyenes kulcs ↗":"Free key ↗","Hugging Face fiók → Settings → Access Tokens → új token („Make calls to Inference Providers” joggal).":"Hugging Face account → Settings → Access Tokens → new token (with “Make calls to Inference Providers”).","A console.mistral.ai oldalon az ingyenes „Experiment” csomaggal kapsz kulcsot.":"Get a key with the free “Experiment” plan at console.mistral.ai.","A „:free” végű modellek ingyenesek (napi korláttal). A „Kulcs ellenőrzése” betölti az összes elérhető modellt.":"Models ending in “:free” are free (with daily limits). “Check key” loads every available model.","hibás hozzáférési kód (másold be a Cloudflare-be)":"wrong access code (paste it into Cloudflare)","nincs tároló kötve a hídhoz":"no storage bound to the bridge","túl sok adat":"too much data","nem érhető el":"unreachable","a felhőben lévő adat más jelszóval készült":"cloud data was made with a different password","[ide írd a szöveget]":"[write your text here]"
 };
 const WX_EN={"Derült":"Clear","Többnyire derült":"Mostly clear","Részben felhős":"Partly cloudy","Borult":"Overcast","Köd":"Fog","Zúzmarás köd":"Rime fog","Szitálás":"Drizzle","Erős szitálás":"Heavy drizzle","Ónos szitálás":"Freezing drizzle",
   "Gyenge eső":"Light rain","Eső":"Rain","Erős eső":"Heavy rain","Ónos eső":"Freezing rain","Gyenge havazás":"Light snow","Havazás":"Snow","Erős havazás":"Heavy snow","Hószemcse":"Snow grains","Zápor":"Showers","Heves zápor":"Heavy showers","Hózápor":"Snow showers","Zivatar":"Thunderstorm","Zivatar jégesővel":"Thunderstorm with hail"};
@@ -685,7 +685,7 @@ const EN_PATTERNS=[
   [/^Működik · (\d+) modell \(kattints a modell mezőre a listához\)$/,"Working · $1 models (click the model field for the list)"],
   [/^Felhő: szinkronizálva (.+)$/,"Cloud: synced $1"],[/^szinkronizálva (.+)$/,"synced $1"],[/^Felhő: (.+)$/,m=>"Cloud: "+trCore(m.slice(7))],
   [/^Lejárt: (.+)$/,"Overdue: $1"],[/^Határidő: (.+)$/,"Due: $1"],[/^Feladat: (.+)$/,"Task: $1"],[/^Megjegyzésed: (.+)$/,"Your note: $1"],[/^Feladat határidő · (.+)$/,"Task deadline · $1"],
-  [/^(\d+) ügynök$/,"$1 agents"],[/^(.+) \(alapértelmezett\)$/,"$1 (default)"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
+  [/^(\d+) ügynök$/,"$1 agents"],[/^Alapértelmezett \((.+)\)$/,"Default ($1)"],[/^(.+): (\d+) modell betöltve a listába$/,"$1: $2 models loaded into the list"],[/^Az OpenRouter-bejelentkezés nem sikerült: (.+)$/,"OpenRouter sign-in failed: $1"],[/^(.+) \(alapértelmezett\)$/,"$1 (default)"],[/^Betöltve: (.+)$/,"Loaded: $1"],[/^(.+) feltöltve$/,"$1 uploaded"],[/^(.+): túl nagy \(max 2 MB\)$/,"$1: too large (max 2 MB)"],[/^Hely: (.+)$/,"Location: $1"],
   [/^Nincs beállítva: (.+?)\. Add meg az AI mag oldalon\.$/,"Not configured: $1. Add it on the AI Core page."],[/^Nincs beállítva: (.+)$/,"Not configured: $1"],
   [/^(.+?): a kulcs érvénytelen vagy nincs jogosultsága\. Ellenőrizd az AI mag oldalon\. \((.*)\)$/,"$1: invalid key or no permission. Check it on the AI Core page. ($2)"],
   [/^(.+?): nincs ilyen modell\. Válassz másikat az AI mag oldalon\. \((.*)\)$/,"$1: no such model. Pick another on the AI Core page. ($2)"],
@@ -780,7 +780,17 @@ const PROVIDERS = {
   openai:{name:"ChatGPT",vendor:"OpenAI",kind:"oa",base:"https://api.openai.com/v1",keyUrl:"https://platform.openai.com/api-keys",keyHint:"sk-…",models:["gpt-5-mini","gpt-5","gpt-4.1"]},
   gemini:{name:"Gemini",vendor:"Google",kind:"gemini",keyUrl:"https://aistudio.google.com/apikey",keyHint:"AIza…",models:["gemini-2.5-flash","gemini-2.5-pro"]},
   groq:{name:"Groq",vendor:"Gyors nyílt modellek",kind:"oa",base:"https://api.groq.com/openai/v1",keyUrl:"https://console.groq.com/keys",keyHint:"gsk_…",models:["llama-3.3-70b-versatile","llama-3.1-8b-instant"]},
-  openrouter:{name:"OpenRouter",vendor:"Több száz modell egy kulccsal",kind:"oa",base:"https://openrouter.ai/api/v1",keyUrl:"https://openrouter.ai/keys",keyHint:"sk-or-…",models:["openrouter/auto"]},
+  openrouter:{name:"OpenRouter",vendor:"Ingyenes modellek is, fiókkal vagy kulccsal",kind:"oa",base:"https://openrouter.ai/api/v1",keyUrl:"https://openrouter.ai/keys",keyHint:"sk-or-…",
+    hint:"A „:free” végű modellek ingyenesek (napi korláttal). A „Kulcs ellenőrzése” betölti az összes elérhető modellt.",
+    models:["openrouter/free","google/gemma-4-31b-it:free","nvidia/nemotron-3.5-super-vl:free","nvidia/nemotron-3-ultra-550b-a55b:free","openrouter/auto"]},
+  pollinations:{name:"Pollinations",vendor:"Ingyenes kerettel, fiókkal",kind:"oa",base:"https://gen.pollinations.ai/v1",keyHint:"sk_… vagy pk_…",
+    hint:"Lépj be az enter.pollinations.ai oldalon (pl. GitHub-fiókkal), és ott kapsz ingyenes kulcsot.",keyUrl:"https://enter.pollinations.ai",linkText:"Ingyenes kulcs ↗",models:["openai","openai-fast","mistral"]},
+  huggingface:{name:"Hugging Face",vendor:"Ingyenes havi keret, tokennel",kind:"oa",base:"https://router.huggingface.co/v1",keyHint:"hf_…",tokenLabel:"Hozzáférési token",
+    hint:"Hugging Face fiók → Settings → Access Tokens → új token („Make calls to Inference Providers” joggal).",keyUrl:"https://huggingface.co/settings/tokens",linkText:"Token létrehozása ↗",
+    models:["openai/gpt-oss-120b","meta-llama/Llama-3.3-70B-Instruct","Qwen/Qwen3-235B-A22B-Instruct-2507","deepseek-ai/DeepSeek-V3-0324"]},
+  mistral:{name:"Mistral",vendor:"Ingyenes kísérleti csomag",kind:"oa",base:"https://api.mistral.ai/v1",keyHint:"API-kulcs",
+    hint:"A console.mistral.ai oldalon az ingyenes „Experiment” csomaggal kapsz kulcsot.",keyUrl:"https://console.mistral.ai/api-keys",models:["mistral-small-latest","mistral-large-latest","open-mistral-nemo"]},
+  cerebras:{name:"Cerebras",vendor:"Ingyenes, villámgyors",kind:"oa",base:"https://api.cerebras.ai/v1",keyHint:"csk-…",keyUrl:"https://cloud.cerebras.ai",models:["gpt-oss-120b","llama-3.3-70b","qwen-3-235b-a22b-instruct-2507"]},
   claudecode:{name:"Claude Code",vendor:"A gépeden futó Claude Code, az előfizetéseddel",kind:"cc",local:true,keyHint:"http://127.0.0.1:8765",defAddr:"http://127.0.0.1:8765",
     hint:"Csak azon a gépen működik, ahol a Claude Code telepítve van és a híd fut (Jarvis-Claude-inditas.bat). API-kulcs nem kell.",
     linkText:"Híd letöltése ↗",keyUrl:"https://github.com/Anti1469/jarvis/tree/main/helyi",models:["sonnet","opus","haiku","claude-opus-5-5","claude-sonnet-5-5","claude-haiku-5-5"]},
@@ -796,6 +806,10 @@ const DEFAULT_TEAM = [
   {name:"Ellenőr ügynök",provider:"gemini",instruction:"Ellenőrizd az író munkáját: hibák, hiányok, pontatlanságok, stílus. Írd le röviden, mit javítottál, majd add meg a javított, végleges változatot."}
 ];
 const BUILTIN_WF = [
+  {id:"wf-free",name:"Ingyenes csapat (OpenRouter-fiókkal)",desc:"Ingyenes modellekkel dolgozik. Elég egyszer belépni: AI mag → OpenRouter → Bejelentkezés OpenRouter-fiókkal.",team:[
+    {name:"Kutató ügynök",provider:"openrouter",model:"openrouter/free",instruction:"Gyűjtsd össze a feladathoz szükséges tényeket, szempontokat és ötleteket. Szedd pontokba, tömören. A végleges szöveget még ne írd meg."},
+    {name:"Író ügynök",provider:"openrouter",model:"openrouter/free",instruction:"A kutató anyagára építve készítsd el a feladat kért végeredményét, igényesen és teljes terjedelemben."},
+    {name:"Ellenőr ügynök",provider:"openrouter",model:"openrouter/free",instruction:"Ellenőrizd az író munkáját: hibák, hiányok, pontatlanságok, stílus. Írd le röviden, mit javítottál, majd add meg a javított, végleges változatot."}]},
   {id:"wf-std",name:"Kutatás → Írás → Ellenőrzés",desc:"Általános szövegek, cikkek, leírások.",team:DEFAULT_TEAM},
   {id:"wf-brain",name:"Ötletbörze",desc:"Két AI egymástól függetlenül ötletel, a harmadik összegzi és rangsorolja.",team:[
     {name:"Ötletgyáros A",provider:"openai",instruction:"Adj 8-10 merész, kreatív ötletet a feladatra, mindegyikhez egy mondat indoklással."},
@@ -963,11 +977,43 @@ $("#opBtn").addEventListener("click",()=>openSettings()); $("#setBtn").addEventL
 // ================= API =================
 const isSubToken=k=>/^sk-ant-(oat|sid)/i.test((k||"").trim());
 const SUB_TOKEN_MSG="Ez a Claude előfizetés tokenje (sk-ant-oat…), nem API-kulcs, ezért a Jarvis nem használhatja. API-kulcs: console.anthropic.com, vagy cseréld a Claude-ot másik AI-ra.";
-const hasKey=p=>{ const k=(keys[p]||"").trim(); return !!k && !(p==="claude"&&isSubToken(k)); };
+const hasKey=p=>{ if (PROVIDERS[p]?.noKey) return true; const k=(keys[p]||"").trim(); return !!k && !(p==="claude"&&isSubToken(k)); };
+// Modellválasztó: legördülő lista (beépített + a szolgáltatótól betöltött modellek) és „Egyéni modell…” lehetőség.
+let modelCache=store.get("modelCache",{});
+function modelOptions(pid){ return [...new Set([...(PROVIDERS[pid]?.models||[]),...(modelCache[pid]||[])])]; }
+function modelPicker({pid,value,id,allowDefault,onChange}){
+  const sel=el("select",{id,"aria-label":"Modell"}), opts=modelOptions(pid);
+  if (allowDefault) sel.append(el("option",{value:""},`Alapértelmezett (${models[pid]||PROVIDERS[pid]?.models?.[0]||"—"})`));
+  for (const m of (value&&!opts.includes(value)?[value,...opts]:opts)) sel.append(el("option",{value:m,selected:m===value},m));
+  sel.append(el("option",{value:"__custom"},"✎ Egyéni modell…"));
+  const inp=el("input",{placeholder:"Írd be a modell azonosítóját",hidden:true,"aria-label":"Egyéni modell"});
+  sel.addEventListener("change",()=>{ if (sel.value==="__custom"){ inp.hidden=false; inp.focus(); } else { inp.hidden=true; onChange(sel.value); } });
+  inp.addEventListener("change",()=>{ const v=inp.value.trim(); if (v){ sel.insertBefore(el("option",{value:v},v),sel.lastChild); sel.value=v; inp.hidden=true; onChange(v); } });
+  return el("div",{class:"stack",style:"gap:6px"},sel,inp);
+}
+// OpenRouter bejelentkezés fiókkal (hivatalos OAuth PKCE): a végén az OpenRouter ad egy saját kulcsot ehhez az oldalhoz.
+async function startOpenRouterLogin(){
+  const v=[...crypto.getRandomValues(new Uint8Array(32))].map(b=>b.toString(16).padStart(2,"0")).join("");
+  const dig=new Uint8Array(await crypto.subtle.digest("SHA-256",new TextEncoder().encode(v)));
+  const ch=btoa(String.fromCharCode(...dig)).replace(/\+/g,"-").replace(/\//g,"_").replace(/=+$/,"");
+  try{ sessionStorage.setItem("jarvis:or_verifier",v); }catch(_){}
+  location.href="https://openrouter.ai/auth?callback_url="+encodeURIComponent(location.origin+location.pathname)+"&code_challenge="+ch+"&code_challenge_method=S256";
+}
+async function finishOpenRouterLogin(){
+  const code=new URLSearchParams(location.search).get("code"); let v=null; try{ v=sessionStorage.getItem("jarvis:or_verifier"); }catch(_){}
+  if (!code||!v) return;
+  window.history.replaceState(null,"",location.pathname); try{ sessionStorage.removeItem("jarvis:or_verifier"); }catch(_){}
+  try{
+    const r=await fetch("https://openrouter.ai/api/v1/auth/keys",{method:"POST",headers:{"content-type":"application/json"},body:JSON.stringify({code,code_verifier:v,code_challenge_method:"S256"})});
+    const d=await r.json().catch(()=>({})); if(!r.ok||!d.key) throw new Error(d?.error?.message||("HTTP "+r.status));
+    keys.openrouter=d.key; keyOk.openrouter=true; saveAll(); renderNav(); toast("OpenRouter-fiók összekötve"); log("ok","OpenRouter csatlakoztatva","Bejelentkezés fiókkal");
+    if (view==="core") renderKeys();
+  }catch(e){ toast("Az OpenRouter-bejelentkezés nem sikerült: "+e.message); }
+}
 const configured = () => PIDS.filter(hasKey);
 async function callAI(provider,model,system,user,signal){
   const P=PROVIDERS[provider], key=(keys[provider]||"").trim();
-  if (!key) throw new Error(`Nincs beállítva: ${P.name}. Add meg az AI mag oldalon.`);
+  if (!key && !P.noKey) throw new Error(`Nincs beállítva: ${P.name}. Add meg az AI mag oldalon.`);
   if (provider==="claude" && isSubToken(key)) throw new Error(SUB_TOKEN_MSG+" Tipp: használd helyette a „Claude Code” szolgáltatót.");
   stats.apiCalls++; let res,data;
   if (P.kind==="anthropic"){
@@ -988,9 +1034,9 @@ async function callAI(provider,model,system,user,signal){
     return data.text||"";
   }
   const base = P.local ? key.replace(/\/+$/,"") : P.base;
-  const h={"content-type":"application/json"}; if(!P.local) h.authorization="Bearer "+key;
+  const h={"content-type":"application/json"}; if(!P.local && key) h.authorization="Bearer "+key;
   if (provider==="openrouter"){ h["HTTP-Referer"]=location.origin; h["X-Title"]="Jarvis"; }
-  res=await fetch(base+"/chat/completions",{method:"POST",signal,headers:h,body:JSON.stringify({model,messages:[{role:"system",content:system},{role:"user",content:user}]})});
+  res=await fetch(P.chatUrl||(base+"/chat/completions"),{method:"POST",signal,headers:h,body:JSON.stringify({model,messages:[{role:"system",content:system},{role:"user",content:user}]})});
   data=await res.json().catch(()=>({})); if(!res.ok) throw apiError(provider,res,data?.error?.message||(typeof data?.error==="string"?data.error:""));
   return data.choices?.[0]?.message?.content || "";
 }
@@ -1013,7 +1059,7 @@ function netMsg(provider,e){
 }
 async function listModels(provider){
   const P=PROVIDERS[provider], key=(keys[provider]||"").trim();
-  if (!key) throw new Error(P.local?"Előbb add meg a címet.":"Előbb add meg a kulcsot.");
+  if (!key && !P.noKey) throw new Error(P.local?"Előbb add meg a címet.":"Előbb add meg a kulcsot.");
   let res,data;
   if (provider==="claude" && isSubToken(key)) throw new Error(SUB_TOKEN_MSG);
   if (P.kind==="cc"){
@@ -1029,9 +1075,11 @@ async function listModels(provider){
     data=await res.json().catch(()=>({})); if(!res.ok) throw apiError(provider,res,data?.error?.message);
     return (data.models||[]).filter(m=>(m.supportedGenerationMethods||[]).includes("generateContent")).map(m=>m.name.replace(/^models\//,"")).filter(id=>id.startsWith("gemini"));
   }
-  const base=P.local?key.replace(/\/+$/,""):P.base; const h={}; if(!P.local) h.authorization="Bearer "+key;
-  res=await fetch(base+"/models",{headers:h}); data=await res.json().catch(()=>({})); if(!res.ok) throw apiError(provider,res,data?.error?.message);
-  let ids=(data.data||[]).map(m=>m.id);
+  const base=P.local?key.replace(/\/+$/,""):P.base; const h={}; if(!P.local && key) h.authorization="Bearer "+key;
+  res=await fetch(P.modelsUrl||(base+"/models"),{headers:h}); data=await res.json().catch(()=>({})); if(!res.ok) throw apiError(provider,res,data?.error?.message);
+  let ids=Array.isArray(data) ? data.map(m=>m.name||m.id).filter(Boolean) : (data.data||[]).map(m=>m.id);
+  if (provider==="openrouter") ids=[...ids.filter(i=>/:free$|^openrouter\/free$/.test(i)), ...ids.filter(i=>!/:free$|^openrouter\/free$/.test(i))];
+  if (provider==="pollinations") ids=(Array.isArray(data)?data.filter(m=>!m.output_modalities||m.output_modalities.includes("text")).map(m=>m.name):ids);
   if (provider==="openai") ids=ids.filter(id=>/^(gpt|o\d|chatgpt)/.test(id)&&!/(audio|realtime|transcribe|tts|image|search|embedding)/.test(id)).sort().reverse();
   if (provider==="groq") ids=ids.filter(id=>!/whisper|tts|guard/.test(id));
   return ids;
@@ -1309,8 +1357,7 @@ function renderTeam(){
     const sel=el("select",{id:"prov-"+m.id,"aria-label":"Melyik AI"}); for (const id of PIDS) sel.append(el("option",{value:id,selected:id===m.provider},PROVIDERS[id].name));
     sel.addEventListener("change",()=>{ m.provider=sel.value; m.model=""; saveAll(); renderTeam(); renderNav(); });
     const dlId=ensureDl(m.provider);
-    const mdl=el("input",{id:"mdl-"+m.id,list:dlId,value:m.model||"",placeholder:(models[m.provider]||"")+" (alapértelmezett)","aria-label":"Modell"});
-    mdl.addEventListener("input",()=>{ m.model=mdl.value.trim(); saveAll(); });
+    const mdl=modelPicker({pid:m.provider,value:m.model||"",id:"mdl-"+m.id,allowDefault:true,onChange:v=>{ m.model=v; saveAll(); }});
     const name=el("input",{id:"name-"+m.id,value:m.name,"aria-label":"Ügynök neve",placeholder:"Ügynök neve"}); name.addEventListener("input",()=>{ m.name=name.value; saveAll(); });
     const ins=el("textarea",{id:"ins-"+m.id,rows:"4","aria-label":"Utasítás",placeholder:"Mi a feladata?"}); ins.value=m.instruction; ins.addEventListener("input",()=>{ m.instruction=ins.value; saveAll(); });
     const move=d=>{ const j=i+d; if(j<0||j>=team.length) return; [team[i],team[j]]=[team[j],team[i]]; saveAll(); renderTeam(); };
@@ -1341,23 +1388,25 @@ function renderKeys(){
     const key=el("input",{id:"key-"+id,type:P.local?"url":"password",autocomplete:"off",spellcheck:"false",placeholder:P.keyHint,value:keys[id]||""});
     key.addEventListener("input",()=>{ keys[id]=key.value.trim(); delete keyOk[id]; saveAll(); renderNav(); });
     const show=P.local?null:el("button",{class:"btn small",type:"button",onclick:()=>{ key.type=key.type==="password"?"text":"password"; show.textContent=key.type==="password"?"Mutasd":"Rejtsd"; }},"Mutasd");
-    const model=el("input",{id:"model-"+id,list:"dl-"+id,value:models[id]||"",placeholder:"modell neve"});
-    model.addEventListener("change",()=>{ models[id]=model.value.trim()||P.models[0]; saveAll(); });
+    const model=modelPicker({pid:id,value:models[id]||P.models[0],id:"model-"+id,onChange:v=>{ models[id]=v||P.models[0]; saveAll(); renderAll(); }});
     const status=el("span",{class:"status"}), s=provStatus(id);
     const load=el("button",{class:"btn small",onclick:async()=>{
       status.className="status"; status.textContent="Ellenőrzés…";
-      try{ const list=await listModels(id); dl.replaceChildren(...list.map(m=>el("option",{value:m}))); keyOk[id]=true; saveAll(); renderNav();
-        log("ok",`${P.name} csatlakoztatva`,`${list.length} modell elérhető`); status.className="status ok"; status.textContent=`Működik · ${list.length} modell (kattints a modell mezőre a listához)`; }
+      try{ const list=await listModels(id); modelCache[id]=list; store.set("modelCache",modelCache); keyOk[id]=true; saveAll(); renderNav();
+        log("ok",`${P.name} csatlakoztatva`,`${list.length} modell elérhető`); renderKeys(); toast(`${P.name}: ${list.length} modell betöltve a listába`); }
       catch(e){ saveAll(); status.className="status bad"; status.textContent=netMsg(id,e); }
-    }},P.local?"Kapcsolat ellenőrzése":"Kulcs ellenőrzése");
+    }},P.noKey?"Kapcsolat ellenőrzése":P.local?"Kapcsolat ellenőrzése":"Kulcs ellenőrzése");
+    const orLogin=id==="openrouter"?el("button",{class:"btn small primary",type:"button",onclick:startOpenRouterLogin},"Bejelentkezés OpenRouter-fiókkal"):null;
     k.append(el("div",{class:"panel stack"},
-      el("div",{class:"row"},ico("cpu",pColor(id)),el("div",{style:"min-width:0"},el("b",{style:"font:700 16px var(--f-label)"},P.name),el("div",{class:"hint"},P.vendor)),el("span",{class:"grow"}),el("span",{class:"tag "+(s[1]||"mute")},s[0])),
-      el("label",{for:"key-"+id},P.local?"Szerver címe":"API-kulcs"),
-      el("div",{class:"row"},el("div",{class:"grow"},key),show,
+      el("div",{class:"row"},ico("cpu",pColor(id)),el("div",{style:"min-width:0"},el("b",{style:"font:700 16px var(--f-label)"},P.name),el("div",{class:"hint"},P.vendor)),el("span",{class:"grow"}),el("span",{class:"tag "+(s[1]||"mute")},P.noKey?"Kulcs nem kell":s[0])),
+      P.noKey?el("p",{class:"hint"},"Nem kell kulcs vagy fiók, azonnal használható. Ingyenes, ezért lassabb lehet, és naponta korlátozott."):null,
+      orLogin?el("div",{class:"row"},orLogin,el("span",{class:"hint"},"vagy illeszd be lent a kulcsot")):null,
+      P.noKey?null:el("label",{for:"key-"+id},P.local?"Szerver címe":P.tokenLabel||"API-kulcs"),
+      P.noKey?null:el("div",{class:"row"},el("div",{class:"grow"},key),show,
         P.local&&!keys[id]?el("button",{class:"btn small",type:"button",onclick:()=>{ key.value=P.defAddr; keys[id]=P.defAddr; delete keyOk[id]; saveAll(); renderNav(); load.click(); }},"Bekapcsolás"):null),
       id==="claude"&&isSubToken(keys[id])?el("p",{class:"hint",style:"color:var(--warn)"},SUB_TOKEN_MSG):null,
       P.hint?el("p",{class:"hint"},P.hint):null,
-      el("label",{for:"model-"+id},"Modell"),model,
+      el("label",{for:"model-"+id},"Alapértelmezett modell"),model,
       el("div",{class:"row"},load,el("a",{href:P.keyUrl,target:"_blank",rel:"noopener",style:"font:600 13px var(--f-label)"},P.linkText||"Kulcs létrehozása ↗")),
       status));
   }
@@ -1537,7 +1586,7 @@ let trCache={src:"",out:""};
 async function toEnglish(text){
   if (trCache.src===text) return trCache.out;
   if (!/[áéíóöőúüű]/i.test(text)) return text; // már angol (nincs magyar ékezet)
-  const prov=["gemini","openai","groq","openrouter","claude","claudecode","ollama"].find(hasKey);
+  const prov=["gemini","openai","groq","openrouter","claude","claudecode","mistral","cerebras","huggingface","ollama","pollinations"].find(hasKey);
   if (!prov) return text;
   const out=(await callAI(prov,models[prov],"Translate the user's text into natural, spoken British English, the way J.A.R.V.I.S. from the films would say it: calm, polite, concise. If it is already English, return it unchanged. Output only the text to be spoken, without notes, quotes, lists or markdown.",text.slice(0,3000))).trim();
   saveLocal(); trCache={src:text,out:out||text}; return trCache.out;
@@ -1565,7 +1614,7 @@ $("#micBig").addEventListener("click",toggleMic); $("#micSmall").addEventListene
 
 // ================= vezetői összefoglaló =================
 $("#briefBtn").addEventListener("click",async()=>{
-  const prov=["gemini","openai","groq","openrouter","claude","claudecode","ollama"].find(hasKey);
+  const prov=["gemini","openai","groq","openrouter","claude","claudecode","mistral","cerebras","huggingface","ollama","pollinations"].find(hasKey);
   const body=el("div",{class:"stack"}); openModal("Vezetői összefoglaló",body);
   if (!prov){ body.append(el("p",{class:"hint"},"Ehhez legalább egy AI-szolgáltatót be kell állítanod az AI mag oldalon."),el("button",{class:"btn",onclick:()=>{ closeModal(); showView("core"); }},"AI mag megnyitása")); return; }
   body.append(el("div",{class:"note"},el("span",{class:"dots"},el("i"),el("i"),el("i"))," ",`${PROVIDERS[prov].name} összeállítja a napod áttekintését…`));
@@ -1876,6 +1925,7 @@ $("#incogBtn").addEventListener("click",()=>setIncog(!incog,true));
 taskEl.value=task;
 history=history.filter(h=>!h.pending);
 renderOp(); applyFocus(); setMicUI(); renderNet(); loadWeather(); showView("command"); autoGrow();
+finishOpenRouterLogin();
 try{ if (sessionStorage.getItem("jarvis:incog")==="1"){ sessionStorage.removeItem("jarvis:incog"); setIncog(true,false); } }catch(_){}
 if (authToken()===getCred().hash && accessKey() && sget("jarvis:sk")) unlock();
 else if (authToken()===getCred().hash){
