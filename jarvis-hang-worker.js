@@ -13,6 +13,18 @@
 const ALLOWED_ORIGINS = ["https://anti1469.github.io", "http://localhost:5173"];
 const DEFAULT_VOICE = "612b878b113047d9a770c069c8b4fdfe";
 const MAX_SYNC_BYTES = 20 * 1024 * 1024;
+const UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/130.0 Safari/537.36";
+const decodeEntities = s => s.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#x27;|&#39;/g, "'").replace(/&nbsp;/g, " ").replace(/&#(\d+);/g, (_, n) => String.fromCharCode(+n));
+const cleanText = s => decodeEntities(String(s).replace(/<[^>]+>/g, "")).replace(/\s+/g, " ").trim();
+function htmlToText(html) {
+  return decodeEntities(html
+    .replace(/<(script|style|noscript|svg|nav|footer|header|form|iframe)[\s\S]*?<\/\1>/gi, " ")
+    .replace(/<!--[\s\S]*?-->/g, " ")
+    .replace(/<\/(p|div|h[1-6]|li|tr|br|section|article)>/gi, "\n")
+    .replace(/<br\s*\/?>/gi, "\n")
+    .replace(/<[^>]+>/g, " "))
+    .replace(/[ \t]+/g, " ").replace(/\n\s*\n+/g, "\n").trim();
+}
 
 export default {
   async fetch(request, env) {
@@ -44,6 +56,51 @@ export default {
 
     // ---------- bejelentkezés ellenőrzése ----------
     if (path === "/auth") return json(200, { ok: true });
+
+    // ---------- internet: keresés és weboldal olvasás ----------
+    if (path === "/search" && request.method === "GET") {
+      const q = (new URL(request.url).searchParams.get("q") || "").trim().slice(0, 300);
+      if (!q) return err(400, "Nincs keresőkifejezés.");
+      const results = [];
+      try {
+        // 1) DuckDuckGo Lite
+        const r = await fetch("https://lite.duckduckgo.com/lite/?q=" + encodeURIComponent(q) + "&kl=hu-hu", { headers: { "user-agent": UA, "accept-language": "hu-HU,hu;q=0.9,en;q=0.8" }, signal: AbortSignal.timeout(10000) });
+        const html = await r.text();
+        const re = /<a[^>]*href="([^"]+)"[^>]*class='result-link'>([\s\S]*?)<\/a>[\s\S]*?class='result-snippet'>([\s\S]*?)<\/td>/g;
+        let m;
+        while ((m = re.exec(html)) && results.length < 8) {
+          let url = decodeEntities(m[1]);
+          const u = url.match(/[?&]uddg=([^&]+)/); if (u) url = decodeURIComponent(u[1]);
+          if (url.startsWith("//")) url = "https:" + url;
+          if (/duckduckgo\.com\/y\.js|[?&]ad_domain=/.test(url)) continue; // hirdetések kihagyása
+          results.push({ title: cleanText(m[2]), url, snippet: cleanText(m[3]) });
+        }
+      } catch (e) {}
+      if (!results.length) {
+        // 2) tartalék: Wikipédia keresés
+        try {
+          const wr = await fetch("https://hu.wikipedia.org/w/api.php?action=query&list=search&format=json&utf8=1&srlimit=5&srsearch=" + encodeURIComponent(q), { headers: { "user-agent": "JarvisBridge/1.0" }, signal: AbortSignal.timeout(8000) });
+          const wd = await wr.json();
+          for (const s of (wd.query && wd.query.search) || []) results.push({ title: s.title + " – Wikipédia", url: "https://hu.wikipedia.org/wiki/" + encodeURIComponent(s.title.replace(/ /g, "_")), snippet: cleanText(s.snippet) });
+        } catch (e) {}
+      }
+      if (!results.length) return err(502, "A kereső most nem adott találatot.");
+      return json(200, { results });
+    }
+    if (path === "/fetch" && request.method === "GET") {
+      const target = new URL(request.url).searchParams.get("url") || "";
+      let u; try { u = new URL(target); } catch { return err(400, "Hibás cím."); }
+      if (!/^https?:$/.test(u.protocol) || /^(localhost|127\.|10\.|192\.168\.|172\.(1[6-9]|2\d|3[01])\.|169\.254\.|0\.|\[?::1\]?$)/i.test(u.hostname)) return err(400, "Ez a cím nem engedélyezett.");
+      try {
+        const r = await fetch(u.toString(), { headers: { "user-agent": UA, "accept-language": "hu-HU,hu;q=0.9,en;q=0.8" }, redirect: "follow", signal: AbortSignal.timeout(10000) });
+        const type = r.headers.get("content-type") || "";
+        if (!/text\/|json|xml/.test(type)) return err(415, "Ez nem szöveges oldal (" + type.split(";")[0] + ").");
+        const raw = (await r.text()).slice(0, 1500000);
+        const title = cleanText((raw.match(/<title[^>]*>([\s\S]*?)<\/title>/i) || [])[1] || "");
+        const text = /html/.test(type) ? htmlToText(raw) : raw;
+        return json(200, { url: r.url, status: r.status, title, text: text.slice(0, 20000) });
+      } catch (e) { return err(502, "Az oldal nem tölthető be."); }
+    }
 
     // ---------- felhő mentés ----------
     if (path === "/sync") {
